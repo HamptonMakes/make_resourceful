@@ -15,12 +15,15 @@ module Resourceful
       end
       
       def build_action(named)
-        puts named
-        @controller_klass.extend Resourceful::Default::Actions::Index
+        create_method(named) { Resourceful::Default::Actions.index }
       end
       
       def build(*available_actions)
         available_actions.each { |available_action| build_action(available_action)}
+      end
+
+      def create_method(name, &block)
+        @controller_klass.send(:define_method, name, &block)
       end
     end
 

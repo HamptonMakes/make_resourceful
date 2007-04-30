@@ -9,10 +9,12 @@ module SimpleControllers
       build :index
 
       def magic
-        puts "MAGICK is called"
+        puts "this should not be public"
       end
     end
-  
+
+
+   # methods to mock a real controller
    protected
     
     def controller
