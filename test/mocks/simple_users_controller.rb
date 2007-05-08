@@ -5,6 +5,7 @@ require 'test/mocks/user'
 
 module SimpleControllers
   class UsersController < ActionController::Base
+
     make_resourceful do
       build :index
 

@@ -15,7 +15,7 @@ module Resourceful
       end
       
       def build_action(named)
-        create_method(named) { Resourceful::Default::Actions.index }
+        create_method(named) { Resourceful::Default::Actions.index(self) }
       end
       
       def build(*available_actions)

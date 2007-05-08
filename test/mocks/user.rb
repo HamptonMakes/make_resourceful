@@ -1,6 +1,6 @@
+require 'active_record'
 
-
-class User
+class User < ActiveRecord::Base
   attr_accessor :id, :options
 
   # A mock of the 'find' method in ActiveRecord

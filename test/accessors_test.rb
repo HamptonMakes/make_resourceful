@@ -6,7 +6,6 @@ class AccessorsTest < Test::Unit::TestCase
   def setup
     @empty_controller = EmptyControllers::UsersController.new
     @simple_controller = SimpleControllers::UsersController.new
-    @simple_controller.index
   end
   
   # Find out if we can devine the proper ActiveRecord-style class name from the Controller

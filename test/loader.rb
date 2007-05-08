@@ -1,6 +1,7 @@
 
 require 'rubygems'
 require 'action_controller'
+require 'action_controller/test_process'
 require 'resourceful/maker'
 require 'test/unit'
 ActionController::Base.extend Resourceful::Maker

@@ -1,0 +1,14 @@
+jeff:
+  id: 1
+  email: jeff@unspace.ca
+  password: secret
+  first_name: Jeff
+  last_name: Hardy
+
+hampton:
+  id: 2
+  email: hcatlin@gmail.com
+  password: 1234
+  first_name: Hampton
+  last_name: Catlin
+
