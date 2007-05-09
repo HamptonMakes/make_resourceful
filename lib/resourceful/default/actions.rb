@@ -1,8 +1,8 @@
 module Resourceful
   module Default
     module Actions
-      def self.index(controller)
-        controller.render :text => "Boomba!"
+      def index(controller)
+        render :text => current_object.inspect
       end
     end
   end
