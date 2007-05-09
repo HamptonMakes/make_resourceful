@@ -2,7 +2,10 @@
 require 'resourceful/default/actions'
 
 module Resourceful
+  ACTIONS = [:index, :show, :edit, :update, :create, :new, :destroy]
+
   module Builder
+
     def self.construct(controller_klass, &block)
       # Add in all those super-helpful little babies
       # TODO: Make private
@@ -29,9 +32,21 @@ module Resourceful
     
     class Constructor < Module
 
+     
       def initialize(controller_klass, &block)
         @controller_klass = controller_klass
+        @action_module    = Resourceful::Default::Actions.dup
+        @ok_actions       = []
+
         super(&block)
+
+        Resourceful::ACTIONS.each do |action_named|
+          unless @ok_actions.include? action_named
+            @action_module.send :undef_method, action_named
+          end
+        end
+
+        @controller_klass.extend(@action_module)
       end
       
       def build(*available_actions)
@@ -41,11 +56,7 @@ module Resourceful
      private  # Keep this shit on the downlow, yo!
 
       def build_action(named)
-        create_method(named, &Resourceful::Default::Actions.method(named).to_proc)
-      end
-
-      def create_method(name, &block)
-        @controller_klass.send(:define_method, name, &block)
+        @ok_actions << named.to_sym
       end
 
     end
