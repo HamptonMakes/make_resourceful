@@ -42,7 +42,7 @@ module Resourceful
 
         Resourceful::ACTIONS.each do |action_named|
           unless @ok_actions.include? action_named
-            @action_module.send :undef_method, action_named
+            @action_module.send :remove_method, action_named
           end
         end
 
