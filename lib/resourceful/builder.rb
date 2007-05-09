@@ -45,8 +45,9 @@ module Resourceful
             @action_module.send :remove_method, action_named
           end
         end
-
-        @controller_klass.extend(@action_module)
+        
+        @controller_klass.action_methods.merge @ok_actions.map {|a|a.to_s}
+        @controller_klass.send :include, @action_module
       end
       
       def build(*available_actions)
