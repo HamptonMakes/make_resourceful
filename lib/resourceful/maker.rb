@@ -6,7 +6,7 @@ module Resourceful
     def make_resourceful(*args, &block)
       include Resourceful::Base
 
-      Resourceful::Builder.construct(self, &block)
+      Resourceful::Builder.new(self, &block)
     end
   end
 end
