@@ -10,7 +10,7 @@ module Resourceful
       # Add in all those super-helpful little babies
       # TODO: Make private
       puts controller_klass.to_s
-      controller_klass.extend Resourceful::Default::Accessors
+      controller_klass.send :include, Resourceful::Default::Accessors
 
       # Now, for some meta shit!
       #   --- Too bad _why already took HacketyHack as a name!
@@ -46,7 +46,7 @@ module Resourceful
           end
         end
         
-        @controller_klass.action_methods.merge @ok_actions.map {|a|a.to_s}
+        @controller_klass.hidden_actions.reject! &@ok_actions.method(:include?)
         @controller_klass.send :include, @action_module
       end
       
