@@ -11,7 +11,7 @@ module Resourceful
       end
 
       def current_model_name
-        controller.controller_name.singularize.titleize
+        controller_name.singularize.titleize
       end
 
       def current_model
