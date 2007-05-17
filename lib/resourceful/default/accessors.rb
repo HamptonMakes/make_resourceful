@@ -6,12 +6,28 @@ module Resourceful
         @current_objects ||= current_model.find(:all, :include => model_includes)
       end
 
+      def load_objects
+        eval "@#{instance_variable_name} = current_objects"
+      end
+
       def current_object
         @current_object  ||= current_model.find(current_param)
       end
 
+      def load_object
+        eval "@#{instance_variable_name.singularize} = current_object"
+      end
+
+      def build_object
+        current_model.build(object_parameters)
+      end
+
       def current_model_name
         controller_name.singularize.titleize
+      end
+
+      def instance_variable_name
+        controller_name.underscore.gsub /_controller$/, ""
       end
 
       def current_model
@@ -22,8 +38,16 @@ module Resourceful
         params[:id]
       end
 
+      def object_parameters
+        params[instance_variable_name.singularize.to_sym]
+      end
+
       def model_includes
         Hash.new
+      end
+
+      def response_for(action)
+        send("response_for_#{action}")
       end
     end
   end

@@ -2,16 +2,10 @@
 require 'resourceful/default/actions'
 
 module Resourceful
-  ACTIONS = [:index, :show, :edit, :update, :create, :new, :destroy]
 
   class Builder
 
     def initialize(controller_klass, &block)
-      # Add in all those super-helpful little babies
-      # TODO: Make private
-      puts controller_klass.to_s
-      controller_klass.send :include, Resourceful::Default::Accessors
-
       @controller_klass = controller_klass
       @action_module    = Resourceful::Default::Actions.dup
       @ok_actions       = []
@@ -24,8 +18,30 @@ module Resourceful
         end
       end
       
+<<<<<<< .mine
+      def build(*available_actions)
+        available_actions.each { |available_action| build_action(available_action)}
+      end
+
+      def before(action, &block)
+        callback_name = "before_#{action}".to_sym
+        if is_defined? callback_name
+          undef callback_name
+        end
+        define_method callback_name, &block
+        protected callback_name
+      end
+     
+     private  # Keep this shit on the downlow, yo!
+
+      def build_action(named)
+        @ok_actions << named.to_sym
+      end
+
+=======
       @controller_klass.hidden_actions.reject! &@ok_actions.method(:include?)
       @controller_klass.send :include, @action_module
+>>>>>>> .r16
     end
     
     def build(*available_actions)
