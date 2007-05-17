@@ -3,60 +3,60 @@ module Resourceful
     module Actions
       def index
         load_objects
-        before_index
+        before :index
         response_for :index
       end
 
       def show
         load_object
-        before_show
+        before :show
         response_for :show
       end
 
       def create
         build_object
-        before_create
+        before :create
         if current_object.save
-          after_create
+          after :create
           response_for :create
         else
-          after_create_fails
+          after :create_fails
           response_for :create_fails
         end
       end
 
       def update
         load_object
-        before_update
+        before :update
         if current_object.update_attributes object_parameters
-          after_update
+          after :update
           response_for :update
         else
-          after_update_fails
+          after :update_fails
           response_for :update_fails
         end
       end
 
       def new
         build_object
-        before_new
+        before :new
         response_for :new
       end
 
       def edit
         load_object
-        before_edit
+        before :edit
         response_for :edit
       end
 
       def destroy
         load_object
-        before_destroy
+        before :destroy
         if load_object.destroy
-          after_destroy
+          after :destroy
           response_for :destroy
         else
-          after_destroy_fails
+          after :destroy_fails
           response_for :destroy_fails
         end
       end

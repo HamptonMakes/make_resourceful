@@ -1,4 +1,3 @@
-
 require 'test/mocks/user'
 
 # Very complex User controller
