@@ -12,7 +12,7 @@ module ComplexControllers
             :new,   :update,
             :create
 
-      scoped_by :current_site
+      belongs_to :current_site
 
       publish :types      => [:xml, :yaml, :json],
               :only       =>  :show, # without it makes both available
@@ -27,7 +27,7 @@ module ComplexControllers
         puts "this should not be public"
       end
 
-      def before_show
+      before :show do
         @before_show_called = true
       end
     end

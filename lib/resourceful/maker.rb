@@ -20,7 +20,7 @@ module Resourceful
     end
 
     def resourceful_fire(callback_name)
-      read_inheritable_attribute(:resourceful_callbacks)[callback_name].call
+      instance_eval(read_inheritable_attribute(:resourceful_callbacks)[callback_name])
     end
   end
 end
