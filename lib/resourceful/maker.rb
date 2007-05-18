@@ -19,8 +19,12 @@ module Resourceful
       resourceful_fire("after_#{action}".intern)
     end
 
+    def response_for(action)
+      respond_to(&read_inheritable_attribute(:resourceful_responses)[action.to_sym])
+    end
+
     def resourceful_fire(callback_name)
-      instance_eval(read_inheritable_attribute(:resourceful_callbacks)[callback_name])
+      instance_eval(&read_inheritable_attribute(:resourceful_callbacks)[callback_name])
     end
   end
 end

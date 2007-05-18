@@ -30,6 +30,17 @@ module ComplexControllers
       before :show do
         @before_show_called = true
       end
+
+      response_for :show do # No args!
+        redirect_to @person
+      end
+
+      # This time, when we use the format() method call, 
+      # we are going to use the responds_to block
+      response_for :edit do |format|
+        format.html { redirect_to @person }
+        format.xml { blah }
+      end
     end
 
     # This is a custom edit that should override the make_resourceful one

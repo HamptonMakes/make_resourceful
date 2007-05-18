@@ -7,6 +7,7 @@ module Resourceful
       @action_module    = Resourceful::Default::Actions.dup
       @ok_actions       = []
       @callbacks        = {}
+      @responses        = {}
     end
 
     def apply(kontroller) # :nodoc:
@@ -20,10 +21,11 @@ module Resourceful
       kontroller.send :include, @action_module
 
       kontroler.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
+      kontroler.read_inheritable_attribute(:resourceful_responses).merge! @responses
     end
       
     def build(*available_actions)
-      available_actions.each { |action| build_action action }
+      available_actions.each { |action| @ok_actions << action.to_sym }
     end
 
     def before(action, &block)
@@ -33,11 +35,33 @@ module Resourceful
     def after(action, &block)
       @callbacks["after_#{action}".intern] = block
     end
-    
-    private  # Keep this shit on the downlow, yo!
 
-    def build_action(named)
-      @ok_actions << named.to_sym
+    def response_for(action, &block)
+      if block.arity == 0
+        response_for(action) do |format|
+          format.html(&block)
+        end
+      else
+        @responses[action.to_sym] = block
+      end
+    end
+
+    DEFAULT_FORMAT_RENDERS = {
+      :html => Proc.new {}, # This does automatically render the right thing, right?
+      :xml => Proc.new { render :xml => current_object.to_xml },
+      :json => Proc.new { render :json => current_object.to_json },
+      :yaml => Proc.new { render :yaml => current_object.to_yaml }
+    }
+
+    def publish(*types, options = {})
+      actions = (options[:only] || [:show, :index]) - (options[:except] || [])
+      actions.each do |action|
+        response_for action do |format|
+          types.each do |type|
+            format.send(type, &DEFAULT_FORMAT_RENDERS[type])
+          end
+        end
+      end
     end
   end
 end
