@@ -1,9 +1,9 @@
-require 'response'
+require 'resourceful/response'
 require 'resourceful/default/actions'
 
 module Resourceful
   class Builder
-    def initialize(controller_klass, &block)
+    def initialize
       @action_module    = Resourceful::Default::Actions.dup
       @ok_actions       = []
       @callbacks        = {}
@@ -20,8 +20,8 @@ module Resourceful
       kontroller.hidden_actions.reject! &@ok_actions.method(:include?)
       kontroller.send :include, @action_module
 
-      kontroler.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
-      kontroler.read_inheritable_attribute(:resourceful_responses).merge! @responses
+      kontroller.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
+      kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
     end
       
     def build(*available_actions)

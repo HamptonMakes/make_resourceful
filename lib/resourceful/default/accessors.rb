@@ -19,7 +19,11 @@ module Resourceful
       end
 
       def build_object
-        current_model.build(object_parameters)
+        if current_model.respond_to? :build
+          current_model.build(object_parameters)
+        else
+          current_model.new(object_parameters)
+        end
       end
 
       def current_model_name
