@@ -12,10 +12,8 @@ module Resourceful
       end
       
       def response_for(action)
-        responses = self.class.read_inheritable_attribute(:resourceful_responses)[action.to_sym]
-        responses ||= {:html => Resourceful::Builder::DEFAULT_FORMAT_RENDERS[:html]}
         respond_to do |format|
-          responses.each do |key, value|
+          self.class.read_inheritable_attribute(:resourceful_responses)[action.to_sym].each do |key, value|
             format.send(key, &scope(value))
           end
         end

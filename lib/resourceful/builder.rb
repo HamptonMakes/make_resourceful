@@ -22,6 +22,10 @@ module Resourceful
 
       kontroller.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
       kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
+
+      @ok_actions.each do |action|
+        @responses[action] ||= {:html => DEFAULT_FORMAT_RENDERS[:html]}
+      end
     end
       
     def build(*available_actions)
