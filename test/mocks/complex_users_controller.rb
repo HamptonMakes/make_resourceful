@@ -14,12 +14,12 @@ module ComplexControllers
 
       belongs_to :current_site
 
-      publish :types      => [:xml, :yaml, :json],
+      publish :xml, :yaml, :json,
               :only       =>  :show, # without it makes both available
               :attributes => [:login,
                               :created_at,
                               {:messages => [:title, :body, :created_at]}]
-      publish :type => :xml,
+      publish :xml,
               :only => :index,
               :attribute => :login
 

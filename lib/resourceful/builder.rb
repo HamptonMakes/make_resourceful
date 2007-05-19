@@ -1,4 +1,4 @@
-
+require 'response'
 require 'resourceful/default/actions'
 
 module Resourceful
@@ -42,7 +42,9 @@ module Resourceful
           format.html(&block)
         end
       else
-        @responses[action.to_sym] = block
+        response = Response.new
+        block.call response
+        @responses[action.to_sym] = response.formats
       end
     end
 

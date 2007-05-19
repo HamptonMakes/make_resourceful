@@ -20,11 +20,21 @@ module Resourceful
     end
 
     def response_for(action)
-      respond_to(&read_inheritable_attribute(:resourceful_responses)[action.to_sym])
+      respond_to do |format|
+        read_inheritable_attribute(:resourceful_responses)[action.to_sym].each do |key, value|
+          format.send(key, scope(value))
+        end
+      end
     end
 
     def resourceful_fire(callback_name)
-      instance_eval(&read_inheritable_attribute(:resourceful_callbacks)[callback_name])
+      scope(read_inheritable_attribute(:resourceful_callbacks)[callback_name]).call
+    end
+
+    private
+
+    def scope(&block)
+      Proc.new { |*args, &block| instance_eval(&proc) }
     end
   end
 end
