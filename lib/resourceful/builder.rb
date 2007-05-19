@@ -56,9 +56,7 @@ module Resourceful
     }
 
     def publish(*types)
-      if Hash === types[-1]
-        options = types[-1]
-      end
+      options = (Hash === types[-1] ? types[-1] : {})
       actions = (options[:only] || [:show, :index]) - (options[:except] || [])
       actions.each do |action|
         response_for action do |format|
