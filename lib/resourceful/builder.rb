@@ -3,6 +3,12 @@ require 'resourceful/default/actions'
 
 module Resourceful
   class Builder
+    @@formats = {}
+
+    def self.register_format(name, klass)
+      @@formats[name] = klass
+    end
+
     def initialize
       @action_module    = Resourceful::Default::Actions.dup
       @ok_actions       = []
@@ -24,7 +30,7 @@ module Resourceful
       kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
 
       @ok_actions.each do |action|
-        @responses[action] ||= {:html => DEFAULT_FORMAT_RENDERS[:html]}
+        @responses[action] ||= {:html => @@formats[:html].to_proc}
       end
     end
       
@@ -52,20 +58,17 @@ module Resourceful
       end
     end
 
-    DEFAULT_FORMAT_RENDERS = {
-      :html => Proc.new {}, # This does automatically render the right thing, right?
-      :xml => Proc.new { render :xml => current_object.to_xml },
-      :json => Proc.new { render :json => current_object.to_json },
-      :yaml => Proc.new { render :yaml => current_object.to_yaml }
-    }
-
     def publish(*types)
       options = (Hash === types[-1] ? types[-1] : {})
-      actions = (options[:only] || [:show, :index]) - (options[:except] || [])
+      if options[:attribute]
+        options[:attributes] = Array(options.delete(:attribute))
+      end
+      actions = (options.delete(:only) || [:show, :index]) - (options.delete(:except) || [])
+
       actions.each do |action|
         response_for action do |format|
           types.each do |type|
-            format.send(type, &DEFAULT_FORMAT_RENDERS[type])
+            format.send(type, &@@formats[type].to_proc(options))
           end
         end
       end
