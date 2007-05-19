@@ -55,7 +55,10 @@ module Resourceful
       :yaml => Proc.new { render :yaml => current_object.to_yaml }
     }
 
-    def publish(*types, options = {})
+    def publish(*types)
+      if Hash === types[-1]
+        options = types[-1]
+      end
       actions = (options[:only] || [:show, :index]) - (options[:except] || [])
       actions.each do |action|
         response_for action do |format|
