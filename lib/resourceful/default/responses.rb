@@ -3,12 +3,17 @@ module Resourceful
     module Responses
 
      protected
-      ACTIONS.each do |action|
+      [:show, :edit, :new, :index].each do |action|
         define_method "response_for_#{action}" do
-          respond_to do |format|
-            format.html
-          end
         end
+      end
+
+      def response_for_create
+        redirect_to current_object
+      end
+
+      def response_for_update
+        redirect_to current_objects
       end
 
       MODIFYING_ACTIONS.each do |action|

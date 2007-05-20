@@ -5,8 +5,8 @@ module Resourceful
   class Builder
     @@formats = {}
 
-    def self.register_format(name, klass)
-      @@formats[name] = klass
+    def self.register_format(name, &block)
+      @@formats[name] = block
     end
 
     def initialize
@@ -29,12 +29,10 @@ module Resourceful
       kontroller.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
       kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
 
-      @ok_actions.each do |action|
-        @responses[action] ||= {:html => @@formats[:html].to_proc}
-      end
     end
       
     def build(*available_actions)
+      available_actions = ACTIONS if available_actions.first == :all
       available_actions.each { |action| @ok_actions << action.to_sym }
     end
 
