@@ -10,7 +10,7 @@ require 'resourceful/default/responses'
 require 'resourceful/default/callbacks'
 
 module Resourceful::Base
-    include Resourceful::Default::Accessors
-    include Resourceful::Default::Responses
-    include Resourceful::Default::Callbacks
+  include Resourceful::Default::Accessors
+  include Resourceful::Default::Responses
+  include Resourceful::Default::Callbacks
 end

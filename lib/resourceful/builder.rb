@@ -28,7 +28,6 @@ module Resourceful
 
       kontroller.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
       kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
-
     end
       
     def build(*available_actions)
