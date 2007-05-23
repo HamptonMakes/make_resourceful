@@ -44,7 +44,7 @@ module Resourceful
     end
 
     def response_for(action, &block)
-      if block.arity == 0
+      if block.arity < 1
         response_for(action) do |format|
           format.html(&block)
         end

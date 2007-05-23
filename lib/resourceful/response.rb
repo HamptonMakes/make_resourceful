@@ -6,7 +6,7 @@ module Resourceful
       @formats = {}
     end
 
-    def method_missing(name, block)
+    def method_missing(name, &block)
       @formats[name] = block
     end
   end

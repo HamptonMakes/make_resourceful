@@ -1,7 +1,0 @@
-test:
-  adapter: mysql
-  database: make_resourceful_test
-  username: root
-  password:
-  host: localhost
-
