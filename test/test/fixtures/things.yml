@@ -1,5 +1,16 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-one:
+car:
   id: 1
-two:
+  person_id: 1
+  name: car
+  awesome: true
+house:
   id: 2
+  person_id: 1
+  name: houe
+  awesome: true
+tv:
+  id: 3
+  person_id: 2
+  name: big freak'n tv
+  awesome: true
