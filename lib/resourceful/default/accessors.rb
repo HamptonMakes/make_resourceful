@@ -27,7 +27,7 @@ module Resourceful
       end
 
       def current_model_name
-        controller_name.singularize.titleize
+        controller_name.singularize.camelize
       end
 
       def instance_variable_name
@@ -52,6 +52,22 @@ module Resourceful
 
       def response_for(action)
         send("response_for_#{action}")
+      end
+
+      def parent_model_names
+        parents.map { |p| p.camelize }
+      end
+
+      def parent_models
+        parent_model_names.map { |p| p.constantize }
+      end
+
+      def parent_params
+        parents.map { |p| params["#{p}_id"] }
+      end
+
+      def parent_objects
+        @parent_objects ||= parent_params.zip(parent_models) { |id, model| model.find(id) }
       end
     end
   end

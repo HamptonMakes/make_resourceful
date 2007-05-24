@@ -14,6 +14,7 @@ module Resourceful
       @ok_actions       = []
       @callbacks        = {}
       @responses        = {}
+      @parents          = []
     end
 
     def apply(kontroller) # :nodoc:
@@ -28,6 +29,8 @@ module Resourceful
 
       kontroller.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
       kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
+
+      kontroller.write_inheritable_attribute(:parents, @parents)
     end
       
     def build(*available_actions)
@@ -69,6 +72,10 @@ module Resourceful
           end
         end
       end
+    end
+
+    def belongs_to(*parents)
+      @parents = parents.map { |p| p.to_s }
     end
   end
 end
