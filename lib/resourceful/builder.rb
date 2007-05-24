@@ -31,6 +31,7 @@ module Resourceful
       kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
 
       kontroller.write_inheritable_attribute(:parents, @parents)
+      kontroller.before_filter { load_parent_objects }
     end
       
     def build(*available_actions)

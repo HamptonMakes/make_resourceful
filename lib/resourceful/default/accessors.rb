@@ -69,6 +69,10 @@ module Resourceful
       def parent_objects
         @parent_objects ||= parent_params.zip(parent_models) { |id, model| model.find(id) }
       end
+
+      def load_parent_objects
+        parents.zip(parent_objects) { |name, obj| instance_variable_set("@#{name}", obj) }
+      end
     end
   end
 end
