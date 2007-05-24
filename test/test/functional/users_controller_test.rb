@@ -40,4 +40,13 @@ class UsersControllerTest < Test::Unit::TestCase
     # If the method were visible, an exception would have been raised
     assert_response :success
   end
+
+  def test_show
+    id = 3
+    get :show, :id => id
+
+    user = @controller.instance_variable_get("@user")
+    assert_equal user.id, id
+    assert_tag :tag => 'h5', :content => users(:nathan).first_name
+  end
 end

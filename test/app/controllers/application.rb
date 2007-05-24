@@ -4,4 +4,8 @@
 class ApplicationController < ActionController::Base
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_test_session_id'
+
+  def ok_go
+    @was_before_filter_called = true
+  end
 end

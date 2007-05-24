@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   make_resourceful do
-    build :index
+    build :index, :show
     
     def magic
       raise "This should not be public."

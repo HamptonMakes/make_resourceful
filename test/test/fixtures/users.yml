@@ -12,3 +12,9 @@ hampton:
   first_name: Hampton
   last_name: Catlin
 
+nathan:
+  id: 3
+  email: nex342@gmail.com
+  password: zoink
+  first_name: Nathan
+  last_name: Weizenbaum
