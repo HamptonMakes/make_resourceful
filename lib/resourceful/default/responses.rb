@@ -4,16 +4,15 @@ module Resourceful
 
      protected
       [:show, :edit, :new, :index].each do |action|
-        define_method "response_for_#{action}" do
-        end
+        define_method("response_for_#{action}") {}
       end
 
       def response_for_create
-        redirect_to current_object
+        redirect_to object_path
       end
 
       def response_for_update
-        redirect_to current_objects
+        redirect_to objects_path
       end
 
       MODIFYING_ACTIONS.each do |action|

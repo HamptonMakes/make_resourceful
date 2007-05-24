@@ -7,19 +7,19 @@ module Resourceful
       end
 
       def load_objects
-        eval "@#{instance_variable_name} = current_objects"
+        instance_variable_set("@#{instance_variable_name}", current_objects)
       end
 
       def current_object
-        @current_object  ||= current_model.find(current_param)
+        @current_object ||= current_model.find(current_param)
       end
 
       def load_object
-        eval "@#{instance_variable_name.singularize} = current_object"
+        instance_variable_set("@#{instance_variable_name.singularize}", current_object)
       end
 
       def build_object
-        if current_model.respond_to? :build
+        @current_object = if current_model.respond_to? :build
           current_model.build(object_parameters)
         else
           current_model.new(object_parameters)

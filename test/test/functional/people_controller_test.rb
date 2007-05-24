@@ -11,7 +11,6 @@ class PeopleControllerTest < Test::Unit::TestCase
     @response   = ActionController::TestResponse.new
   end
 
-  # Replace this with your real tests.
   def test_create
     attributes = {:name => "Sam"}
     post :create,
