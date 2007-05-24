@@ -45,8 +45,7 @@ class UsersControllerTest < Test::Unit::TestCase
     id = 3
     get :show, :id => id
 
-    user = @controller.instance_variable_get("@user")
-    assert_equal user.id, id
+    assert_equal assigns(:user).id, id
     assert_tag :tag => 'h5', :content => users(:nathan).first_name
   end
 end

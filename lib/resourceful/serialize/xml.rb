@@ -14,7 +14,7 @@ module Resourceful
         super(model, options)
       end
 
-      private
+     private
 
       def transform_attributes(attributes)
         options = {}

@@ -15,6 +15,7 @@ module Resourceful
 
       def create
         build_object
+        load_object
         before :create
         if current_object.save
           after :create
@@ -39,6 +40,7 @@ module Resourceful
 
       def new
         build_object
+        load_object
         before :new
         response_for :new
       end

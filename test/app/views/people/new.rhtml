@@ -1,0 +1,6 @@
+<% if @person.errors.any? %>
+  <%= error_messages_for :person %>
+<% end %>
+
+<%= text_field :person, :name %>
+<%= submit_tag %>
