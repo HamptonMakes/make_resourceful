@@ -41,11 +41,11 @@ class ThingsControllerTest < Test::Unit::TestCase
            :awesome => true
         }
 
-    assert assigns(:thing)
-    assert assigns(:person)
+    assert_not_nil assigns(:thing)
+    assert_not_nil assigns(:person)
 
     assert_not_nil (thing = Thing.find_by_name("nillawafer"))
-    assert thing.person_id == 2
     assert_redirect_to thing_path(thing.person, thing)
+    assert_equal 2, thing.person_id
   end
 end
