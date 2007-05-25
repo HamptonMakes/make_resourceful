@@ -35,7 +35,11 @@ module Resourceful
       end
 
       def current_model
-        current_model_name.constantize
+        if parent_objects.empty?
+          current_model_name.constantize
+        else
+          parent_objects.first.send(instance_variable_name)
+        end
       end
 
       def current_param
@@ -55,7 +59,7 @@ module Resourceful
       end
 
       def parents
-        self.class.read_inheritable_attribute(:parents)
+        self.class.read_inheritable_attribute :parents
       end
 
       def parent_model_names
@@ -70,8 +74,18 @@ module Resourceful
         parents.map { |p| params["#{p}_id"] }
       end
 
+      # Returns an array of all of the parent objects
+      # as defined in belongs_to :thing
+      #
+      # Currently only works for one parameter
+      #
+      # TODO: Expand this to handle more than one parent
       def parent_objects
-        @parent_objects ||= parent_params.zip(parent_models).map { |id, model| model.find(id) }
+        if parents.any?
+          @parent_objects = [parents.first.camelize.constantize.find(parent_params.first)]
+        else
+          []
+        end
       end
 
       def load_parent_objects

@@ -19,18 +19,21 @@ class ThingsControllerTest < Test::Unit::TestCase
         :id => 2,
         :person_id => 1
 
-    assert assigns(:thing)
-    assert assigns(:person)
+    assert_not_nil assigns(:thing)
+    assert_not_nil assigns(:person)
 
     assert_response :success
   end
 
   def test_show_bad_parent
-     get :show,
+    get :show,
         :id => 2,
         :person_id => 2
-
-    assert_response 404
+    
+    assert false
+    
+  rescue ActiveRecord::RecordNotFound
+    assert true
   end
 
   def test_create
@@ -45,7 +48,7 @@ class ThingsControllerTest < Test::Unit::TestCase
     assert_not_nil assigns(:person)
 
     assert_not_nil (thing = Thing.find_by_name("nillawafer"))
-    assert_redirect_to thing_path(thing.person, thing)
+    assert_redirected_to thing_path(thing.person, thing)
     assert_equal 2, thing.person_id
   end
 end

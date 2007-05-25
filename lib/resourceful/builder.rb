@@ -19,7 +19,10 @@ module Resourceful
 
     def apply(kontroller) # :nodoc:
       Resourceful::ACTIONS.each do |action_named|
+        # See if this is a method listed by build/n
         unless @ok_actions.include? action_named
+          # If its not listed, then remove the method
+          # No one can hit it... if its DEAD!
           @action_module.send :remove_method, action_named
         end
       end
@@ -75,8 +78,8 @@ module Resourceful
       end
     end
 
-    def belongs_to(*parents)
-      @parents = parents.map { |p| p.to_s }
+    def belongs_to(parent)
+      @parents = [parent.to_s]
     end
   end
 end
