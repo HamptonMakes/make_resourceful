@@ -54,6 +54,10 @@ module Resourceful
         send("response_for_#{action}")
       end
 
+      def parents
+        self.class.read_inheritable_attribute(:parents)
+      end
+
       def parent_model_names
         parents.map { |p| p.camelize }
       end
@@ -67,11 +71,11 @@ module Resourceful
       end
 
       def parent_objects
-        @parent_objects ||= parent_params.zip(parent_models) { |id, model| model.find(id) }
+        @parent_objects ||= parent_params.zip(parent_models).map { |id, model| model.find(id) }
       end
 
       def load_parent_objects
-        parents.zip(parent_objects) { |name, obj| instance_variable_set("@#{name}", obj) }
+        parents.zip(parent_objects).map { |name, obj| instance_variable_set("@#{name}", obj) }
       end
     end
   end
