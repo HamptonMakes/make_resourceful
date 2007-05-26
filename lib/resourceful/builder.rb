@@ -54,15 +54,18 @@ module Resourceful
       end
     end
 
-    def response_for(action, &block)
+    def response_for(*actions, &block)
       if block.arity < 1
-        response_for(action) do |format|
+        response_for(*actions) do |format|
           format.html(&block)
         end
       else
         response = Response.new
         block.call response
-        @responses[action.to_sym] = response.formats
+        
+        actions.each do |action|
+          @responses[action.to_sym] = response.formats
+        end
       end
     end
 

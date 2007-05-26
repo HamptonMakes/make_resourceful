@@ -22,6 +22,11 @@ class PeopleController < ApplicationController
     before :edit, :new do
       @before_edit_and_new = true
     end
+
+    response_for :index, :destroy do |format|
+      format.html { render :text => "HTML" }
+      format.json { render :json => "JSON".to_json }
+    end
   end
   
   # This is a custom edit that should override the make_resourceful one

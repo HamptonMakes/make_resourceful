@@ -91,4 +91,54 @@ class PeopleControllerTest < Test::Unit::TestCase
 
     assert_nil assigns(:before_edit_and_new)
   end
+
+  def test_index_html
+    get :index, :format => 'html'
+
+    assert_response :success
+
+    assert_kind_of Array, assigns(:people)
+    assert assigns(:people).include?(people(:one))
+    assert assigns(:people).include?(people(:two))
+
+    assert_equal assigns(:people), assigns(:current_objects)
+    
+    assert_tag :content => "HTML"
+  end
+
+  def test_index_json
+    get :index, :format => 'json'
+
+    assert_response :success
+
+    assert_kind_of Array, assigns(:people)
+    assert assigns(:people).include?(people(:one))
+    assert assigns(:people).include?(people(:two))
+
+    assert_equal assigns(:people), assigns(:current_objects)
+
+    assert_equal 'application/json; charset=utf-8', @response.headers['Content-Type']
+    assert_tag :content => "JSON".to_json
+  end
+
+  def test_destroy
+    person = people(:two)
+
+    get :destroy,
+        :id => 2,
+        :format => 'json'
+
+    assert_response :success
+    assert_equal person, assigns(:person)
+
+    begin
+      Person.find(2)
+    rescue ActiveRecord::RecordNotFound => err
+    end
+
+    assert_not_nil err
+
+    assert_equal 'application/json; charset=utf-8', @response.headers['Content-Type']
+    assert_tag :content => "JSON".to_json
+  end
 end
