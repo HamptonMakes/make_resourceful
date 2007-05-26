@@ -38,7 +38,7 @@ module Resourceful
         if parent_objects.empty?
           current_model_name.constantize
         else
-          parent_objects.first.send(instance_variable_name)
+          parent_objects[-1].send(instance_variable_name)
         end
       end
 
@@ -71,7 +71,7 @@ module Resourceful
       end
 
       def parent_params
-        parents.map { |p| params["#{p}_id"] }
+        parents.map { |p| params["#{p}_id"].to_i }
       end
 
       # Returns an array of all of the parent objects
@@ -81,11 +81,16 @@ module Resourceful
       #
       # TODO: Expand this to handle more than one parent
       def parent_objects
-        if parents.any?
-          @parent_objects = [parents.first.camelize.constantize.find(parent_params.first)]
-        else
-          []
+        return [] if parents.empty?
+        return @parent_objects if @parent_objects
+
+        first = parent_models[0].find(parent_params[0])
+        @parent_objects = [first]
+        parent_params.zip(parents)[1..-1].inject(first) do |memo, arr|
+          id, name = arr
+          @parent_objects << memo.send(name.pluralize).find(id)
         end
+        @parent_objects
       end
 
       def load_parent_objects

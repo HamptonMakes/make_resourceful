@@ -13,27 +13,27 @@ class ThingsControllerTest < Test::Unit::TestCase
     @response   = ActionController::TestResponse.new
   end
 
-  # Replace this with your real tests.
   def test_show
     get :show,
         :id => 2,
         :person_id => 1
 
-    assert_not_nil assigns(:thing)
-    assert_not_nil assigns(:person)
+    assert_equal things(:house), assigns(:thing)
+    assert_equal people(:one), assigns(:person)
+    assert_equal people(:one), assigns(:thing).person
 
     assert_response :success
   end
 
   def test_show_bad_parent
-    get :show,
+    begin
+      get :show,
         :id => 2,
         :person_id => 2
+    rescue ActiveRecord::RecordNotFound => err
+    end
     
-    assert false
-    
-  rescue ActiveRecord::RecordNotFound
-    assert true
+    assert_not_nil err
   end
 
   def test_create
@@ -44,11 +44,11 @@ class ThingsControllerTest < Test::Unit::TestCase
            :awesome => true
         }
 
-    assert_not_nil assigns(:thing)
-    assert_not_nil assigns(:person)
-
     assert_not_nil (thing = Thing.find_by_name("nillawafer"))
     assert_redirected_to thing_path(thing.person, thing)
     assert_equal 2, thing.person_id
+
+    assert_equal thing, assigns(:thing)
+    assert_equal thing.person, assigns(:person)
   end
 end

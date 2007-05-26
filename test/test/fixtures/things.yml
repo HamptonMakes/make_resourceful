@@ -1,4 +1,3 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 car:
   id: 1
   person_id: 1
