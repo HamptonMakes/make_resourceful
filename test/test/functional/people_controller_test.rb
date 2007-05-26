@@ -5,6 +5,8 @@ require 'people_controller'
 class PeopleController; def rescue_action(e) raise e end; end
 
 class PeopleControllerTest < Test::Unit::TestCase
+  fixtures :people
+
   def setup
     @controller = PeopleController.new
     @request    = ActionController::TestRequest.new
@@ -58,5 +60,35 @@ class PeopleControllerTest < Test::Unit::TestCase
                :attributes => {:id => "errorExplanation"}
 
     assert_response :success
+  end
+
+  def test_show
+    get :show,
+        :id => 1
+
+    assert_redirected_to person_path(people(:one))
+    assert_equal people(:one), assigns(:person)
+    assert_equal people(:one), assigns(:current_object)
+    assert_not_nil assigns(:before_show_called)
+  end
+
+  def test_new
+    get :new
+
+    assert_response :success
+    assert_not_nil assigns(:before_edit_and_new)
+  end
+
+  def test_edit
+    get :edit,
+        :id => 2
+
+    assert_response :success
+    assert_tag :tag => 'p', :child => "I am a custom edit for the person #{people(:two).name}"
+
+    assert_equal people(:two), assigns(:current_object)
+    assert_nil assigns(:person)
+
+    assert_nil assigns(:before_edit_and_new)
   end
 end

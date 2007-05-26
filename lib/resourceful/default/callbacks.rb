@@ -4,11 +4,11 @@ module Resourceful
   module Default
     module Callbacks
       def before(action)
-        resourceful_fire("before_#{action}".intern)
+        resourceful_fire(:before, action)
       end
 
       def after(action)
-        resourceful_fire("after_#{action}".intern)
+        resourceful_fire(:after, action)
       end
 
       def response_for(action)
@@ -21,8 +21,8 @@ module Resourceful
         send "response_for_#{action}"
       end
 
-      def resourceful_fire(callback_name)
-        scope(self.class.read_inheritable_attribute(:resourceful_callbacks)[callback_name]).call
+      def resourceful_fire(type, name)
+        scope(self.class.read_inheritable_attribute(:resourceful_callbacks)[type][name]).call
       end
 
       def scope(block)

@@ -12,7 +12,7 @@ module Resourceful
     def initialize
       @action_module    = Resourceful::Default::Actions.dup
       @ok_actions       = []
-      @callbacks        = {}
+      @callbacks        = {:before => {}, :after => {}}
       @responses        = {}
       @parents          = []
     end
@@ -42,12 +42,16 @@ module Resourceful
       available_actions.each { |action| @ok_actions << action.to_sym }
     end
 
-    def before(action, &block)
-      @callbacks["before_#{action}".intern] = block
+    def before(*actions, &block)
+      actions.each do |action|
+        @callbacks[:before][action.to_sym] = block
+      end
     end
 
-    def after(action, &block)
-      @callbacks["after_#{action}".intern] = block
+    def after(*actions, &block)
+      actions.each do |action|
+        @callbacks[:after][action.to_sym] = block
+      end
     end
 
     def response_for(action, &block)
