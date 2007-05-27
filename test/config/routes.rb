@@ -6,6 +6,15 @@ ActionController::Routing::Routes.draw do |map|
     end
   end
 
+  # In Edge Rails (changeset 6783):
+  #   map.namespace :admin do |admin|
+  #     admin.namespace :blog do |blog|
+  #       blog.resources :pages
+  #     end
+  #   end
+  map.resources :posts, :controller => 'admin/blog/posts',
+    :path_prefix => '/admin/blog', :name_prefix => 'admin_blog_'
+
   map.connect ':controller/:action/:id.:format'
   map.connect ':controller/:action/:id'
 end
