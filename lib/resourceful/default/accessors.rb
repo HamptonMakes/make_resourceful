@@ -30,6 +30,10 @@ module Resourceful
         controller_name.singularize.camelize
       end
 
+      def namespaces
+        @namespaces ||= self.class.name.split('::').slice(0..-2).map(&:underscore).map(&:to_sym)
+      end
+
       def instance_variable_name
         controller_name.underscore.gsub /_controller$/, ""
       end
