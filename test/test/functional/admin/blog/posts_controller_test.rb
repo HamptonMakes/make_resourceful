@@ -21,7 +21,7 @@ class Admin::Blog::PostsControllerTest < Test::Unit::TestCase
 
     assert_redirected_to admin_blog_post_path(Post.count)
     assert_not_nil Post.find_by_title(attributes[:title])
-    assert_equal [:admin, :blog], assigns(:current_namespaces)
+    assert_equal [:admin, :blog], assigns(:namespaces)
   end
 
   def test_destroy
