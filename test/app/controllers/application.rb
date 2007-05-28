@@ -8,4 +8,9 @@ class ApplicationController < ActionController::Base
   def ok_go
     @was_before_filter_called = true
   end
+
+  protected
+    def current_user
+      User.find(1)
+    end
 end

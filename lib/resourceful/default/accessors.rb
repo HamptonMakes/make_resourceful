@@ -24,6 +24,28 @@ module Resourceful
         else
           current_model.new(object_parameters)
         end
+
+        # This is where we assign all of the associations
+        # and figure out how they work.
+        #
+        # This is currently setup back in builder
+        # with associated_with :current_something
+        associations = self.class.read_inheritable_attribute :resourceful_associations
+        associations.each do |association_name, assign_with|
+          associated_object = send(association_name)
+
+          possible_method = if assign_with
+            assign_with.to_s
+          else
+            associated_object.class.to_s.underscore
+          end
+
+          if @current_object.respond_to? possible_method
+            @current_object.send(possible_method + "=", associated_object)
+          else
+            logger.warn "Association failed!"
+          end
+        end
       end
 
       def current_model_name

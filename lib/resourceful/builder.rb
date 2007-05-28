@@ -15,6 +15,7 @@ module Resourceful
       @callbacks        = {:before => {}, :after => {}}
       @responses        = {}
       @parents          = []
+      @associations     = {}
     end
 
     def apply(kontroller) # :nodoc:
@@ -32,6 +33,7 @@ module Resourceful
 
       kontroller.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
       kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
+      kontroller.read_inheritable_attribute(:resourceful_associations).merge! @associations
 
       kontroller.write_inheritable_attribute(:parents, @parents)
       kontroller.before_filter { |c| c.send(:load_parent_objects) }
@@ -63,11 +65,40 @@ module Resourceful
       else
         response = Response.new
         block.call response
-        
+
         actions.each do |action|
           @responses[action.to_sym] = response.formats
         end
       end
+    end
+
+    # Use this method to assign associations that
+    # are method-accessable and not in the belongs_to
+    # (aka, url scoped) declaration.
+    #
+    # This would be commonly used to assign the current_user
+    # as the owner, when #current_user is defined.
+    #
+    # The assignment-method that happens on the object
+    # is guessed to be the underscored class-name of the
+    # returned object.
+    #
+    # If you are using STI or other things... where the
+    # AR object wants to be assigned with a name
+    # that might be different than the class returned, then
+    # use :assign_with => name
+    #
+    # Example usages:
+    #   // Where current_object.user=
+    #   // and #current_user returns a User
+    #   associate_with :current_user
+    #   // Where current_object.admin=
+    #   // and #current_juror returns anything
+    #   associate_with :current_juror,
+    #                      :assign_with => :admin
+    #
+    def associated_with(element, options={})
+      @associations[element] = options[:assign_with] || nil
     end
 
     def publish(*types)

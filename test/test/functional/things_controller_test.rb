@@ -48,6 +48,8 @@ class ThingsControllerTest < Test::Unit::TestCase
     assert_redirected_to thing_path(thing.person, thing)
     assert_equal 2, thing.person_id
 
+    assert_equal 1, thing.user_id
+
     assert_equal thing, assigns(:thing)
     assert_equal thing.person, assigns(:person)
   end
