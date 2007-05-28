@@ -89,11 +89,13 @@ module Resourceful
     # use :assign_with => name
     #
     # Example usages:
-    #   // Where current_object.user=
-    #   // and #current_user returns a User
+    # 
+    #   # Assigns current_object.user=
+    #   # because #current_user returns a User
     #   associate_with :current_user
-    #   // Where current_object.admin=
-    #   // and #current_juror returns anything
+    #   
+    #   # Assigns current_object.admin=
+    #   # #current_juror can return anything
     #   associate_with :current_juror,
     #                      :assign_with => :admin
     #
