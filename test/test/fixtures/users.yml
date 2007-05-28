@@ -18,3 +18,9 @@ nathan:
   password: zoink
   first_name: Nathan
   last_name: Weizenbaum
+  
+indestructible_user:
+  id: 4
+  email: indestrutible@aol.com
+  first_name: indestructible
+  last_name: user

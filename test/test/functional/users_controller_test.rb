@@ -48,4 +48,15 @@ class UsersControllerTest < Test::Unit::TestCase
     assert_equal assigns(:user).id, id
     assert_tag :tag => 'h5', :content => users(:nathan).first_name
   end
+  
+  def test_destroy_fails
+    #so it doesn't cry about redirect_to :back
+    @request.env["HTTP_REFERER"] = "www.google.com"
+    
+    u = users(:indestructible_user)
+    delete :destroy, :id => u.id
+    
+    assert_not_nil User.find_by_id(u.id), 'should not have deleted indestructible_user'
+  end
+  
 end

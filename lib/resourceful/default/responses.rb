@@ -77,7 +77,7 @@ module Resourceful
         set_default_redirect objects_path
       end
 
-      def response_for_destroy_failed
+      def response_for_destroy_fails
         set_default_flash :error, "There was a problem deleting."
         set_default_redirect(:back,
                              :on     => :fail)
