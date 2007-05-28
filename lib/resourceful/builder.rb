@@ -37,10 +37,11 @@ module Resourceful
       kontroller.before_filter { |c| c.send(:load_parent_objects) }
     end
       
-    def build(*available_actions)
+    def actions(*available_actions)
       available_actions = ACTIONS if available_actions.first == :all
       available_actions.each { |action| @ok_actions << action.to_sym }
     end
+    alias build actions
 
     def before(*actions, &block)
       actions.each do |action|
