@@ -18,8 +18,6 @@ module Resourceful
               format.send(key, &scope(value))
             end
           end
-        else
-          send "response_for_#{action}"
         end
       end
 

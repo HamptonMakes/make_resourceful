@@ -14,6 +14,7 @@ module Resourceful
       include Resourceful::Base
 
       builder = Resourceful::Builder.new
+      Resourceful::Base.made_resourceful.each { |proc| builder.instance_eval(&proc) }
       builder.instance_eval(&block)
       builder.apply(self)
     end

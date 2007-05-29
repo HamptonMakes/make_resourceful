@@ -47,42 +47,41 @@ module Resourceful
         redirect_to (params[:_redirect_on] && params[:_redirect_on][on]) || default
       end
 
-      [:show, :edit, :new, :index].each do |action|
-        define_method("response_for_#{action}") {}
+      def self.included(base)
+        base.made_resourceful do
+          response_for(:create) do
+            set_default_flash(:notice, "Create successful!")
+            set_default_redirect object_path
+          end
+          
+          response_for(:create_fails) do
+            set_default_flash :error, "There was a problem!"
+            render({:action => :new},
+                   :status => :unprocessable_entity)
+          end
+        
+          response_for(:update) do
+            set_default_flash :notice, "Save successful!"
+            set_default_redirect objects_path
+          end
+          
+          response_for(:update_fails) do
+            set_default_flash :error, "There was a problem saving!"
+            render :action => :edit
+          end
+          
+          response_for(:destroy) do
+            set_default_flash :notice, "Record deleted!"
+            set_default_redirect objects_path
+          end
+          
+          response_for(:destroy_fails) do
+            set_default_flash :error, "There was a problem deleting."
+            set_default_redirect(:back,
+                                 :on     => :fail)
+          end
+        end
       end
-
-      def response_for_create
-        set_default_flash(:notice, "Create successful!")
-        set_default_redirect object_path
-      end
-
-      def response_for_create_fails
-        set_default_flash :error, "There was a problem!"
-        render({:action => :new},
-               :status => :unprocessable_entity)
-      end
-
-      def response_for_update
-        set_default_flash :notice, "Save successful!"
-        set_default_redirect objects_path
-      end
-
-      def response_for_update_fails
-        set_default_flash :error, "There was a problem saving!"
-        render :action => :edit
-      end
-
-      def response_for_destroy
-        set_default_flash :notice, "Record deleted!"
-        set_default_redirect objects_path
-      end
-
-      def response_for_destroy_fails
-        set_default_flash :error, "There was a problem deleting."
-        set_default_redirect(:back,
-                             :on     => :fail)
-      end
-      
     end
   end
 end
