@@ -13,10 +13,15 @@ module Resourceful
     def make_resourceful(*args, &block)
       include Resourceful::Base
 
-      builder = Resourceful::Builder.new
+      builder = Resourceful::Builder.new(self)
       Resourceful::Base.made_resourceful.each { |proc| builder.instance_eval(&proc) }
       builder.instance_eval(&block)
-      builder.apply(self)
+      if args.last.is_a?(Hash) && include_module = args.last[:include]
+        builder.instance_eval(&include_module.method(:resource_extension).to_proc)
+      end
+      builder.apply
+      
+      
 
       add_helpers
     end

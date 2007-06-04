@@ -4,12 +4,14 @@ require 'resourceful/default/actions'
 module Resourceful
   class Builder
     @@formats = {}
+    attr :controller, true
 
     def self.register_format(name, &block)
       @@formats[name] = block
     end
 
-    def initialize
+    def initialize(kontroller)
+      @controller       = kontroller
       @action_module    = Resourceful::Default::Actions.dup
       @ok_actions       = []
       @callbacks        = {:before => {}, :after => {}}
@@ -18,7 +20,8 @@ module Resourceful
       @associations     = {}
     end
 
-    def apply(kontroller) # :nodoc:
+    def apply# :nodoc:
+      kontroller = @controller
       Resourceful::ACTIONS.each do |action_named|
         # See if this is a method listed by build/n
         unless @ok_actions.include? action_named
