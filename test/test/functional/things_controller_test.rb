@@ -5,7 +5,7 @@ require 'things_controller'
 class ThingsController; def rescue_action(e) raise e end; end
 
 class ThingsControllerTest < Test::Unit::TestCase
-  fixtures :things, :people
+  fixtures :things, :people, :users
 
   def setup
     @controller = ThingsController.new
@@ -46,11 +46,24 @@ class ThingsControllerTest < Test::Unit::TestCase
 
     assert_not_nil (thing = Thing.find_by_name("nillawafer"))
     assert_redirected_to thing_path(thing.person, thing)
-    assert_equal 2, thing.person_id
+    assert_equal people(:two), thing.person
 
-    assert_equal 1, thing.user_id
+    assert_equal users(:jeff), thing.user
 
     assert_equal thing, assigns(:thing)
     assert_equal thing.person, assigns(:person)
+  end
+
+  def test_preview
+    get :preview,
+        :person_id => 1,
+        :thing => {
+          :name => 'mud',
+          :awesome => false
+        }
+
+    assert :success
+    assert_equal people(:one), assigns(:current_object).person
+    assert_tag :content => 'mud'
   end
 end

@@ -24,27 +24,12 @@ module Resourceful
         else
           current_model.new(object_parameters)
         end
+      end
 
-        # This is where we assign all of the associations
-        # and figure out how they work.
-        #
-        # This is currently setup back in builder
-        # with associated_with :current_something
-        associations = self.class.read_inheritable_attribute :resourceful_associations
-        associations.each do |association_name, assign_with|
-          associated_object = send(association_name)
-
-          possible_method = if assign_with
-            assign_with.to_s
-          else
-            associated_object.class.to_s.underscore
-          end
-
-          if @current_object.respond_to? possible_method
-            @current_object.send(possible_method + "=", associated_object)
-          else
-            logger.warn "Association failed!"
-          end
+      def build_associations
+        self.class.read_inheritable_attribute(:resourceful_associations).each do |name, with|
+          object = send(name)
+          @current_object.send("#{with || object.class.to_s.underscore}=", object)
         end
       end
 
@@ -102,10 +87,6 @@ module Resourceful
 
       # Returns an array of all of the parent objects
       # as defined in belongs_to :thing
-      #
-      # Currently only works for one parameter
-      #
-      # TODO: Expand this to handle more than one parent
       def parent_objects
         return [] if parents.empty?
         return @parent_objects if @parent_objects

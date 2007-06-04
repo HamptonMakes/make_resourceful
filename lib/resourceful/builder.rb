@@ -100,7 +100,7 @@ module Resourceful
     #                      :assign_with => :admin
     #
     def associated_with(element, options={})
-      @associations[element] = options[:assign_with] || nil
+      @associations[element] = options[:assign_with]
     end
 
     def publish(*types)

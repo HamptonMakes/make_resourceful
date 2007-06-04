@@ -15,6 +15,7 @@ module Resourceful
 
       def create
         build_object
+        build_associations
         load_object
         before :create
         if current_object.save

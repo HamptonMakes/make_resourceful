@@ -4,4 +4,8 @@ class ThingsController < ApplicationController
     belongs_to :person
     associated_with :current_user
   end
+
+  def preview
+    render :text => build_object.name, :layout => false
+  end
 end
