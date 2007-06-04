@@ -22,6 +22,11 @@ class ThingsControllerTest < Test::Unit::TestCase
     assert_equal people(:one), assigns(:person)
     assert_equal people(:one), assigns(:thing).person
 
+    assert_tag :tag => 'a', :content => 'obj', :attributes => {:href => thing_path(people(:one))}
+    assert_tag :tag => 'a', :content => 'objs', :attributes => {:href => things_path(people(:one))}
+    assert_tag :tag => 'a', :content => 'new_obj', :attributes => {:href => new_thing_path(people(:one))}
+    assert_tag :tag => 'a', :content => 'edit_obj', :attributes => {:href => edit_thing_path(people(:one), things(:house))}
+
     assert_response :success
   end
 
