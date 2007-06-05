@@ -71,4 +71,16 @@ class ThingsControllerTest < Test::Unit::TestCase
     assert_equal people(:one), assigns(:current_object).person
     assert_tag :content => 'mud'
   end
+
+  def test_update
+    get :update,
+        :person_id => 1,
+        :id => 2,
+        :format => 'js',
+        :thing => { :name => 'bubbles' }
+
+    assert :success
+    assert_equal 'bubbles', assigns(:thing).name
+    assert_tag :content => '$("foobar").show();'
+  end
 end

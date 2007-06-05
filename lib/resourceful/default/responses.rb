@@ -49,36 +49,54 @@ module Resourceful
 
       def self.included(base)
         base.made_resourceful do
-          response_for(:create) do
-            set_default_flash(:notice, "Create successful!")
-            set_default_redirect object_path
+          response_for(:create) do |format|
+            format.html do
+              set_default_flash(:notice, "Create successful!")
+              set_default_redirect object_path
+            end
+            format.js
           end
           
-          response_for(:create_fails) do
-            set_default_flash :error, "There was a problem!"
-            render({:action => :new},
-                   :status => :unprocessable_entity)
+          response_for(:create_fails) do |format|
+            format.html do
+              set_default_flash :error, "There was a problem!"
+              render({:action => :new},
+                     :status => :unprocessable_entity)
+            end
+            format.js
           end
         
-          response_for(:update) do
-            set_default_flash :notice, "Save successful!"
-            set_default_redirect objects_path
+          response_for(:update) do |format|
+            format.html do
+              set_default_flash :notice, "Save successful!"
+              set_default_redirect objects_path
+            end
+            format.js
           end
           
-          response_for(:update_fails) do
-            set_default_flash :error, "There was a problem saving!"
-            render :action => :edit
+          response_for(:update_fails) do |format|
+            format.html do
+              set_default_flash :error, "There was a problem saving!"
+              render :action => :edit
+            end
+            format.js
           end
           
-          response_for(:destroy) do
-            set_default_flash :notice, "Record deleted!"
-            set_default_redirect objects_path
+          response_for(:destroy) do |format|
+            format.html do
+              set_default_flash :notice, "Record deleted!"
+              set_default_redirect objects_path
+            end
+            format.js
           end
           
-          response_for(:destroy_fails) do
-            set_default_flash :error, "There was a problem deleting."
-            set_default_redirect(:back,
-                                 :on     => :fail)
+          response_for(:destroy_fails) do |format|
+            format.html do
+              set_default_flash :error, "There was a problem deleting."
+              set_default_redirect(:back,
+                                   :on     => :fail)
+            end
+            format.js
           end
         end
       end
