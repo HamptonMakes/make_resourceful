@@ -103,6 +103,18 @@ module Resourceful
       def load_parent_objects
         parents.zip(parent_objects).map { |name, obj| instance_variable_set("@#{name}", obj) }
       end
+
+      def save_succeeded?
+        @save_succeeded
+      end
+
+      def save_succeeded!
+        @save_succeeded = true
+      end
+
+      def save_failed!
+        @save_succeeded = false
+      end
     end
   end
 end

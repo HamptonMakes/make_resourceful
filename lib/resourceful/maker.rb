@@ -20,8 +20,6 @@ module Resourceful
         builder.instance_eval(&include_module.method(:resource_extension).to_proc)
       end
       builder.apply
-      
-      
 
       add_helpers
     end
@@ -32,7 +30,7 @@ module Resourceful
       helper_method(:object_path, :objects_path, :new_object_path, :edit_object_path,
                     :current_objects, :current_object, :current_model, :current_model_name,
                     :namespaces, :instance_variable_name, :parents, :parent_model_names,
-                    :parent_objects)
+                    :parent_objects, :save_succeeded?)
     end
   end
 end

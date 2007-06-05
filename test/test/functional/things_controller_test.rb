@@ -82,5 +82,17 @@ class ThingsControllerTest < Test::Unit::TestCase
     assert :success
     assert_equal 'bubbles', assigns(:thing).name
     assert_tag :content => '$("foobar").show();'
+    assert assigns(:save_succeeded)
+  end
+
+  def test_update_fails
+    get :update,
+        :person_id => 1,
+        :id => 2,
+        :format => 'js',
+        :thing => { :name => ('*' * 42) }
+    
+    assert :failure
+    assert (false === assigns(:save_succeeded))
   end
 end
