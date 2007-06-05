@@ -6,7 +6,6 @@ module Resourceful
     def self.extended(base)
       base.write_inheritable_attribute :resourceful_callbacks,    {}
       base.write_inheritable_attribute :resourceful_responses,    {}
-      base.write_inheritable_attribute :resourceful_associations, {}
       base.write_inheritable_attribute :parents,                  []
     end
 

@@ -26,13 +26,6 @@ module Resourceful
         end
       end
 
-      def build_associations
-        self.class.read_inheritable_attribute(:resourceful_associations).each do |name, with|
-          object = send(name)
-          @current_object.send("#{with || object.class.to_s.underscore}=", object)
-        end
-      end
-
       def current_model_name
         controller_name.singularize.camelize
       end
