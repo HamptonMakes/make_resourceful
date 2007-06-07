@@ -91,7 +91,7 @@ class ThingsControllerTest < Test::Unit::TestCase
         :id => 2,
         :format => 'js',
         :thing => { :name => ('*' * 42) }
-    
+
     assert :failure
     assert (false === assigns(:save_succeeded))
   end

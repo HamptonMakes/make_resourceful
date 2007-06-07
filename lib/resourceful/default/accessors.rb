@@ -2,18 +2,78 @@ module Resourceful
   module Default
     module Accessors
      protected
+      # current_objects returns an array representing the
+      # best-guess for what an index-like action might want
+      #
+      # It basically preforms:
+      #
+      #   User.find(:all, :include => auto_include)
+      #
+      # However, it is built off of current_model... which
+      # provides a lot of flexibility. If you override this method
+      # try and use current_model to build off of.
+      #
+      # For instance, if you wanted to limit to 5 entries.
+      #
+      #   def current_objects
+      #     @current_objects ||=current_model.find(:all, :limit => 5)
+      #   end
+      #
+      # Notice its recommended to cache the results
+      # so that multiple calls to this method do not
+      # require executing SQL calls.
+      #
       def current_objects
         @current_objects ||= current_model.find(:all, :include => model_includes)
       end
 
+      # This method will call current_objects and store
+      # the results in an instance variable based
+      # off the name of the controller.
+      #
+      # For instance, after this is called in a UsersController:
+      #
+      #   @users #=> current_objects
+      #
       def load_objects
         instance_variable_set("@#{instance_variable_name}", current_objects)
       end
 
+      # current_object returns an object representing the
+      # best-guess for what a show-like action might need for
+      # resource data.
+      #
+      # It basically preforms:
+      #
+      #   User.find(params[:id], :include => auto_include)
+      #
+      # However, it is built off of current_model... which
+      # provides a lot of flexibility. If you override this method
+      # try and use current_model to build off of.
+      #
+      # For instance, if you wanted to limit to 5 entries.
+      #
+      #   def current_objects
+      #     @current_objects ||=current_model.find(current_params, :limit => 5)
+      #   end
+      #
+      # Notice its recommended to cache the results
+      # so that multiple calls to this method do not
+      # require executing SQL calls.
+      #
       def current_object
         @current_object ||= current_model.find(current_param)
       end
 
+      
+      # This method will call current_object and store
+      # the results in an instance variable based
+      # off the singularized name of the controller.
+      #
+      # For instance, after this is called in a UsersController:
+      #
+      #   @user #=> current_object
+      #
       def load_object
         instance_variable_set("@#{instance_variable_name.singularize}", current_object)
       end

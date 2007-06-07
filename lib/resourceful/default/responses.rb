@@ -61,7 +61,7 @@ module Resourceful
             format.html do
               set_default_flash :error, "There was a problem!"
               render({:action => :new},
-                     :status => :unprocessable_entity)
+                      :status => :unprocessable_entity)
             end
             format.js
           end
