@@ -1,9 +1,6 @@
 module Resourceful
   module Default
     module Responses
-
-     protected
-
       # set_default_flash is a nice little helper for responses
       # that lets you set a "default" flash message
       # to respond to a problem. The default

@@ -1,7 +1,6 @@
 module Resourceful
   module Default
     module Accessors
-     protected
       # current_objects returns an array representing the
       # best-guess for what an index-like action might want
       #
