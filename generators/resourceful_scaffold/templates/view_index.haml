@@ -1,0 +1,5 @@
+%h1 Listing <%= plural_name %>
+
+= render :partial => '<%= singular_name %>', :collection => @<%= plural_name %>
+
+= link_to 'New <%= singular_name %>', new_<%= singular_name %>_path 

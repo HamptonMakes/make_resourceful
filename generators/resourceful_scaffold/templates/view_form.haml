@@ -1,0 +1,6 @@
+%div[<%= singular_name %>]
+  - <%= singular_name %>.attributes.each do |attribute|
+    %p
+      = attribute.column.human_name
+      :
+      = f.send(attribute.field_type) attribute.name.to_sym

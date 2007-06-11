@@ -1,0 +1,10 @@
+%h1== Creating <%= singular_name %>
+
+= error_messages_for :<%= singular_name %>
+
+- form_for(@<%= singular_name %>) do |f|
+  = render :partial => "form", :locals => {:f => f}
+  %p
+    = f.submit "Create"
+
+= link_to 'Back', <%= plural_name %>_path 
