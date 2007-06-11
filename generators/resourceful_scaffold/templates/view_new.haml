@@ -1,4 +1,5 @@
-%h1== Creating <%= singular_name %>
+%h1 Creating <%= singular_name %>
+Find me in app/views/<%= plural_name %>/new.haml
 
 = error_messages_for :<%= singular_name %>
 
@@ -7,4 +8,4 @@
   %p
     = f.submit "Create"
 
-= link_to 'Back', <%= plural_name %>_path 
+= link_to 'Back', <%= plural_name %>_path
