@@ -110,7 +110,7 @@ module Resourceful
       end
 
       def object_parameters
-        params[instance_variable_name.singularize.to_sym]
+        params[current_model_name.underscore.singularize.to_sym]
       end
 
       def model_includes

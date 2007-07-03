@@ -54,7 +54,7 @@ class ResourcefulScaffoldGenerator < Rails::Generator::NamedBase
       m.template('partial.haml', File.join('app/views', controller_class_path, controller_file_name, "_#{singular_name}.haml"))
 
       # Layout and stylesheet.
-      m.template('layout.haml', File.join('app/views/layouts', controller_class_path, "#{controller_file_name}.haml"))
+      m.template('layout.haml', File.join('app/views/layouts', controller_class_path, "application.haml"))
 
       #m.dependency 'model', [singular_name] + @args, :collision => :skip 
 
