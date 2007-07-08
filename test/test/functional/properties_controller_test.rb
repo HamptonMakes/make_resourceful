@@ -29,15 +29,12 @@ class PropertiesControllerTest < Test::Unit::TestCase
   end
 
   def test_show_bad_parent
-    begin
-      get :show,
-        :id => 1,
-        :thing_id => 2,
-        :person_id => 1
-    rescue ActiveRecord::RecordNotFound => err
-    end
+    get :show,
+      :id => 1,
+      :thing_id => 2,
+      :person_id => 1
     
-    assert_not_nil err
+    assert_response 404
   end
 
   def test_show_bad_grandparent

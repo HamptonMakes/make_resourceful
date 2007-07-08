@@ -71,6 +71,12 @@ class PeopleControllerTest < Test::Unit::TestCase
     assert_equal people(:one), assigns(:current_object)
     assert_not_nil assigns(:before_show_called)
   end
+  
+  def test_show_fails
+    get :show, :id => 1982
+    
+    assert_response 404
+  end
 
   def test_new
     get :new
