@@ -59,7 +59,7 @@ class PeopleControllerTest < Test::Unit::TestCase
     assert_tag :tag => 'div', 
                :attributes => {:id => "errorExplanation"}
 
-    assert_response :success
+    assert_response 422
   end
 
   def test_show
