@@ -3,11 +3,11 @@ require 'resourceful/default/actions'
 
 module Resourceful
   class Builder
-    @@formats = {}
+    @@formats = []
     attr :controller, true
 
     def self.register_format(name, &block)
-      @@formats[name] = block
+      @@formats.push([name, block]) unless @@formats.find{|n,b| n == name}
     end
 
     def initialize(kontroller)
@@ -83,7 +83,7 @@ module Resourceful
       actions.each do |action|
         response_for action do |format|
           types.each do |type|
-            format.send(type, &@@formats[type].to_proc(options))
+            format.send(type, &@@formats.find{|n,b|n==type}[1].to_proc(options))
           end
         end
       end

@@ -3,11 +3,11 @@ module Resourceful
     attr :formats
 
     def initialize
-      @formats = {}
+      @formats = []
     end
 
     def method_missing(name, &block)
-      @formats[name] = block
+      @formats.push([name, block]) unless @formats.find{|n,b| n == name}
     end
   end
 end
