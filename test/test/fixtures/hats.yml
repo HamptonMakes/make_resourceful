@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+tophat:
+  id: 1
+  style: top hat
+  user_id: 3
+sombrero:
+  id: 2
+  style: sombrero
+  user_id: 2

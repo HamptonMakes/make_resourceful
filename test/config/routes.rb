@@ -1,7 +1,10 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :users
+  map.resources :users do |user|
+    user.resource :hat
+  end
+
   map.resources :people do |person|
-    person.resources :things do |thing|
+     person.resources :things do |thing|
       thing.resources :properties
     end
   end

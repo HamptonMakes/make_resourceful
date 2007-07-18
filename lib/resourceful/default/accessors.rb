@@ -61,7 +61,11 @@ module Resourceful
       # require executing SQL calls.
       #
       def current_object
-        @current_object ||= current_model.find(current_param)
+        @current_object ||= if plural?
+          current_model.find(current_param)
+        else
+          t = parent_objects[-1].send(instance_variable_name)
+        end
       end
 
       
@@ -74,7 +78,7 @@ module Resourceful
       #   @user #=> current_object
       #
       def load_object
-        instance_variable_set("@#{instance_variable_name.singularize}", current_object)
+        v = instance_variable_set("@#{instance_variable_name.singularize}", current_object)
       end
 
       def build_object
@@ -98,7 +102,7 @@ module Resourceful
       end
 
       def current_model
-        if parent_objects.empty?
+        if parent_objects.empty? || singular?
           current_model_name.constantize
         else
           parent_objects[-1].send(instance_variable_name)
@@ -166,6 +170,14 @@ module Resourceful
 
       def save_failed!
         @save_succeeded = false
+      end
+
+      def plural?
+        !singular?
+      end
+
+      def singular?
+        instance_variable_name.singularize == instance_variable_name
       end
     end
   end

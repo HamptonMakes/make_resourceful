@@ -147,4 +147,9 @@ class PeopleControllerTest < Test::Unit::TestCase
     assert_equal 'application/json; charset=utf-8', @response.headers['Content-Type']
     assert_tag :content => "JSON".to_json
   end
+
+  def test_should_be_plural
+    assert @controller.plural?
+    assert !@controller.singular?
+  end
 end

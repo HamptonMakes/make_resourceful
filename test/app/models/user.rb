@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   has_many :things
+  has_one :hat
 
   before_destroy :ensure_cant_delete_indestructible_user
 

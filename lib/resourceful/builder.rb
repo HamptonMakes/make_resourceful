@@ -41,7 +41,10 @@ module Resourceful
     end
       
     def actions(*available_actions)
-      available_actions = ACTIONS if available_actions.first == :all
+      if available_actions.first == :all
+        available_actions = controller.new.plural? ? ACTIONS : SINGULAR_ACTIONS
+      end
+
       available_actions.each { |action| @ok_actions << action.to_sym }
     end
     alias build actions
