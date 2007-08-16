@@ -19,7 +19,7 @@ class PeopleControllerTest < Test::Unit::TestCase
     post :create,
          :person => attributes
 
-    assert_redirected_to person_path(Person.count)
+    assert_redirected_to person_path(Person.find(:first, :order => "id DESC").id)
     assert_not_nil Person.find_by_name(attributes[:name])
   end
 

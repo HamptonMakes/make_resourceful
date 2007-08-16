@@ -19,7 +19,7 @@ class Admin::Blog::PostsControllerTest < Test::Unit::TestCase
     post :create,
          :post => attributes
 
-    assert_redirected_to admin_blog_post_path(Post.count)
+    assert_redirected_to admin_blog_post_path(Post.find(:first, :order => "id DESC").id)
     assert_not_nil Post.find_by_title(attributes[:title])
     assert_equal [:admin, :blog], assigns(:namespaces)
   end
