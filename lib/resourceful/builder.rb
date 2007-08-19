@@ -93,7 +93,7 @@ module Resourceful
     end
 
     def belongs_to(*parents)
-      @parents = parents.map { |p| p.to_s }
+      @parents = parents.map(&:to_s)
     end
   end
 end
