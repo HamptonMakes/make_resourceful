@@ -25,4 +25,9 @@ class Test::Unit::TestCase
   self.use_instantiated_fixtures  = false
 
   # Add more helper methods to be used by all tests here...
+
+  def hash_for_fun_party
+    {'name' => "What a fun party!",
+      'people' => [{'name' => "Jill"}, {'name' => "BOB"}]}
+  end
 end

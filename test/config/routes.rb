@@ -8,6 +8,8 @@ ActionController::Routing::Routes.draw do |map|
       thing.resources :properties
     end
   end
+  
+  map.resources :parties
 
   # In Edge Rails (changeset 6783):
   #   map.namespace :admin do |admin|

@@ -1,4 +1,5 @@
 require 'resourceful/response'
+require 'resourceful/serialize'
 require 'resourceful/default/actions'
 
 module Resourceful
@@ -77,16 +78,16 @@ module Resourceful
     end
 
     def publish(*types)
-      options = (Hash === types[-1] ? types[-1] : {})
-      if options[:attribute]
-        options[:attributes] = Array(options.delete(:attribute))
-      end
-      actions = (options.delete(:only) || [:show, :index]) - (options.delete(:except) || [])
-
+      options = { :only => [:show, :index] }.merge(Hash === types.last ? types.pop : {})
+      actions = options[:only]
+      
       actions.each do |action|
         response_for action do |format|
           types.each do |type|
-            format.send(type, &@@formats.find{|n,b|n==type}[1].to_proc(options))
+            format.send(type) do
+              render_action = [:json, :xml].include?(type) ? type : :text
+              render render_action => current_object.serialize(type, options)
+            end
           end
         end
       end
