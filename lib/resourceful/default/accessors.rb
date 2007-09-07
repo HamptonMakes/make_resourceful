@@ -98,7 +98,7 @@ module Resourceful
       end
 
       def instance_variable_name
-        controller_name.underscore.gsub /_controller$/, ""
+        controller_name
       end
 
       def current_model
