@@ -4,20 +4,20 @@ require 'resourceful/base'
 module Resourceful
   module Maker
     def self.extended(base)
-      base.write_inheritable_attribute :resourceful_callbacks,    {}
-      base.write_inheritable_attribute :resourceful_responses,    {}
-      base.write_inheritable_attribute :parents,                  []
+      base.write_inheritable_attribute :resourceful_callbacks, {}
+      base.write_inheritable_attribute :resourceful_responses, {}
+      base.write_inheritable_attribute :parents,               []
     end
 
     def make_resourceful(*args, &block)
+      options = Hash === args.last ? args.pop : {}
+
       include Resourceful::Base
 
       builder = Resourceful::Builder.new(self)
-      Resourceful::Base.made_resourceful.each { |proc| builder.instance_eval(&proc) }
+      (Resourceful::Base.made_resourceful + Array(options[:include])).each { |proc| builder.instance_eval(&proc) }
       builder.instance_eval(&block)
-      if args.last.is_a?(Hash) && include_module = args.last[:include]
-        builder.instance_eval(&include_module.method(:resource_extension).to_proc)
-      end
+
       builder.apply
 
       add_helpers
