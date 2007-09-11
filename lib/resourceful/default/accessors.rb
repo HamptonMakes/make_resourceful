@@ -172,6 +172,14 @@ module Resourceful
         @save_succeeded = false
       end
 
+      def plural_action?
+        params[:action] == 'index'
+      end
+
+      def singular_action?
+        !plural_action?
+      end
+
       def plural?
         !singular?
       end

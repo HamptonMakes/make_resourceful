@@ -46,6 +46,11 @@ module Resourceful
 
       def self.included(base)
         base.made_resourceful do
+          response_for(:show) do |format|
+            format.html
+            format.js
+          end
+
           response_for(:show_fails) do |format|
             not_found = Proc.new { render :text => "No item found", :status => 404 }
             format.html &not_found

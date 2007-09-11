@@ -4,7 +4,8 @@ module Resourceful
   module Serialize
     module Model
 
-      def serialize(format, options = {})
+      def serialize(format, options)
+        raise "Must specify :attributes option" unless options[:attributes]
         hash = self.to_hash(options[:attributes])
         root = self.class.to_s.underscore
         if format == :xml
@@ -14,11 +15,10 @@ module Resourceful
         end
       end
 
-      def to_hash(attributes = nil)
-        attributes = normalize_attributes(attributes)
-        return self.attributes if attributes.nil?
+      def to_hash(attributes)
+        raise "Must specify attributes for #{self.inspect}.to_hash" if attributes.nil?
 
-        attributes.inject({}) do |hash, (key, value)|
+        normalize_attributes(attributes).inject({}) do |hash, (key, value)|
           attr = self.send(key)
           attr = attr.to_hash(value) if ActiveRecord::Base === attr
 

@@ -17,10 +17,13 @@ module Resourceful
       @ok_actions       = []
       @callbacks        = {:before => {}, :after => {}}
       @responses        = {}
+      @publish          = {}
       @parents          = []
     end
 
     def apply# :nodoc:
+      apply_publish
+
       kontroller = @controller
       Resourceful::ACTIONS.each do |action_named|
         # See if this is a method listed by build/n
@@ -78,23 +81,33 @@ module Resourceful
     end
 
     def publish(*types)
-      options = { :only => [:show, :index] }.merge(Hash === types.last ? types.pop : {})
-      actions = options[:only]
+      options = {
+        :only => [:show, :index]
+      }.merge(Hash === types.last ? types.pop : {})
+      raise "Must specify :attributes option" unless options[:attributes]
       
-      actions.each do |action|
-        response_for action do |format|
-          types.each do |type|
-            format.send(type) do
-              render_action = [:json, :xml].include?(type) ? type : :text
-              render render_action => current_object.serialize(type, options)
-            end
-          end
+      options[:only].each do |action|
+        @publish[action] ||= []
+        types.each do |type|
+          @publish[action] << [type, proc do
+            render_action = [:json, :xml].include?(type) ? type : :text
+            render render_action => (plural_action? ? current_objects : current_object).serialize(type, options)
+          end]
         end
       end
     end
 
     def belongs_to(*parents)
       @parents = parents.map(&:to_s)
+    end
+
+    private
+    
+    def apply_publish
+      @publish.each do |action, types|
+        @responses[action.to_sym] ||= []
+        @responses[action.to_sym] += types
+      end
     end
   end
 end
