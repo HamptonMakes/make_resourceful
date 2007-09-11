@@ -3,7 +3,8 @@ module Resourceful
 
   ACTIONS = [:index, :show, :edit, :update, :create, :new, :destroy]
   MODIFYING_ACTIONS = [:update, :create, :destroy]
-  SINGULAR_ACTIONS = ACTIONS - [:index]
+  PLURAL_ACTIONS = [:index]
+  SINGULAR_ACTIONS = ACTIONS - PLURAL_ACTIONS
 end
 
 require 'resourceful/default/accessors'

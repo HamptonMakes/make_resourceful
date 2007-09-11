@@ -173,7 +173,7 @@ module Resourceful
       end
 
       def plural_action?
-        params[:action] == 'index'
+        PLURAL_ACTIONS.include?(params[:action].to_sym)
       end
 
       def singular_action?
