@@ -58,7 +58,7 @@ module Resourceful
 
     module Array
       
-      def serialize(format, options = {})
+      def serialize(format, options)
         raise "Not all elements respond to to_hash" unless all? { |e| e.respond_to? :serialize }
 
         serialized = map { |e| e.to_hash(options[:attributes]) }
