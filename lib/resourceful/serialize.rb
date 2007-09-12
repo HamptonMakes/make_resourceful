@@ -27,7 +27,7 @@ module Resourceful
       protected
 
       def attr_hash_value(attr, sub_attributes)
-        if attr.responds_to?(:to_resourceful_hash)
+        if attr.respond_to?(:to_resourceful_hash)
           attr.to_resourceful_hash(sub_attributes)
         else
           attr
@@ -68,7 +68,7 @@ module Resourceful
       end
 
       def to_resourceful_hash(attributes)
-        if first.responds_to?(:to_resourceful_hash)
+        if first.respond_to?(:to_resourceful_hash)
           map { |e| e.to_resourceful_hash(attributes) }
         else
           self
