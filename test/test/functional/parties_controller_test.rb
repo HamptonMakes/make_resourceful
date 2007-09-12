@@ -37,7 +37,6 @@ class PartiesControllerTest < Test::Unit::TestCase
   def test_index_should_not_respond_to_xml
     get :index, :format => "xml"
     assert_not_equal "application/x-yaml; charset=utf-8", @response.headers['Content-Type']
-    assert_template 'index'
   end
     
   private
