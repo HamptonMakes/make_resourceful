@@ -19,14 +19,22 @@ module Resourceful
         raise "Must specify attributes for #{self.inspect}.to_hash" if attributes.nil?
 
         normalize_attributes(attributes).inject({}) do |hash, (key, value)|
-          attr = self.send(key)
-          attr = attr.to_hash(value) if ActiveRecord::Base === attr
+          hash[key.to_s] = attr_hash_value(self.send(key), value)
+          hash
+        end
+      end
 
+      protected
+
+      def attr_hash_value(attr, sub_attributes)
+        if ActiveRecord::Base === attr
+          attr.to_hash(sub_attributes)
+        elsif attr.is_a?(Array) && ActiveRecord::Base === attr.first        
           # Would use Array === attr here,
           # but it's not overridden for associations
-          attr.map! { |e| e.to_hash(value) } if attr.is_a?(Array) && ActiveRecord::Base === attr.first
-          hash[key.to_s] = attr
-          hash
+          attr.map { |e| e.to_hash(sub_attributes) } 
+        else
+          attr
         end
       end
 
