@@ -2,6 +2,21 @@ require 'resourceful/builder'
 
 module Resourceful
   module Serialize
+    
+    def self.normalize_attributes(attributes) # :nodoc
+      return nil if attributes.nil?
+      return {attributes => nil} if !attributes.respond_to?(:inject)
+
+      attributes.inject({}) do |hash, attr|
+        if Array === attr
+          hash[attr[0]] = attr[1]
+          hash
+        else
+          hash.merge normalize_attributes(attr)
+        end
+      end
+    end
+
     module Model
 
       def serialize(format, options)
@@ -18,7 +33,7 @@ module Resourceful
       def to_resourceful_hash(attributes)
         raise "Must specify attributes for #{self.inspect}.to_resourceful_hash" if attributes.nil?
 
-        normalize_attributes(attributes).inject({}) do |hash, (key, value)|
+        Serialize.normalize_attributes(attributes).inject({}) do |hash, (key, value)|
           hash[key.to_s] = attr_hash_value(self.send(key), value)
           hash
         end
@@ -31,22 +46,6 @@ module Resourceful
           attr.to_resourceful_hash(sub_attributes)
         else
           attr
-        end
-      end
-
-      private
-      
-      def normalize_attributes(attributes)
-        return nil if attributes.nil?
-        return {attributes => nil} if !attributes.respond_to?(:inject)
-
-        attributes.inject({}) do |hash, attr|
-          if Array === attr
-            hash[attr[0]] = attr[1]
-            hash
-          else
-            hash.merge normalize_attributes(attr)
-          end
         end
       end
 
@@ -68,6 +67,7 @@ module Resourceful
       end
 
       def to_resourceful_hash(attributes)
+        attributes = Serialize.normalize_attributes(attributes)
         if first.respond_to?(:to_resourceful_hash)
           map { |e| e.to_resourceful_hash(attributes) }
         else
