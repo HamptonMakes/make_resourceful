@@ -7,7 +7,7 @@ module Resourceful
     end
 
     def method_missing(name, &block)
-      @formats.push([name, block]) unless @formats.find{|n,b| n == name}
+      @formats.push([name, block || proc {}]) unless @formats.any? {|n,b| n == name}
     end
   end
 end

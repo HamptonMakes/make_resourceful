@@ -6,6 +6,18 @@ Spec::Runner.configure do |config|
   config.mock_with :mocha
 end
 
+def should_be_called(&block)
+  pstub = stub
+  pstub.expects(:call).instance_eval(&(block || proc {}))
+  proc { |*args| pstub.call(*args) }
+end
+
+module Spec::Matchers
+  def have_any(&proc)
+    satisfy { |a| a.any?(&proc) }
+  end
+end
+
 module ControllerMocks
   def mock_controller
     @controller = Class.new
@@ -25,11 +37,5 @@ module ControllerMocks
     @builder.stubs(:instance_eval).yields(@buildercc )
     Resourceful::Base.stubs(:made_resourceful).returns([])
     Resourceful::Builder.stubs(:new).returns(@builder)
-  end
-
-  def should_be_called(&block)
-    pstub = stub
-    pstub.expects(:call).instance_eval(&(block || proc {}))
-    proc { |*args| pstub.call(*args) }
   end
 end

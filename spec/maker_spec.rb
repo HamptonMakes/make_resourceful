@@ -53,7 +53,7 @@ describe Resourceful::Maker, "after being made_resourceful" do
   include ControllerMocks
   before(:each) { mock_controller }
 
-  it "should have methods from Resourceful::Defaults" do
+  it "should have methods from Resourceful::Default" do
     @controller.make_resourceful {}
     @controller.should respond_to?(:current_object)
     @controller.should respond_to?(:set_default_flash)
