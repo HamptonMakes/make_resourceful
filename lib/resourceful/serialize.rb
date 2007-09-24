@@ -56,6 +56,7 @@ module Resourceful
       
       def serialize(format, options)
         raise "Not all elements respond to to_serializable" unless all? { |e| e.respond_to? :to_serializable }
+        raise "Must specify :attributes option" unless options[:attributes]
 
         serialized = map { |e| e.to_serializable(options[:attributes]) }
         root = first.class.to_s.pluralize.underscore
