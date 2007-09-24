@@ -5,6 +5,7 @@ module Resourceful
     
     def self.normalize_attributes(attributes) # :nodoc
       return nil if attributes.nil?
+      return {attributes.to_sym => nil} if String === attributes
       return {attributes => nil} if !attributes.respond_to?(:inject)
 
       attributes.inject({}) do |hash, attr|
@@ -21,7 +22,7 @@ module Resourceful
 
       def serialize(format, options)
         raise "Must specify :attributes option" unless options[:attributes]
-        hash = self.to_resourceful_hash(options[:attributes])
+        hash = self.to_serializable(options[:attributes])
         root = self.class.to_s.underscore
         if format == :xml
           hash.send("to_#{format}", :root => root)
@@ -30,8 +31,8 @@ module Resourceful
         end
       end
 
-      def to_resourceful_hash(attributes)
-        raise "Must specify attributes for #{self.inspect}.to_resourceful_hash" if attributes.nil?
+      def to_serializable(attributes)
+        raise "Must specify attributes for #{self.inspect}.to_serializable" if attributes.nil?
 
         Serialize.normalize_attributes(attributes).inject({}) do |hash, (key, value)|
           hash[key.to_s] = attr_hash_value(self.send(key), value)
@@ -42,8 +43,8 @@ module Resourceful
       protected
 
       def attr_hash_value(attr, sub_attributes)
-        if attr.respond_to?(:to_resourceful_hash)
-          attr.to_resourceful_hash(sub_attributes)
+        if attr.respond_to?(:to_serializable)
+          attr.to_serializable(sub_attributes)
         else
           attr
         end
@@ -54,9 +55,9 @@ module Resourceful
     module Array
       
       def serialize(format, options)
-        raise "Not all elements respond to to_resourceful_hash" unless all? { |e| e.respond_to? :to_resourceful_hash }
+        raise "Not all elements respond to to_serializable" unless all? { |e| e.respond_to? :to_serializable }
 
-        serialized = map { |e| e.to_resourceful_hash(options[:attributes]) }
+        serialized = map { |e| e.to_serializable(options[:attributes]) }
         root = first.class.to_s.pluralize.underscore
 
         if format == :xml
@@ -66,10 +67,10 @@ module Resourceful
         end
       end
 
-      def to_resourceful_hash(attributes)
+      def to_serializable(attributes)
         attributes = Serialize.normalize_attributes(attributes)
-        if first.respond_to?(:to_resourceful_hash)
-          map { |e| e.to_resourceful_hash(attributes) }
+        if first.respond_to?(:to_serializable)
+          map { |e| e.to_serializable(attributes) }
         else
           self
         end
