@@ -12,6 +12,28 @@ def should_be_called(&block)
   proc { |*args| pstub.call(*args) }
 end
 
+def stub_model(name)
+  model = Class.new do
+    include Resourceful::Serialize::Model
+
+    def self.to_s
+      @name
+    end
+
+    def initialize(attrs = {})
+      attrs.each do |k, v|
+        self.stubs(k).returns(v)
+      end
+    end
+
+    def inspect
+      "#<#{@name}>"
+    end
+  end
+  model.send(:instance_variable_set, '@name', name)
+  model
+end
+
 module Spec::Matchers
   def have_any(&proc)
     satisfy { |a| a.any?(&proc) }

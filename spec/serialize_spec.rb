@@ -48,3 +48,46 @@ describe Array, " of non-serializable objects" do
     lambda { @array.serialize(:yaml, :attributes => [:foo]) }.should raise_error("Not all elements respond to to_serializable")
   end
 end
+
+describe Array, " of serializable objects" do
+  before :each do
+    @cat = stub_model("Cat")
+    @dog = stub_model("Dog")
+    @array = %w{brown yellow green}.zip(%w{rex rover fido}).
+      map { |c, d| @cat.new(:fur => c, :friend => @dog.new(:name => d)) }
+  end
+
+  it "should return an array of serializable hashes for #to_serializable" do
+    @array.to_serializable([:fur]).should == [{'fur' => 'brown'}, {'fur' => 'yellow'}, {'fur' => 'green'}]
+  end
+
+  it "should follow deep attributes for #to_serializable" do
+    @array.to_serializable([:fur, {:friend => :name}]).should ==
+      [{'fur' => 'brown',  'friend' => {'name' => 'rex'}},
+       {'fur' => 'yellow', 'friend' => {'name' => 'rover'}},
+       {'fur' => 'green',  'friend' => {'name' => 'fido'}}]
+  end
+
+  it "should raise an error if #serialize is called without the :attributes option" do
+    lambda { @array.serialize(:yaml, {}) }.should raise_error("Must specify :attributes option")
+  end
+
+  it "should serialize to a hash with a pluralized root for #serialize" do
+    YAML.load(@array.serialize(:yaml, :attributes => [:fur, {:friend => :name}])).should ==
+      {"cats" => [{'fur' => 'brown',  'friend' => {'name' => 'rex'}},
+                  {'fur' => 'yellow', 'friend' => {'name' => 'rover'}},
+                  {'fur' => 'green',  'friend' => {'name' => 'fido'}}]}
+  end
+
+  it "should serialize to an XML document with a pluralized root for #serialize(:xml, ...)" do
+    doc = REXML::Document.new(@array.serialize(:xml, :attributes => [:fur, {:friend => :name}]),
+                              :ignore_whitespace_nodes => :all)
+    doc.root.name.should == "cats"
+    cats = doc.get_elements('/cats/cat')
+    cats.size.should == 3
+    cats.zip(%w{brown yellow green}, %w{rex rover fido}) do |cat, fur, dog|
+      cat.children.find { |e| e.name == "fur" }.text.should == fur
+      cat.children.find { |e| e.name == "friend" }.children[0].text.should == dog
+    end
+  end
+end
