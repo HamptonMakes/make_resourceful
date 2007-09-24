@@ -27,7 +27,7 @@ def stub_model(name)
     end
 
     def inspect
-      "#<#{@name}>"
+      "#<#{self.class.send(:instance_variable_get, '@name')}>"
     end
   end
   model.send(:instance_variable_set, '@name', name)

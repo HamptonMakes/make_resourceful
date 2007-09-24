@@ -91,3 +91,43 @@ describe Array, " of serializable objects" do
     end
   end
 end
+
+describe ActiveRecord::Base, " with a few attributes and an association" do
+  before :each do
+    @person = stub_model("Person")
+    @party_hat = stub_model("PartyHat")
+    @model = @person.new(:name => "joe", :eye_color => "blue", :hairs => 567,
+                         :party_hat => @party_hat.new(:color => 'blue', :size => 12, :pattern => 'stripey'))
+  end
+
+  it "should raise an error if #to_serializable is called without attributes" do
+    lambda { @model.to_serializable(nil) }.should raise_error("Must specify attributes for #<Person>.to_serializable")
+  end
+
+  it "should return an attributes hash for #to_serializable" do
+    @model.to_serializable([:name, :hairs, {:party_hat => [:color, :size]}]).should ==
+      {'name' => 'joe', 'hairs' => 567, 'party_hat' => {
+        'color' => 'blue', 'size' => 12
+      }}
+  end
+
+  it "should raise an error if #serialize is called without the :attributes option" do
+    lambda { @model.serialize(:yaml, {}) }.should raise_error("Must specify :attributes option")
+  end
+
+  it "should serialize to a hash for #serialize" do
+    YAML.load(@model.serialize(:yaml, :attributes => [:hairs, :eye_color, {:party_hat => :size}])).should ==
+      {"person" => {'hairs' => 567, 'eye_color' => 'blue', 'party_hat' => {'size' => 12}}}
+  end
+
+  it "should serialize to an XML document for #serialize(:xml, ...)" do
+    doc = REXML::Document.new(@model.serialize(:xml, :attributes => [:name, :eye_color, {:party_hat => :pattern}]),
+                              :ignore_whitespace_nodes => :all)
+    doc.root.name.should == "person"
+    doc.root.children.find { |e| e.name == "name"      }.text.should == "joe"
+    doc.root.children.find { |e| e.name == "eye-color" }.text.should == "blue"
+
+    hat = doc.root.children.find { |e| e.name == "party-hat" }
+    hat.children.find { |e| e.name == "pattern" }.text.should == "stripey"
+  end
+end
