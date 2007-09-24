@@ -6,7 +6,7 @@ class SerializeTest < Test::Unit::TestCase
   
   def test_should_generate_hash_for_model
     assert_equal(hash_for_fun_party,
-                 parties(:fun_party).to_resourceful_hash([:name, {:people => [:name]}]))
+                 parties(:fun_party).to_serializable([:name, {:people => [:name]}]))
   end
   
   def test_to_s_should_return_format
