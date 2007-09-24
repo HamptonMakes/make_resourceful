@@ -68,8 +68,6 @@ module Resourceful
       end
 
       def to_serializable(attributes)
-        raise "Must specify attributes for #{inspect}.to_serializable" if attributes.nil?
-
         if first.respond_to?(:to_serializable)
           attributes = Serialize.normalize_attributes(attributes)
           map { |e| e.to_serializable(attributes) }
