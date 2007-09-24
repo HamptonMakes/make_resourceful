@@ -4,12 +4,7 @@ require 'resourceful/default/actions'
 
 module Resourceful
   class Builder
-    @@formats = []
     attr :controller, true
-
-    def self.register_format(name, &block)
-      @@formats.push([name, block]) unless @@formats.find{|n,b| n == name}
-    end
 
     def initialize(kontroller)
       @controller       = kontroller
