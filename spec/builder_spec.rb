@@ -42,7 +42,7 @@ describe Resourceful::Builder, " applied without any modification" do
   end
 end
 
-describe Resourceful::Builder, "with some actions set" do
+describe Resourceful::Builder, " with some actions set" do
   include ControllerMocks
   before :each do
     mock_controller
@@ -65,7 +65,7 @@ describe Resourceful::Builder, "with some actions set" do
   end
 end
 
-describe Resourceful::Builder, "with all actions set for a plural controller" do
+describe Resourceful::Builder, " with all actions set for a plural controller" do
   include ControllerMocks
   before :each do
     mock_controller
@@ -83,7 +83,7 @@ describe Resourceful::Builder, "with all actions set for a plural controller" do
   end
 end
 
-describe Resourceful::Builder, "with all actions set for a singular controller" do
+describe Resourceful::Builder, " with all actions set for a singular controller" do
   include ControllerMocks
   before :each do
     mock_controller
@@ -98,5 +98,74 @@ describe Resourceful::Builder, "with all actions set for a singular controller" 
         Resourceful::SINGULAR_ACTIONS.map(&:to_s).sort
     end
     @builder.apply
+  end
+end
+
+describe Resourceful::Builder, " with several before and after callbacks set" do
+  include ControllerMocks
+  before :each do
+    mock_controller
+    @builder = Resourceful::Builder.new(@controller)
+    @builder.before(:create, :update, 'destroy', &(should_be_called { times(3) }))
+    @builder.after('index', &should_be_called)
+    @builder.after(:update, &should_be_called)
+    @builder.apply
+  end
+
+  it "should save the callbacks as the :resourceful_callbacks inheritable_attribute" do
+    callbacks = @controller.read_inheritable_attribute(:resourceful_callbacks)
+    callbacks[:before][:create].call
+    callbacks[:before][:update].call
+    callbacks[:before][:destroy].call
+    callbacks[:after][:index].call
+    callbacks[:after][:update].call
+  end
+end
+
+describe Resourceful::Builder, " with responses set for several formats" do
+  include ControllerMocks
+  before :each do
+    mock_controller
+    @builder = Resourceful::Builder.new(@controller)
+    @builder.response_for('create') do |f|
+      f.html(&should_be_called)
+      f.js(&should_be_called)
+      f.yaml(&should_be_called)
+      f.xml(&should_be_called)
+      f.txt(&should_be_called)
+    end
+    @builder.response_for(:remove_failed, 'update') do |f|
+      f.yaml(&(should_be_called { times(2) }))
+      f.png(&(should_be_called { times(2) }))
+    end
+    @builder.apply
+  end
+
+  it "should save the responses as the :resourceful_responses inheritable_attribute" do
+    responses = @controller.read_inheritable_attribute(:resourceful_responses)
+    responses[:create].map(&:first).should == [:html, :js, :yaml, :xml, :txt]
+    responses[:create].map(&:last).each(&:call)
+
+    responses[:remove_failed].map(&:first).should == [:yaml, :png]
+    responses[:remove_failed].map(&:last).each(&:call)
+
+    responses[:update].map(&:first).should == [:yaml, :png]
+    responses[:update].map(&:last).each(&:call)
+  end
+end
+
+describe Resourceful::Builder, " with a response set for the default format" do
+  include ControllerMocks
+  before :each do
+    mock_controller
+    @builder = Resourceful::Builder.new(@controller)
+    @builder.response_for('index', &should_be_called)
+    @builder.apply
+  end
+  
+  it "should save the response as a response for HTML in the :resourceful_responses inheritable_attribute" do
+    responses = @controller.read_inheritable_attribute(:resourceful_responses)
+    responses[:index].map(&:first).should == [:html]
+    responses[:index].map(&:last).each(&:call)
   end
 end
