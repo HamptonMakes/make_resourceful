@@ -47,6 +47,7 @@ module ControllerMocks
 
     @hidden_actions = Resourceful::ACTIONS.dup
     @controller.stubs(:hidden_actions).returns(@hidden_actions)
+    @controller.stubs(:plural_action?).returns(false)
     @controller.stubs(:include)
     @controller.stubs(:before_filter)
     @controller.stubs(:helper_method)
@@ -59,5 +60,17 @@ module ControllerMocks
     @builder.stubs(:instance_eval).yields(@buildercc )
     Resourceful::Base.stubs(:made_resourceful).returns([])
     Resourceful::Builder.stubs(:new).returns(@builder)
+  end
+
+  def responses
+    @controller.read_inheritable_attribute(:resourceful_responses)
+  end
+
+  def callbacks
+    @controller.read_inheritable_attribute(:resourceful_callbacks)
+  end
+
+  def parents
+    @controller.read_inheritable_attribute(:parents)
   end
 end

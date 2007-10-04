@@ -81,9 +81,10 @@ module Resourceful
       }.merge(Hash === types.last ? types.pop : {})
       raise "Must specify :attributes option" unless options[:attributes]
       
-      options[:only].each do |action|
+      Array(options.delete(:only)).each do |action|
         @publish[action] ||= []
         types.each do |type|
+          type = type.to_sym
           @publish[action] << [type, proc do
             render_action = [:json, :xml].include?(type) ? type : :text
             render render_action => (plural_action? ? current_objects : current_object).serialize(type, options)
