@@ -252,7 +252,6 @@ describe Resourceful::Builder, " publishing only to #show" do
   end
 end
 
-
 describe Resourceful::Builder, " publishing in addition to other responses" do
   include ControllerMocks
   before :each do
