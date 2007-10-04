@@ -138,7 +138,7 @@ module Resourceful
       end
 
       def parent_params
-        parents.map { |p| params["#{p}_id"].to_i }
+        parents.map { |p| params["#{p}_id"] }
       end
 
       # Returns an array of all of the parent objects
