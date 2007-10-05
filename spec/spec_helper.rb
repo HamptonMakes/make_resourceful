@@ -41,9 +41,10 @@ module Spec::Matchers
 end
 
 module ControllerMocks
-  def mock_controller
+  def mock_controller(to_extend = Module.new)
     @controller = Class.new
     @controller.extend Resourceful::Maker
+    @controller.extend to_extend
 
     @hidden_actions = Resourceful::ACTIONS.dup
     @controller.stubs(:hidden_actions).returns(@hidden_actions)
