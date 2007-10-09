@@ -41,17 +41,23 @@ module Spec::Matchers
 end
 
 module ControllerMocks
-  def mock_controller(to_extend = Module.new)
-    @controller = Class.new
-    @controller.extend Resourceful::Maker
-    @controller.extend to_extend
+  def mock_kontroller(to_extend = Module.new)
+    @kontroller = Class.new
+    @kontroller.extend Resourceful::Maker
+    @kontroller.extend to_extend
 
     @hidden_actions = Resourceful::ACTIONS.dup
-    @controller.stubs(:hidden_actions).returns(@hidden_actions)
-    @controller.stubs(:plural_action?).returns(false)
-    @controller.stubs(:include)
-    @controller.stubs(:before_filter)
-    @controller.stubs(:helper_method)
+    @kontroller.stubs(:hidden_actions).returns(@hidden_actions)
+    @kontroller.stubs(:plural_action?).returns(false)
+    @kontroller.stubs(:include)
+    @kontroller.stubs(:before_filter)
+    @kontroller.stubs(:helper_method)
+  end
+
+  def mock_controller(to_extend = Module.new)
+    mock_kontroller
+    @controller = @kontroller.new
+    @controller.extend to_extend
   end
 
   def mock_builder
@@ -64,14 +70,26 @@ module ControllerMocks
   end
 
   def responses
-    @controller.read_inheritable_attribute(:resourceful_responses)
+    @kontroller.read_inheritable_attribute(:resourceful_responses)
+  end
+
+  def stub_responses(value)
+    @kontroller.write_inheritable_attribute(:resourceful_responses, value)
   end
 
   def callbacks
-    @controller.read_inheritable_attribute(:resourceful_callbacks)
+    @kontroller.read_inheritable_attribute(:resourceful_callbacks)
+  end
+
+  def stub_callbacks(value)
+    @kontroller.write_inheritable_attribute(:resourceful_callbacks, value)
   end
 
   def parents
-    @controller.read_inheritable_attribute(:parents)
+    @kontroller.read_inheritable_attribute(:parents)
+  end
+
+  def stub_parents(value)
+    @kontroller.write_inheritable_attribute(:parents, value)
   end
 end
