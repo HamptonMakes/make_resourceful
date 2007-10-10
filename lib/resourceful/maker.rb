@@ -27,6 +27,7 @@ module Resourceful
 
     def add_helpers
       helper_method(:object_path, :objects_path, :new_object_path, :edit_object_path,
+                    :object_url, :objects_url, :new_object_url, :edit_object_url,
                     :current_objects, :current_object, :current_model, :current_model_name,
                     :namespaces, :instance_variable_name, :parents, :parent_model_names,
                     :parent_objects, :save_succeeded?)
