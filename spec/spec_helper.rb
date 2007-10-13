@@ -73,23 +73,11 @@ module ControllerMocks
     @kontroller.read_inheritable_attribute(:resourceful_responses)
   end
 
-  def stub_responses(value)
-    @kontroller.write_inheritable_attribute(:resourceful_responses, value)
-  end
-
   def callbacks
     @kontroller.read_inheritable_attribute(:resourceful_callbacks)
   end
 
-  def stub_callbacks(value)
-    @kontroller.write_inheritable_attribute(:resourceful_callbacks, value)
-  end
-
   def parents
     @kontroller.read_inheritable_attribute(:parents)
-  end
-
-  def stub_parents(value)
-    @kontroller.write_inheritable_attribute(:parents, value)
   end
 end
