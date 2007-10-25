@@ -60,7 +60,7 @@ module Resourceful
       def destroy
         load_object
         before :destroy
-        if load_object.destroy
+        if current_object.destroy
           after :destroy
           response_for :destroy
         else

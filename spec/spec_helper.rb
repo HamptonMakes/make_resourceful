@@ -41,10 +41,10 @@ module Spec::Matchers
 end
 
 module ControllerMocks
-  def mock_kontroller(to_extend = Module.new)
+  def mock_kontroller(*to_extend)
     @kontroller = Class.new
     @kontroller.extend Resourceful::Maker
-    @kontroller.extend to_extend
+    to_extend.each(&@kontroller.method(:extend))
 
     @hidden_actions = Resourceful::ACTIONS.dup
     @kontroller.stubs(:hidden_actions).returns(@hidden_actions)
@@ -54,10 +54,10 @@ module ControllerMocks
     @kontroller.stubs(:helper_method)
   end
 
-  def mock_controller(to_extend = Module.new)
+  def mock_controller(*to_extend)
     mock_kontroller
     @controller = @kontroller.new
-    @controller.extend to_extend
+    to_extend.each(&@controller.method(:extend))
   end
 
   def mock_builder
