@@ -23,7 +23,7 @@ module Resourceful
       # require executing SQL calls.
       #
       def current_objects
-        @current_objects ||= current_model.find(:all, :include => model_includes)
+        @current_objects ||= current_model.find(:all)
       end
 
       # This method will call current_objects and store
@@ -115,10 +115,6 @@ module Resourceful
 
       def object_parameters
         params[current_model_name.underscore]
-      end
-
-      def model_includes
-        Hash.new
       end
 
       def response_for(action)
