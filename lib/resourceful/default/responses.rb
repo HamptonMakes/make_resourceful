@@ -101,8 +101,7 @@ module Resourceful
           response_for(:destroy_fails) do |format|
             format.html do
               set_default_flash :error, "There was a problem deleting."
-              set_default_redirect(:back,
-                                   :on     => :fail)
+              set_default_redirect :back, :on => :failure
             end
             format.js
           end
