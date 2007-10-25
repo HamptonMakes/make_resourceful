@@ -4,7 +4,7 @@ describe Resourceful::Builder, " applied without any modification" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
   end
 
   it "should remove all resourceful actions" do
@@ -46,7 +46,7 @@ describe Resourceful::Builder, " with some actions set" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
     @actions = [:show, :index, :new, :create]
     @builder.actions *@actions
   end
@@ -70,7 +70,7 @@ describe Resourceful::Builder, " with all actions set for a plural controller" d
   before :each do
     mock_kontroller
     @kontroller.class_eval { def plural?; true; end }
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
     @builder.actions :all
   end
 
@@ -88,7 +88,7 @@ describe Resourceful::Builder, " with all actions set for a singular controller"
   before :each do
     mock_kontroller
     @kontroller.class_eval { def plural?; false; end }
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
     @builder.actions :all
   end
 
@@ -105,7 +105,7 @@ describe Resourceful::Builder, " with several before and after callbacks set" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
     @builder.before(:create, :update, 'destroy', &(should_be_called { times(3) }))
     @builder.after('index', &should_be_called)
     @builder.after(:update, &should_be_called)
@@ -125,7 +125,7 @@ describe Resourceful::Builder, " with responses set for several formats" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
     @builder.response_for('create') do |f|
       f.html(&should_be_called)
       f.js(&should_be_called)
@@ -156,7 +156,7 @@ describe Resourceful::Builder, " with a response set for the default format" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
     @builder.response_for('index', &should_be_called)
     @builder.apply
   end
@@ -171,7 +171,7 @@ describe Resourceful::Builder, " publishing without an attributes hash" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
   end
 
   it "should raise an error" do
@@ -183,7 +183,7 @@ describe Resourceful::Builder, " publishing several formats" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
 
     @model = stub_model("Thing")
     @kontroller.stubs(:current_object).returns(@model)
@@ -228,7 +228,7 @@ describe Resourceful::Builder, " publishing only to #show" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
 
     @model = stub_model("Thing")
     @kontroller.stubs(:current_object).returns(@model)
@@ -256,7 +256,7 @@ describe Resourceful::Builder, " publishing in addition to other responses" do
   include ControllerMocks
   before :each do
     mock_kontroller
-    @builder = Resourceful::Builder.new(@kontroller)
+    create_builder
 
     @builder.response_for(:index) {}
     @builder.publish :json, :yaml, :attributes => [:name, :stuff]
