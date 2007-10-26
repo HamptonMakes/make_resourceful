@@ -62,12 +62,12 @@ module Resourceful
       #
       def current_object
         @current_object ||= if plural?
-          current_model.find(current_param)
+          current_model.find(params[:id])
         else
           parent_objects[-1].send(instance_variable_name)
         end
       end
-
+      
       
       # This method will call current_object and store
       # the results in an instance variable based
@@ -107,10 +107,6 @@ module Resourceful
         else
           parent_objects[-1].send(instance_variable_name)
         end
-      end
-
-      def current_param
-        params[:id]
       end
 
       def object_parameters
