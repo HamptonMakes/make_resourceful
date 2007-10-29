@@ -4,7 +4,7 @@ describe Resourceful::Default::Accessors, "#current_objects" do
   include ControllerMocks
   before :each do
     mock_controller Resourceful::Default::Accessors
-    @objects = Array.new(5) { stub }
+    @objects = stub_list 5, 'object'
     @model = stub
     @controller.stubs(:current_model).returns(@model)
   end
@@ -31,7 +31,7 @@ describe Resourceful::Default::Accessors, "#load_objects" do
   include ControllerMocks
   before :each do
     mock_controller Resourceful::Default::Accessors
-    @objects = Array.new(5) { stub }
+    @objects = stub_list 5, 'object'
     @controller.stubs(:current_objects).returns(@objects)
     @controller.stubs(:instance_variable_name).returns("posts")
   end
@@ -80,7 +80,7 @@ describe Resourceful::Default::Accessors, "#current_object on a singular control
     @controller.stubs(:plural?).returns(false)
     @controller.stubs(:instance_variable_name).returns("post")
 
-    @parents = Array.new(5) { stub }
+    @parents = stub_list 5, 'parent'
     @controller.stubs(:parent_objects).returns(@parents)
 
     @object = stub
@@ -198,15 +198,16 @@ describe Resourceful::Default::Accessors, "#current_model for a singular control
   include ControllerMocks
   before :each do
     mock_controller Resourceful::Default::Accessors
+    stub_const :Post
     @controller.stubs(:singular?).returns(true)
-    @controller.stubs(:current_model_name).returns("Resourceful")
+    @controller.stubs(:current_model_name).returns("Post")
 
-    @parents = Array.new(5) { stub }
+    @parents = stub_list 5, 'parent'
     @controller.stubs(:parent_objects).returns(@parents)
   end
   
   it "should return the constant named by current_model_name" do
-    @controller.current_model.should == Resourceful
+    @controller.current_model.should == Post
   end
 end
 
@@ -214,13 +215,14 @@ describe Resourceful::Default::Accessors, "#current_model for a plural controlle
   include ControllerMocks
   before :each do
     mock_controller Resourceful::Default::Accessors
+    stub_const :Post
     @controller.stubs(:singular?).returns(false)
-    @controller.stubs(:current_model_name).returns("Resourceful")
+    @controller.stubs(:current_model_name).returns("Post")
     @controller.stubs(:parent_objects).returns([])
   end
   
   it "should return the constant named by current_model_name" do
-    @controller.current_model.should == Resourceful
+    @controller.current_model.should == Post
   end
 end
 
@@ -232,7 +234,7 @@ describe Resourceful::Default::Accessors, "#current_model for a plural controlle
     @controller.stubs(:instance_variable_name).returns("posts")
 
     @model = stub
-    @parents = Array.new(5) { stub }
+    @parents = stub_list 5, 'parent'
     @controller.stubs(:parent_objects).returns(@parents)
   end
   
@@ -242,4 +244,101 @@ describe Resourceful::Default::Accessors, "#current_model for a plural controlle
   end
 end
 
+describe Resourceful::Default::Accessors, "#object_parameters" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @params = {"crazy_user" => {:name => "Hampton", :location => "Canada"}}
+    @controller.stubs(:params).returns(@params)
+    @controller.stubs(:current_model_name).returns("CrazyUser")
+  end
 
+  it "should return the element of the params hash with the name of the model" do
+    @controller.object_parameters.should == @params["crazy_user"]
+  end
+end
+
+describe Resourceful::Default::Accessors, "#response_for" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+  end
+
+  it "should send the method response_for_action" do
+    @controller.expects(:response_for_index)
+    @controller.response_for :index
+  end
+end
+
+describe Resourceful::Default::Accessors, " with five parent classes set on the controller class" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @parents = %w{big_page page post comment paragraph}
+    @models = @parents.map(&:camelize).map(&method(:stub_const))
+    @kontroller.write_inheritable_attribute(:parents, @parents)
+
+    @params = {'big_page_id' => 10, 'page_id' => 11, 'post_id' => 12,
+      'comment_id' => 13, 'paragraph_id' => 14}
+    @controller.stubs(:params).returns(@params)
+
+    @objects = stub_list 5, 'object'
+    @models[0].stubs(:find).once.with(10).returns(@objects.first)
+    [:pages, :posts, :comments, :paragraphs].zip((11..14).to_a, (1..4).to_a) do
+        |method, key, index|
+      @objects[index - 1].stubs(method).once.returns(@models[index])
+      @models[index].stubs(:find).once.with(key).returns(@objects[index])
+    end
+  end
+
+  it "should return the parents for #parents" do
+    @controller.parents.should == @parents
+  end
+
+  it "should return the camelized model names for #parent_model_names" do
+    @controller.parent_model_names.should == %w{BigPage Page Post Comment Paragraph}
+  end
+
+  it "should return the parameters for each parent for #parent_params" do
+    @controller.parent_params.should == [10, 11, 12, 13, 14]
+  end
+
+  it "should return the model classes for #parent_models" do
+    @controller.parent_models.should == [BigPage, Page, Post, Comment, Paragraph]
+  end
+
+  it "should return an array of parent objects looked up with their respective params scoped by their parents" do
+    @models[0].expects(:find).with(10).returns(@objects.first)
+    [:pages, :posts, :comments, :paragraphs].zip((11..14).to_a, (1..4).to_a) do
+        |method, key, index|
+      @objects[index - 1].expects(method).returns(@models[index])
+      @models[index].expects(:find).with(key).returns(@objects[index])
+    end
+    @controller.parent_objects.should == @objects
+  end
+
+  it "should cache the value of #parent_objects so multiple calls won't cause multiple queries" do
+    @models[0].expects(:find).returns(@objects.first).once
+    @controller.parent_objects
+    @controller.parent_objects
+  end
+
+  it "should bind the parent objects to their respective instance variables" do
+    @controller.load_parent_objects
+    ['big_page', 'page', 'post', 'comment', 'paragraph'].each_with_index do |var, i|
+      @controller.instance_variable_get("@#{var}").should == @objects[i]
+    end
+  end
+end
+
+describe Resourceful::Default::Accessors, " with no parents" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:parents).returns([])
+  end
+
+  it "should return [] for #parent_objects" do
+    @controller.parent_objects.should == []
+  end
+end

@@ -34,6 +34,15 @@ def stub_model(name)
   model
 end
 
+def stub_const(name)
+  Object.const_set(name, stub(name.to_s)) unless Object.const_defined?(name)
+  Object.const_get(name)
+end
+
+def stub_list(size, name = nil)
+  Array.new(size) { |i| name ? stub("#{name}_#{i}") : stub }
+end
+
 module Spec::Matchers
   def have_any(&proc)
     satisfy { |a| a.any?(&proc) }

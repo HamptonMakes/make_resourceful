@@ -125,12 +125,12 @@ module Resourceful
         parents.map { |p| p.camelize }
       end
 
-      def parent_models
-        parent_model_names.map { |p| p.constantize }
-      end
-
       def parent_params
         parents.map { |p| params["#{p}_id"] }
+      end
+
+      def parent_models
+        parent_model_names.map { |p| p.constantize }
       end
 
       # Returns an array of all of the parent objects
@@ -141,9 +141,10 @@ module Resourceful
 
         first = parent_models[0].find(parent_params[0])
         @parent_objects = [first]
-        parent_params.zip(parents)[1..-1].inject(first) do |memo, arr|
+        parent_params.zip(parents)[1..-1].inject(first) do |object, arr|
           id, name = arr
-          @parent_objects << memo.send(name.pluralize).find(id)
+          @parent_objects << object.send(name.pluralize).find(id)
+          @parent_objects[-1]
         end
         @parent_objects
       end
