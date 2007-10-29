@@ -94,7 +94,7 @@ module Resourceful
       end
 
       def namespaces
-        @namespaces ||= self.class.name.split('::').slice(0..-2).map(&:underscore).map(&:to_sym)
+        @namespaces ||= self.class.name.split('::').slice(0...-1).map(&:underscore).map(&:to_sym)
       end
 
       def instance_variable_name

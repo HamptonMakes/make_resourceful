@@ -107,3 +107,139 @@ describe Resourceful::Default::Accessors, "#load_object" do
   end
 end
 
+describe Resourceful::Default::Accessors, "#build_object with a #build-able model" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @params = {:name => "Bob", :password => "hideously insecure"}
+    @controller.stubs(:object_parameters).returns(@params)
+
+    @object = stub
+    @model = stub
+    @controller.stubs(:current_model).returns(@model)
+
+    @model.stubs(:build).returns(@object)
+  end
+
+  it "should return a new object built with current_model from the object parameters" do
+    @model.expects(:build).with(@params).returns(@object)
+    @controller.build_object.should == @object
+  end
+
+  it "should make current_object return the newly built object" do
+    @controller.build_object
+    @controller.current_object.should == @object
+  end
+end
+
+describe Resourceful::Default::Accessors, "#build_object with a non-#build-able model" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @params = {:name => "Bob", :password => "hideously insecure"}
+    @controller.stubs(:object_parameters).returns(@params)
+
+    @object = stub
+    @model = stub
+    @controller.stubs(:current_model).returns(@model)
+
+    @model.stubs(:new).returns(@object)
+  end
+
+  it "should return a new instance of the current_model built with the object parameters" do
+    @model.expects(:new).with(@params).returns(@object)
+    @controller.build_object.should == @object
+  end
+end
+
+describe Resourceful::Default::Accessors, "#current_model_name" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:controller_name).returns("funky_posts")
+  end
+
+  it "should return the controller's name, singularized and camel-cased" do
+    @controller.current_model_name.should == "FunkyPost"
+  end
+end
+
+describe Resourceful::Default::Accessors, "#namespaces" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @kontroller.stubs(:name).returns("FunkyStuff::Admin::Posts")
+  end
+
+  it "should return an array of underscored symbols representing the namespaces of the controller class" do
+    @controller.namespaces.should == [:funky_stuff, :admin]
+  end
+
+  it "should cache the result, so subsequent calls won't run multiple computations" do
+    @kontroller.expects(:name).once.returns("Posts")
+    @controller.namespaces
+    @controller.namespaces
+  end
+end
+
+describe Resourceful::Default::Accessors, "#instance_variable_name" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:controller_name).returns("posts")
+  end
+  
+  it "should return controller_name" do
+    @controller.instance_variable_name == "posts"
+  end
+end
+
+describe Resourceful::Default::Accessors, "#current_model for a singular controller" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:singular?).returns(true)
+    @controller.stubs(:current_model_name).returns("Resourceful")
+
+    @parents = Array.new(5) { stub }
+    @controller.stubs(:parent_objects).returns(@parents)
+  end
+  
+  it "should return the constant named by current_model_name" do
+    @controller.current_model.should == Resourceful
+  end
+end
+
+describe Resourceful::Default::Accessors, "#current_model for a plural controller with no parents" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:singular?).returns(false)
+    @controller.stubs(:current_model_name).returns("Resourceful")
+    @controller.stubs(:parent_objects).returns([])
+  end
+  
+  it "should return the constant named by current_model_name" do
+    @controller.current_model.should == Resourceful
+  end
+end
+
+describe Resourceful::Default::Accessors, "#current_model for a plural controller with parents" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:singular?).returns(false)
+    @controller.stubs(:instance_variable_name).returns("posts")
+
+    @model = stub
+    @parents = Array.new(5) { stub }
+    @controller.stubs(:parent_objects).returns(@parents)
+  end
+  
+  it "should return the parent-scoped model" do
+    @parents[-1].stubs(:posts).returns(@model)
+    @controller.current_model.should == @model
+  end
+end
+
+
