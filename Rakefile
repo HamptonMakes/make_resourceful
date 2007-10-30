@@ -36,6 +36,7 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'make_resourceful'
   rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README')
+  rdoc.main = 'README'
+  rdoc.rdoc_files.include(FileList.new('*').exclude(/[^A-Z0-9]/))
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

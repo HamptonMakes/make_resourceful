@@ -1,17 +1,32 @@
-MakeResourceful
-===============
+= +make_resourceful+
+===== Take back control of your Controllers. Make them awesome. Make them resourceful.
 
-http://resourceful.hamptoncatlin.com
+REST is a fine pattern for designing controllers,
+but it can be pretty repetitive.
+Who wants to write out the same actions and copy the same model lookup logic
+all over their application?
 
-Copyright Hampton Catlin, Nathan Weizenbaum, and Jeff Hardy 2007
++make_resourceful+ handles all that automatically.
+All you need to do to create a fully-capable RESTful controller
+is the following:
 
-Take control back of your Controllers.
+  class FoosController < ApplicationController
+    make_resourceful do
+      actions :all
+    end
+  end
 
-Make them awesome.
+This creates all the standard actions: +index+, +show+, +new+, +edit+, +create+, and +destroy+.
+Check out the the default[link:files/DEFAULTS.html] controller for a detailed example
+of what a bare-minimum call to +make_resourceful+ creates.
 
+Copyright 2007 Hampton Catlin, Nathan Weizenbaum, and Jeff Hardy.
 
-------
+Contributions by:
 
-Contributions By:
-
-Don Petersen
+* Cristi Balan
+* Mike Ferrier
+* James Golick
+* Don Petersen
+* Alex Ross
+* Tom Stuart
