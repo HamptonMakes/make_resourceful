@@ -272,3 +272,18 @@ describe Resourceful::Builder, " publishing in addition to other responses" do
     responses[:index].map(&:first).should == [:html, :json, :yaml]
   end
 end
+
+describe Resourceful::Builder, " belonging to several parents" do
+  include ControllerMocks
+  before :each do
+    mock_kontroller
+    create_builder
+
+    @builder.belongs_to :post, :blat, :stang
+    @builder.apply
+  end
+
+  it "should save the parents as the :parents inheritable_attribute" do
+    parents.should == ['post', 'blat', 'stang']
+  end
+end

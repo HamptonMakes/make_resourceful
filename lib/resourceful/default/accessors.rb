@@ -173,12 +173,12 @@ module Resourceful
         !plural_action?
       end
 
-      def plural?
-        !singular?
-      end
-
       def singular?
         instance_variable_name.singularize == instance_variable_name
+      end
+
+      def plural?
+        !singular?
       end
     end
   end

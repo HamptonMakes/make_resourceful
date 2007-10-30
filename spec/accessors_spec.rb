@@ -342,3 +342,91 @@ describe Resourceful::Default::Accessors, " with no parents" do
     @controller.parent_objects.should == []
   end
 end
+
+describe Resourceful::Default::Accessors, "#save_succeeded!" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.save_succeeded!
+  end
+
+  it "should make #save_succeeded? return true" do
+    @controller.save_succeeded?.should be_true
+  end
+end
+
+describe Resourceful::Default::Accessors, "#save_failed!" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.save_failed!
+  end
+
+  it "should make #save_succeeded? return false" do
+    @controller.save_succeeded?.should be_false
+  end
+end
+
+describe Resourceful::Default::Accessors, " for a plural action" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:params).returns :action => "index"
+  end
+
+  it "should know it's a plural action" do
+    @controller.should be_a_plural_action
+  end
+
+  it "should know it's not a singular action" do
+    @controller.should_not be_a_singular_action
+  end
+end
+
+describe Resourceful::Default::Accessors, " for a singular action" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:params).returns :action => "show"
+  end
+
+  it "should know it's not a plural action" do
+    @controller.should_not be_a_plural_action
+  end
+
+  it "should know it's a singular action" do
+    @controller.should be_a_singular_action
+  end
+end
+
+describe Resourceful::Default::Accessors, " for a singular controller" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:instance_variable_name).returns "post"
+  end
+
+  it "should know it's not plural" do
+    @controller.should_not be_plural
+  end
+
+  it "should know it's singular" do
+    @controller.should be_singular
+  end
+end
+
+describe Resourceful::Default::Accessors, " for a plural controller" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:instance_variable_name).returns "posts"
+  end
+
+  it "should know it's plural" do
+    @controller.should be_plural
+  end
+
+  it "should know it's not singular" do
+    @controller.should_not be_singular
+  end
+end
