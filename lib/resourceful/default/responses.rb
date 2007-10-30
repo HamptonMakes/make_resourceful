@@ -46,7 +46,7 @@ module Resourceful
 
       def self.included(base)
         base.made_resourceful do
-          response_for(:show, :index) do |format|
+          response_for(:show, :index, :edit, :new) do |format|
             format.html
             format.js
           end

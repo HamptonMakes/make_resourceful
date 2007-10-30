@@ -92,6 +92,42 @@ describe 'Resourceful::Default::Responses', ' for index' do
   end
 end
 
+describe 'Resourceful::Default::Responses', ' for edit' do
+  include ControllerMocks
+  before :each do
+    mock_kontroller
+    create_builder
+    made_resourceful(Resourceful::Default::Responses)
+    @builder.apply
+  end
+
+  it "should have an empty HTML response" do
+    responses[:edit].find { |f, p| f == :html }[1].call.should == nil
+  end
+
+  it "should have an empty JS response" do
+    responses[:edit].find { |f, p| f == :js }[1].call.should == nil
+  end
+end
+
+describe 'Resourceful::Default::Responses', ' for new' do
+  include ControllerMocks
+  before :each do
+    mock_kontroller
+    create_builder
+    made_resourceful(Resourceful::Default::Responses)
+    @builder.apply
+  end
+
+  it "should have an empty HTML response" do
+    responses[:new].find { |f, p| f == :html }[1].call.should == nil
+  end
+
+  it "should have an empty JS response" do
+    responses[:new].find { |f, p| f == :js }[1].call.should == nil
+  end
+end
+
 describe 'Resourceful::Default::Responses', ' for show_fails' do
   include ControllerMocks
   before :each do
