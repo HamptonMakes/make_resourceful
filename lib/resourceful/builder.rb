@@ -3,9 +3,21 @@ require 'resourceful/serialize'
 require 'resourceful/default/actions'
 
 module Resourceful
+  # The Maker#make_resourceful block is evaluated in the context
+  # of an instance of this class.
+  # It provides various methods for customizing the behavior of the actions
+  # built by make_resourceful.
+  #
+  # All instance methods of this class are available in the +make_resourceful+ block.
   class Builder
+    # The klass of the controller on which the builder is working.
     attr :controller, true
 
+    # The constructor is only meant to be called internally.
+    #
+    # This takes the klass (class object) of a controller
+    # and constructs a Builder ready to apply the make_resourceful
+    # additions to the controller.
     def initialize(kontroller)
       @controller       = kontroller
       @action_module    = Resourceful::Default::Actions.dup
@@ -16,12 +28,17 @@ module Resourceful
       @parents          = []
     end
 
-    def apply# :nodoc:
+    # This method is only meant to be called internally.
+    #
+    # Applies all the changes that have been declared
+    # via the instance methods of this Builder
+    # to the kontroller passed in to the constructor.
+    def apply
       apply_publish
 
       kontroller = @controller
       Resourceful::ACTIONS.each do |action_named|
-        # See if this is a method listed by build/n
+        # See if this is a method listed by #actions
         unless @ok_actions.include? action_named
           # If its not listed, then remove the method
           # No one can hit it... if its DEAD!
