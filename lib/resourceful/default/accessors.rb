@@ -62,6 +62,15 @@ module Resourceful
       #
       def current_object
         @current_object ||= if plural?
+          if defined?(current_param)
+            STDERR.puts "DEPRECATION WARNING: " + <<END.gsub("\n", ' ')
+The make_resourceful #current_param accessor
+is deprecated and will be removed in 0.3.0.
+Override #current_object instead.
+END
+            return current_model.find(current_param)
+          end
+
           current_model.find(params[:id])
         else
           parent_objects[-1].send(instance_variable_name)

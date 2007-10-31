@@ -47,7 +47,6 @@ describe Resourceful::Default::Accessors, "#current_object on a plural controlle
   before :each do
     mock_controller Resourceful::Default::Accessors
     @controller.stubs(:plural?).returns(true)
-    @controller.stubs(:instance_variable_name).returns("posts")
     @controller.stubs(:params).returns(:id => "12")
 
     @object = stub
@@ -88,6 +87,26 @@ describe Resourceful::Default::Accessors, "#current_object on a singular control
 
   it "should look up the instance object of the last parent object" do
     @parents[-1].expects(:post).returns(@object)
+    @controller.current_object.should == @object
+  end
+end
+
+describe Resourceful::Default::Accessors, "#current_object on a plural controller with current_param defined" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:plural?).returns(true)
+    @controller.stubs(:current_param).returns("12")
+
+    @object = stub
+    @model = stub
+    @controller.stubs(:current_model).returns(@model)
+  end
+
+  it "should look up the object specified by #current_param, but issue a deprecation warning" do
+    STDERR.expects(:puts).with(regexp_matches(/^DEPRECATION WARNING: /))
+
+    @model.expects(:find).with("12").returns(@object)
     @controller.current_object.should == @object
   end
 end
