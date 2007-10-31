@@ -63,14 +63,14 @@ Yes.
 === What if I want to use fancy permalinks?
 
   def current_object
-    current_model.find_by_permalink(params[:id])
+    @current_object ||= current_model.find_by_permalink(params[:id])
   end
 
 === What about paging?
 
   def current_objects
-    current_model.find(:all, :order => "created_at DESC",
-                       :page => {:current => params[:page], :size => 10 } )
+    @current_object ||= current_model.find(:all,
+      :order => "created_at DESC", :page => {:current => params[:page], :size => 10 } )
   end
 
 === What if I want to do something in the middle of an action?
