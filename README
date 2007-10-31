@@ -1,24 +1,111 @@
-= +make_resourceful+
-===== Take back control of your Controllers. Make them awesome. Make them resourceful.
+= make_resourceful
+===== Take back control of your Controllers. Make them awesome. Make them sleek. Make them resourceful.
 
 REST is a fine pattern for designing controllers,
 but it can be pretty repetitive.
 Who wants to write out the same actions and copy the same model lookup logic
 all over their application?
 
-+make_resourceful+ handles all that automatically.
-All you need to do to create a fully-capable RESTful controller
-is the following:
+make_resourceful handles all that for you.
+It sets up all your RESTful actions and responses with next to no code.
+Everything has full, sensible default functionality.
 
-  class FoosController < ApplicationController
+Of course, no controller _only_ uses the defaults.
+So make_resourceful can be massively customized,
+while still keeping your controllers trim and readable.
+
+== Get it!
+ 
+Rails
+
+  $ ruby script/plugin install http://svn.hamptoncatlin.com/make_resourceful/trunk
+  $ mv vendor/plugins/trunk vendor/plugins/make_resourceful
+
+Subversion
+
+  $ svn co http://svn.hamptoncatlin.com/make_resourceful/trunk make_resourceful
+
+== Use it!
+
+The easiest way to start with make_resourceful
+is to run the resource_scaffold generator.
+It uses the same syntax as the Rails scaffold_resource generator:
+
+  $ script/generate resource_scaffold post title:string body:text
+
+It does, however, require Haml[http://haml.hamptoncatlin.com].
+You _are_ using Haml, right? No?
+I'll wait here while you go fall in love with it.
+
+If you want to try make_resourceful on one of your current controllers,
+just replace the mess of repetition with this:
+
+  class FooController < ApplicationController
     make_resourceful do
       actions :all
     end
   end
 
-This creates all the standard actions: +index+, +show+, +new+, +edit+, +create+, and +destroy+.
-Check out the the default[link:files/DEFAULTS.html] controller for a detailed example
-of what a bare-minimum call to +make_resourceful+ creates.
+Those three lines will replace the entire default controller
+that comes out of the scaffold_resource generator.
+
+=== Really?
+
+Yes.
+
+=== Can I do nested resources?
+
+  make_resourceful do
+    actions :all
+    belongs_to :post
+  end
+
+=== What if I want to use fancy permalinks?
+
+  def current_object
+    current_model.find_by_permalink(params[:id])
+  end
+
+=== What about paging?
+
+  def current_objects
+    current_model.find(:all, :order => "created_at DESC",
+                       :page => {:current => params[:page], :size => 10 } )
+  end
+
+=== What if I want to do something in the middle of an action?
+
+  before :show, :index do
+    @page_title = "Awesome!"
+  end
+
+  after :create_fails do
+    @page_title = "Not So Awesome!"
+  end
+
+=== What about all of my awesome respond_to blocks for my XML APIs and RJS responses?
+
+  response_for :show do |format|
+    format.html
+    format.js
+    format.xml
+  end
+
+  response_for :update_fails do |format|
+    format.html { render :action => 'edit' }
+    format.json { render :json => false.to_json, :status => 422 }
+  end
+
+=== So I guess I have to write responses for all my actions?
+
+Nope! make_resourceful makes them do the right thing by default.
+You only need to customize them if you want to do something special.
+
+=== Seriously?!
+
+Yes!
+
+ ---
 
 Copyright 2007 Hampton Catlin, Nathan Weizenbaum, and Jeff Hardy.
 
