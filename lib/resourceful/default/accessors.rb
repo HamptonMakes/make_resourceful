@@ -1,4 +1,8 @@
 module Resourceful
+  # This module contains various methods
+  # that are available from actions and callbacks.
+  # Default::Accessors and Default::URLs are the most useful to users;
+  # the rest are mostly used internally.
   module Default
     module Accessors
       # current_objects returns an array representing the
