@@ -1,9 +1,14 @@
 require 'resourceful/builder'
 
 module Resourceful
+  # This module contains mixin modules
+  # used to implement the object serialization
+  # used for the Builder#publish method.
+  # They can also be used as generic ways
+  # to get serialized representations of objects.
   module Serialize
     
-    def self.normalize_attributes(attributes) # :nodoc
+    def self.normalize_attributes(attributes) # :nodoc:
       return nil if attributes.nil?
       return {attributes.to_sym => nil} if String === attributes
       return {attributes => nil} if !attributes.respond_to?(:inject)
