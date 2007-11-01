@@ -105,7 +105,64 @@ You only need to customize them if you want to do something special.
 
 Yes!
 
- ---
+== Grok it!
+
+=== +make_resourceful+ the Method
+
+The +make_resourceful+ block is where most of the action happens.
+Here you specify which actions you want to auto-generate,
+what code you want to run for given callbacks,
+and so forth.
+
+You also use the block to declare various bits of information about your controller.
+For instance, if the controller is nested, you'd call +belongs_to+.
+If you wanted to expose your models as some sort of text format,
+you'd call +publish+.
+
+Check out the documentation of Resourceful::Builder
+for more information on the methods you can call here.
+
+=== Helper Methods
+
+make_resourceful provides lots of useful methods
+that can be used in your callbacks and in your views.
+They range from accessing the records you're looking up
+to easily generating URLs for a record
+to getting information about the action itself.
+
+Two of the most useful methods are +current_object+ and +current_objects+
+(note the subtle plurality difference).
++current_objects+ only works for +index+,
+and returns all the records in the current model.
++current_object+ works for all actions other than +index+,
+and returns the record that's currently being dealt with.
+
+The full documentation of the helper methods
+is in Resourceful::Default::Accessors and Resourceful::Default::URLs.
+
+=== Overriding Methods
+
+Not only are helper methods useful to the developer to use,
+they're used internally by the actions created by make_resourceful.
+Thus one of the main ways make_resourceful can be customized
+is by overriding accessors.
+
+For instance, if you want to only look up the 10 most recent records for +index+,
+you're override +current_objects+.
+If you wanted to use a different model than that suggested by the name of the controller,
+you'd override @current_model@.
+
+When you're overriding methods that do SQL lookups, though, be a little cautious.
+By default, these methods cache their values in instance variables
+so that multiple SQL queries aren't run on multiple calls.
+When overriding them, it's wise for you to do the same.
+For instance,
+
+  def current_object
+    @current_object ||= current_model.find_by_name(params[:name])
+  end
+
+---
 
 Copyright 2007 Hampton Catlin, Nathan Weizenbaum, and Jeff Hardy.
 
