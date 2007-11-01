@@ -87,6 +87,9 @@ module Resourceful
     end
     alias build actions
 
+    # :call-seq:
+    #   before(*events) { ... }
+    #
     # Sets up a block of code to run before one or more events.
     #
     # All the default actions can be used as +before+ events:
@@ -110,6 +113,9 @@ module Resourceful
       end
     end
 
+    # :call-seq:
+    #   after(*events) { ... }
+    #
     # Sets up a block of code to run after one or more events.
     #
     # There are two sorts of +after+ events.
