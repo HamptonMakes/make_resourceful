@@ -24,7 +24,7 @@ module Resourceful
       #
       # TODO: Move this out of here
       def set_default_flash(type, message)
-        flash[type] = (params[:_flash] && params[:_flash][type]) || message
+        flash[type] ||= (params[:_flash] && params[:_flash][type]) || message
       end
 
       # Similar to set_flash, this will allow a posted
