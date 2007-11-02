@@ -143,6 +143,48 @@ module Resourceful
       end
     end
 
+    # :call-seq:
+    #   response_for(*actions) { ... }
+    #   response_for(*actions) { |format| ... }
+    #
+    # Sets up a block of code to run
+    # instead of the default responses for one or more events.
+    #
+    # If the block takes a format parameter,
+    # it has the same semantics as Rails' +respond_to+ method.
+    # Various format methods are called on the format object
+    # with blocks that say what to do for each format.
+    # For example:
+    #
+    #   response_for :index do |format|
+    #     format.html
+    #     format.atom do
+    #       headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
+    #       render :action => 'atom', :layout => false
+    #     end
+    #   end
+    #
+    # This doesn't do anything special for the HTML
+    # other than ensure that the proper view will be rendered,
+    # but for ATOM it sets the proper content type
+    # and renders the atom template.
+    #
+    # If you only need to set the HTML response,
+    # you can omit the format parameter.
+    # For example:
+    #
+    #   response_for :new do
+    #     render :action => 'edit'
+    #   end
+    #
+    # This is the same as
+    #     
+    #   response_for :new do |format|
+    #     format.html { render :action => 'edit' }
+    #   end
+    #
+    # The default responses are defined by
+    # Default::Responses.included[link:classes/Resourceful/Default/Responses.html#M000011].
     def response_for(*actions, &block)
       if block.arity < 1
         response_for(*actions) do |format|
@@ -158,24 +200,106 @@ module Resourceful
       end
     end
 
-    def publish(*types)
+    # :call-seq:
+    #   publish *formats, options, :attributes => [ ... ]
+    #
+    # publish allows you to easily expose information about resourcess in a variety of formats.
+    # The +formats+ parameter is a list of formats
+    # in which to publish the resources.
+    # The formats supported by default are +xml+, +yaml+, and +json+,
+    # but other formats may be added by defining +to_format+ methods
+    # for the Array and Hash classes
+    # and registering the mime type with Rails' Mime::Type.register[http://api.rubyonrails.org/classes/Mime/Type.html#M001115].
+    # See Resourceful::Serialize for more details..
+    #
+    # The <tt>:attributes</tt> option is mandatory.
+    # It takes an array of attributes (as symbols) to make public.
+    # These attributes can refer to any method on current_object;
+    # they aren't limited to database fields.
+    # For example:
+    #
+    #   # posts_controller.rb
+    #   publish :yaml, :attributes => [:title, :created_at, :rendered_content]
+    #
+    # Then GET /posts/12.yaml would render
+    #
+    #   --- 
+    #   post: 
+    #     title: Cool Stuff
+    #     rendered_content: |-
+    #       <p>This is a post.</p>
+    #       <p>It's about <strong>really</strong> cool stuff.</p>
+    #     created_at: 2007-04-28 04:32:08 -07:00
+    #
+    # The <tt>:attributes</tt> array can even contain attributes
+    # that are themselves models.
+    # In this case, you must use a hash to specify their attributes as well.
+    # For example:
+    #
+    #   # person_controller.rb
+    #   publish :xml, :json, :attributes => [
+    #     :name, :favorite_color, {
+    #     :pet_cat => [:name, :breed],
+    #     :hat => [:type]
+    #   }]
+    #
+    # Then GET /people/18.xml would render
+    #
+    #   <?xml version="1.0" encoding="UTF-8"?>
+    #   <person>
+    #     <name>Nathan</name>
+    #     <favorite-color>blue</favorite_color>
+    #     <pet-cat>
+    #       <name>Jasmine</name>
+    #       <breed>panther</breed>
+    #     </pet-cat>
+    #     <hat>
+    #       <type>top</type>
+    #     </hat>
+    #   </person>
+    #
+    # publish will also allow the +index+ action
+    # to render lists of objects.
+    # An example would be too big,
+    # but play with it a little on your own to see.
+    #
+    # publish takes only one optional option: <tt>only</tt>.
+    # This specifies which action to publish the resources for.
+    # By default, they're published for both +show+ and +index+.
+    # For example:
+    #
+    #   # cats_controller.rb
+    #   publish :json, :only => :index, :attributes => [:name, :breed]
+    #
+    # Then GET /cats.json would work, but GET /cats/294.json would fail.
+    def publish(*formats)
       options = {
         :only => [:show, :index]
-      }.merge(Hash === types.last ? types.pop : {})
+      }.merge(Hash === formats.last ? formats.pop : {})
       raise "Must specify :attributes option" unless options[:attributes]
       
       Array(options.delete(:only)).each do |action|
         @publish[action] ||= []
-        types.each do |type|
-          type = type.to_sym
-          @publish[action] << [type, proc do
-            render_action = [:json, :xml].include?(type) ? type : :text
-            render render_action => (plural_action? ? current_objects : current_object).serialize(type, options)
+        formats.each do |format|
+          format = format.to_sym
+          @publish[action] << [format, proc do
+            render_action = [:json, :xml].include?(format) ? format : :text
+            render render_action => (plural_action? ? current_objects : current_object).serialize(format, options)
           end]
         end
       end
     end
 
+    # Specifies a hierarchy of parent models
+    # for the current model.
+    # The array should be ordered as <tt>[..., :great_grandparent, :grandparent, :parent]</tt>.
+    # Each parent's object is automatically loaded into the proper instance variable
+    # (e.g. Person would be loaded into <tt>@person</tt>),
+    # and all child lookups are scoped so that they're guaranteed to be children of the proper parent.
+    #
+    # <b>Note that the semantics of this function will likely change in the next release.</b>
+    # Using it with only one parent is safe,
+    # but more than one will probably break in the future.
     def belongs_to(*parents)
       @parents = parents.map(&:to_s)
     end
