@@ -9,14 +9,6 @@ describe Resourceful::Default::Callbacks, " with a few callbacks" do
     @controller.instance_variable_set('@var', 'value')
   end
 
-  it "should fire the callback with the given type and name when #resourceful_fire is called" do
-    @controller.resourceful_fire(:before, :create).should == "awesome!"
-  end
-
-  it "should scope the callback fired by #resourceful_fire" do
-    @controller.resourceful_fire(:after, :index).should == "value"
-  end
-
   it "should fire the :before callback with the given name when #before is called" do
     @controller.before(:create).should == "awesome!"
   end

@@ -2,6 +2,8 @@ require 'resourceful/builder'
 
 module Resourceful
   module Default
+    # This module is mostly meant to be used by the make_resourceful default actions.
+    # It provides various methods that hook into
     module Callbacks
       def before(action)
         resourceful_fire(:before, action.to_sym)
@@ -21,14 +23,16 @@ module Resourceful
         end
       end
 
-      def resourceful_fire(type, name)
-        scope(self.class.read_inheritable_attribute(:resourceful_callbacks)[type][name]).call
-      end
-
       def scope(block)
         lambda do
           instance_eval(&(block || lambda {}))
         end
+      end
+
+      private
+
+      def resourceful_fire(type, name)
+        scope(self.class.read_inheritable_attribute(:resourceful_callbacks)[type][name]).call
       end
     end
   end
