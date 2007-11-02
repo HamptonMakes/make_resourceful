@@ -201,7 +201,7 @@ module Resourceful
     end
 
     # :call-seq:
-    #   publish *formats, options, :attributes => [ ... ]
+    #   publish *formats, options = {}, :attributes => [ ... ]
     #
     # publish allows you to easily expose information about resourcess in a variety of formats.
     # The +formats+ parameter is a list of formats
