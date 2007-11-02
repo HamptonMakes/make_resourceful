@@ -3,6 +3,10 @@ module Resourceful
   # that are available from actions and callbacks.
   # Default::Accessors and Default::URLs are the most useful to users;
   # the rest are mostly used internally.
+  #
+  # However, if you want to poke around the internals a little,
+  # check out Default::Actions, which has the default Action definitions,
+  # and Default::Responses.included, which defines the default response_for[link:classes/Resourceful/Builder.html#M000061] blocks.
   module Default
     module Accessors
       # current_objects returns an array representing the
