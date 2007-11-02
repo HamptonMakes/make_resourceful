@@ -33,7 +33,7 @@ module Resourceful
       # Returns a block identical to the given block,
       # but in the context of the current controller.
       # The returned block accepts no arguments,
-      # even if the given block did.
+      # even if the given block accepted them.
       def scope(block)
         lambda do
           instance_eval(&(block || lambda {}))

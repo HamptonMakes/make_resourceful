@@ -71,7 +71,8 @@ module Resourceful
       def current_object
         @current_object ||= if plural?
           if defined?(current_param)
-            STDERR.puts "DEPRECATION WARNING: " + <<END.gsub("\n", ' ')
+            STDERR.puts <<END.gsub("\n", ' ')
+DEPRECATION WARNING: 
 The make_resourceful #current_param accessor
 is deprecated and will be removed in 0.3.0.
 Override #current_object instead.

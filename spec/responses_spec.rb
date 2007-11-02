@@ -36,18 +36,25 @@ describe 'Resourceful::Default::Responses', " with a _redirect parameter on :fai
 
   it "should set the redirect for :failure to the parameter's value when set_default_redirect is called on :failure" do
     @controller.expects(:redirect_to).with('http://hamptoncatlin.com/')
+    @controller.set_default_redirect(:back, :status => :failure)
+  end
+
+  it "should accept the deprecated :on option in place of status." do
+    STDERR.expects(:puts).with(regexp_matches(/^DEPRECATION WARNING: /))
+
+    @controller.expects(:redirect_to).with('http://hamptoncatlin.com/')
     @controller.set_default_redirect(:back, :on => :failure)
   end
 
   it "should set the redirect for :success to the default value when set_default_redirect is called on :success" do
     @controller.expects(:redirect_to).with(:back)
-    @controller.set_default_redirect(:back, :on => :success)
+    @controller.set_default_redirect(:back, :status => :success)
   end
 
   it "shouldn't set the redirect for :failure when set_default_redirect is called on :success" do
     @controller.expects(:redirect_to).with(:back)
     @controller.expects(:redirect_to).with('http://hamptoncatlin.com/').never
-    @controller.set_default_redirect(:back, :on => :success)
+    @controller.set_default_redirect(:back, :status => :success)
   end
 
   it "should set the default redirect for :success by default" do
@@ -308,7 +315,7 @@ describe 'Resourceful::Default::Responses', ' for destroy_fails' do
   end
 
   it "should redirect back on failure by default for HTML" do
-    @controller.expects(:set_default_redirect).with(:back, :on => :failure)
+    @controller.expects(:set_default_redirect).with(:back, :status => :failure)
     @controller.scope(responses[:destroy_fails].find { |f, p| f == :html }[1]).call
   end
 end

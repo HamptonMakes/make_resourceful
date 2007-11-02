@@ -1,47 +1,61 @@
 module Resourceful
   module Default
     module Responses
-      # set_default_flash is a nice little helper for responses
-      # that lets you set a "default" flash message
-      # to respond to a problem. The default
-      # responses have default flash messages.
-      # You can override these by doing a manual response
-      # or by passing in parameter that specifies the flash
-      # message.
+      # Sets the default flash message.
+      # This message can be overridden by passing in
+      # an HTTP parameter of the form "_flash[type]" via POST or GET.
       #
-      # There is no reason why a user shouldn't be able to
-      # be trusted for their message! Flash messages are
-      # only shown for :notice and :error... and only when
-      # one of them actually happens.
+      # You can use this to easily have multiple forms
+      # post to the same create/edit/destroy actions
+      # but display different flash notices -
+      # without modifying the controller code at all.
       #
-      # With this technique, you can easily have multiple
-      # forms post to the same create/edit/destroy
-      # actions and have different flash notices.... determined
-      # by the actor itself.
+      # By default, the flash types are +notice+ when the database operation completes successfully
+      # and +error+ when it fails.
       #
-      # This accepts the params "_flash[notice]" and "_flash[error]"
-      # when in use. Others can be used if desired.
-      #
+      #--
       # TODO: Move this out of here
+      #++
       def set_default_flash(type, message)
         flash[type] ||= (params[:_flash] && params[:_flash][type]) || message
       end
 
-      # Similar to set_flash, this will allow a posted
-      # parameter to determine where the user is going
-      # to be redirected after an action has occured
+      # Sets the default redirect
+      # (the argument passed to +redirect_to+).
+      # This message can be overridden by passing in
+      # an HTTP parameter of the form "_redirect_on[status]" via POST or GET.
       #
-      # This is useful, because this shouldn't be a
-      # dangerous activity at all... and helps us
-      # build re-usable CUD actions that might
-      # be 'hit' from multiple HTML locations.
+      # You can use this to easily have multiple forms
+      # post to the same create/edit/destroy actions
+      # but redirect to different URLs -
+      # without modifying the controller code at all.
       #
-      # Post: redirect_on[success] and redirect_on[fail]
+      # By default, the redirect statuses are +success+ when the database operation completes successfully
+      # and +failure+ when it fails.
+      # Use the <tt>:status</tt> option to specify which status to run the redirect for.
+      # For example:
       #
+      #   set_default_redirect "/posts", :status => :failure
+      #
+      # This will run <tt>redirect_to params[:_redirect_on][:failure]</tt> if the parameter exists,
+      # or <tt>redirect_to "/posts"</tt> otherwise.
+      #
+      #--
       # TODO: Move this out of here
-      def set_default_redirect(default, options = {})
-        on = options[:on] || :success
-        redirect_to (params[:_redirect_on] && params[:_redirect_on][on]) || default
+      #++
+      def set_default_redirect(to, options = {})
+        status = options[:status] || options[:on] || :success
+
+        if options[:on]
+          STDERR.puts <<END.gsub("\n", ' ')
+DEPRECATION WARNING:
+The make_resourceful #set_default_redirect :on option
+is deprecated and will be removed in 0.3.0.
+Use the :status option instead.
+END
+        end
+
+        redirect_to (params[:_redirect_on] && params[:_redirect_on][status]) || to
       end
 
       def self.included(base)
@@ -101,7 +115,7 @@ module Resourceful
           response_for(:destroy_fails) do |format|
             format.html do
               set_default_flash :error, "There was a problem deleting!"
-              set_default_redirect :back, :on => :failure
+              set_default_redirect :back, :status => :failure
             end
             format.js
           end
