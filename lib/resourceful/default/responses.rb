@@ -58,6 +58,8 @@ END
         redirect_to (params[:_redirect_on] && params[:_redirect_on][status]) || to
       end
 
+      # This method is automatically run when this module is included in Resourceful::Base.
+      # It sets up the default responses for the default actions.
       def self.included(base)
         base.made_resourceful do
           response_for(:show, :index, :edit, :new) do |format|
