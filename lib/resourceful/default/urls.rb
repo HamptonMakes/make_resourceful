@@ -13,7 +13,22 @@ module Resourceful
       def new_object_path; new_object_route('path'); end
       def new_object_url ; new_object_route('url');  end
 
-     private
+      def url_helper_prefix
+        if defined?(namespace_prefix)
+          STDERR.puts <<END.gsub("\n", ' ')
+DEPRECATION WARNING: 
+The make_resourceful #namespace_prefix accessor
+is deprecated and will be removed in 0.3.0.
+Override #url_method_prefix instead.
+END
+          return namespace_prefix
+        end
+        
+        namespaces.empty? ? '' : "#{namespaces.join('_')}_"
+      end
+
+      private
+
       def object_route(object, type)
         instance_route(current_model_name.underscore, object, type)
       end
@@ -31,15 +46,11 @@ module Resourceful
       end
 
       def instance_route(name, object, type)
-        send("#{namespace_prefix}#{name}_#{type}", *(parent_objects + [object]))
+        send("#{url_helper_prefix}#{name}_#{type}", *(parent_objects + [object]))
       end
 
       def collection_route(name, type)
-        send("#{namespace_prefix}#{name}_#{type}",  *parent_objects)
-      end
-
-      def namespace_prefix
-        namespaces.empty? ? '' : "#{namespaces.join('_')}_"
+        send("#{url_helper_prefix}#{name}_#{type}",  *parent_objects)
       end
     end
   end

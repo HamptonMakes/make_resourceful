@@ -116,6 +116,10 @@ describe Resourceful::Default::URLs, " for a controller within a namespace" do
     @controller.stubs(:namespaces).returns([:admin, :main])
   end
 
+  it "should return the underscored list of namespaces for #url_helper_prefix" do
+    @controller.url_helper_prefix.should == "admin_main_"
+  end
+
   it "should get the namespaced path of current_object with #object_path" do
     @controller.expects(:send).with('admin_main_thing_path', @model)
     @controller.object_path
