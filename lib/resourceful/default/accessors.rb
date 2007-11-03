@@ -31,6 +31,17 @@ module Resourceful
       # require executing SQL calls.
       #
       def current_objects
+        if defined?(model_includes)
+          STDERR.puts <<END.gsub("\n", ' ')
+DEPRECATION WARNING: 
+The make_resourceful #model_includes accessor
+is deprecated and will be removed in 0.3.0.
+Override #current_objects instead.
+END
+          @current_objects ||= current_model.find(:all, :includes => model_includes)
+          return @current_objects
+        end
+
         @current_objects ||= current_model.find(:all)
       end
 
