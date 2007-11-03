@@ -277,18 +277,6 @@ describe Resourceful::Default::Accessors, "#object_parameters" do
   end
 end
 
-describe Resourceful::Default::Accessors, "#response_for" do
-  include ControllerMocks
-  before :each do
-    mock_controller Resourceful::Default::Accessors
-  end
-
-  it "should send the method response_for_action" do
-    @controller.expects(:response_for_index)
-    @controller.response_for :index
-  end
-end
-
 describe Resourceful::Default::Accessors, " with five parent classes set on the controller class" do
   include ControllerMocks
   before :each do

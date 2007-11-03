@@ -7,7 +7,7 @@ module Resourceful
     module URLs
       # This returns the path for the given object,
       # by default current_object[link:classes/Resourceful/Default/Accessors.html#M000012].
-      # For example, in HatsController where Hat belongs_to Person,
+      # For example, in HatsController where Person has_many :hats,
       # the following are equivalent:
       #
       #   object_path             #=> "/people/42/hats/12"
@@ -19,7 +19,7 @@ module Resourceful
 
       # This returns the path for the edit action for the given object,
       # by default current_object[link:classes/Resourceful/Default/Accessors.html#M000012].
-      # For example, in HatsController where Hat belongs_to Person,
+      # For example, in HatsController where Person has_many :hats,
       # the following are equivalent:
       #
       #   edit_object_path             #=> "/people/42/hats/12/edit"
@@ -30,7 +30,7 @@ module Resourceful
       def edit_object_url (object = current_object); edit_object_route(object, 'url');  end
 
       # This returns the path for the collection of the current controller.
-      # For example, in HatsController where Hat belongs_to Person,
+      # For example, in HatsController where Person has_many :hats,
       # the following are equivalent:
       #
       #   objects_path       #=> "/people/42/hats"
@@ -41,7 +41,7 @@ module Resourceful
       def objects_url ; objects_route('url');  end
 
       # This returns the path for the new action for the current controller.
-      # For example, in HatsController where Hat belongs_to Person,
+      # For example, in HatsController where Person has_many :hats,
       # the following are equivalent:
       #
       #   new_object_path       #=> "/people/42/hats/new"
@@ -58,7 +58,7 @@ module Resourceful
       # Note that if this is overridden,
       # the new method should return a string ending in an underscore.
       #
-      # For example, in Admin::Content::PagesController,
+      # For example, in Admin::Content::PagesController:
       #
       #   url_helper_prefix #=> "admin_content_"
       #
