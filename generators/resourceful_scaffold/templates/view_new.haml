@@ -1,11 +1,9 @@
 %h1 Creating <%= singular_name %>
-Find me in app/views/<%= plural_name %>/new.haml
 
 = error_messages_for :<%= singular_name %>
 
-- form_for(@<%= singular_name %>) do |f|
+- form_for(:<%= singular_name %>, :url => objects_url) do |f|
   = render :partial => "form", :locals => {:f => f}
-  %p
-    = f.submit "Create"
+  %p= submit_tag "Create"
 
-= link_to 'Back', <%= plural_name %>_path
+= link_to 'Back', objects_path
