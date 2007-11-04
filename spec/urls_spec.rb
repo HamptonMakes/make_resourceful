@@ -9,6 +9,7 @@ describe Resourceful::Default::URLs, " for a controller with no parents or names
     
     @controller.stubs(:current_model_name).returns('Thing')
     @controller.stubs(:parent_objects).returns([])
+    @controller.stubs(:parents).returns([])
     @controller.stubs(:namespaces).returns([])
   end
 
@@ -87,19 +88,34 @@ describe Resourceful::Default::URLs, " for a controller with several parents" do
     @controller.stubs(:current_model_name).returns('Thing')
 
     @parent = stub_model('Parent')
-    @gandparent = stub_model('GrandParent')
+    @grandparent = stub_model('GrandParent')
     @controller.stubs(:parent_objects).returns([@grandparent, @parent])
+    @controller.stubs(:parents).returns(['grand_parent', 'parent'])
     @controller.stubs(:namespaces).returns([])
   end
 
+  it "should return the underscored list of parents for #url_helper_prefix" do
+    @controller.url_helper_prefix.should == "grand_parent_parent_"
+  end
+
   it "should get the path of current_object and its parents with #object_path" do
-    @controller.expects(:send).with('thing_path', @grandparent, @parent, @model)
+    @controller.expects(:send).with('grand_parent_parent_thing_path', @grandparent, @parent, @model)
     @controller.object_path
   end
 
   it "should get the plural path of the current model and parents with #objects_path" do
-    @controller.expects(:send).with('things_path', @grandparent, @parent)
+    @controller.expects(:send).with('grand_parent_parent_things_path', @grandparent, @parent)
     @controller.objects_path
+  end
+
+  it "should get the edit path of the current model and parents with #edit_object_path" do
+    @controller.expects(:send).with('edit_grand_parent_parent_thing_path', @grandparent, @parent, @model)
+    @controller.edit_object_path
+  end
+
+  it "should get the new path of the current model and parents with #new_object_path" do
+    @controller.expects(:send).with('new_grand_parent_parent_thing_path', @grandparent, @parent)
+    @controller.new_object_path
   end
 end
 
@@ -113,6 +129,7 @@ describe Resourceful::Default::URLs, " for a controller within a namespace" do
     @controller.stubs(:current_model_name).returns('Thing')
 
     @controller.stubs(:parent_objects).returns([])
+    @controller.stubs(:parents).returns([])
     @controller.stubs(:namespaces).returns([:admin, :main])
   end
 
@@ -128,5 +145,56 @@ describe Resourceful::Default::URLs, " for a controller within a namespace" do
   it "should get the namespaced plural path of the current model with #objects_path" do
     @controller.expects(:send).with('admin_main_things_path')
     @controller.objects_path
+  end
+
+  it "should get the edit path of the current model with #edit_object_path" do
+    @controller.expects(:send).with('edit_admin_main_thing_path', @model)
+    @controller.edit_object_path
+  end
+
+  it "should get the new path of the current model with #new_object_path" do
+    @controller.expects(:send).with('new_admin_main_thing_path')
+    @controller.new_object_path
+  end
+end
+
+describe Resourceful::Default::URLs, " for a controller with parents and within a namespace" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::URLs
+    @model = stub_model('Thing')
+    @controller.stubs(:current_object).returns(@model)
+    
+    @controller.stubs(:current_model_name).returns('Thing')
+
+    @parent = stub_model('Parent')
+    @grandparent = stub_model('GrandParent')
+    @controller.stubs(:parent_objects).returns([@grandparent, @parent])
+    @controller.stubs(:parents).returns(['grand_parent', 'parent'])
+    @controller.stubs(:namespaces).returns([:admin, :main])
+  end
+
+  it "should return the underscored list of namespaces, without parents, for #url_helper_prefix" do
+    @controller.url_helper_prefix.should == "admin_main_"
+  end
+
+  it "should get the namespaced path of current_object and parents with #object_path" do
+    @controller.expects(:send).with('admin_main_thing_path', @grandparent, @parent, @model)
+    @controller.object_path
+  end
+
+  it "should get the namespaced plural path of the current model and parents with #objects_path" do
+    @controller.expects(:send).with('admin_main_things_path', @grandparent, @parent)
+    @controller.objects_path
+  end
+
+  it "should get the edit path of the current model and parents with #edit_object_path" do
+    @controller.expects(:send).with('edit_admin_main_thing_path', @grandparent, @parent, @model)
+    @controller.edit_object_path
+  end
+
+  it "should get the new path of the current model and parents with #new_object_path" do
+    @controller.expects(:send).with('new_admin_main_thing_path', @grandparent, @parent)
+    @controller.new_object_path
   end
 end

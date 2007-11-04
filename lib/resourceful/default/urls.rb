@@ -10,8 +10,8 @@ module Resourceful
       # For example, in HatsController where Person has_many :hats,
       # the following are equivalent:
       #
-      #   object_path             #=> "/people/42/hats/12"
-      #   hat_path(@person, @hat) #=> "/people/42/hats/12"
+      #   object_path                    #=> "/people/42/hats/12"
+      #   person_hat_path(@person, @hat) #=> "/people/42/hats/12"
       # 
       def object_path(object = current_object); object_route(object, 'path'); end
       # Same as object_path, but with the protocol and hostname.
@@ -22,8 +22,8 @@ module Resourceful
       # For example, in HatsController where Person has_many :hats,
       # the following are equivalent:
       #
-      #   edit_object_path             #=> "/people/42/hats/12/edit"
-      #   edit_hat_path(@person, @hat) #=> "/people/42/hats/12/edit"
+      #   edit_object_path                    #=> "/people/42/hats/12/edit"
+      #   edit_person_hat_path(@person, @hat) #=> "/people/42/hats/12/edit"
       # 
       def edit_object_path(object = current_object); edit_object_route(object, 'path'); end
       # Same as edit_object_path, but with the protocol and hostname.
@@ -33,8 +33,8 @@ module Resourceful
       # For example, in HatsController where Person has_many :hats,
       # the following are equivalent:
       #
-      #   objects_path       #=> "/people/42/hats"
-      #   hats_path(@person) #=> "/people/42/hats"
+      #   objects_path              #=> "/people/42/hats"
+      #   person_hats_path(@person) #=> "/people/42/hats"
       # 
       def objects_path; objects_route('path'); end
       # Same as objects_path, but with the protocol and hostname.
@@ -44,8 +44,8 @@ module Resourceful
       # For example, in HatsController where Person has_many :hats,
       # the following are equivalent:
       #
-      #   new_object_path       #=> "/people/42/hats/new"
-      #   new_hat_path(@person) #=> "/people/42/hats/new"
+      #   new_object_path              #=> "/people/42/hats/new"
+      #   new_person_hat_path(@person) #=> "/people/42/hats/new"
       # 
       def new_object_path; new_object_route('path'); end
       # Same as new_object_path, but with the protocol and hostname.
@@ -54,7 +54,8 @@ module Resourceful
       # This prefix is added to the Rails URL helper names
       # before they're called.
       # By default, it's the underscored list of namespaces of the current controller,
-      # but it can be overridden if another prefix is needed.
+      # or the underscored list of parents if there are no namespaces defined.
+      # However, it can be overridden if another prefix is needed.
       # Note that if this is overridden,
       # the new method should return a string ending in an underscore.
       #
@@ -74,7 +75,8 @@ END
           return namespace_prefix
         end
         
-        namespaces.empty? ? '' : "#{namespaces.join('_')}_"
+        prefixes = namespaces.empty? ? parents : namespaces
+        prefixes.empty? ? '' : "#{prefixes.join('_')}_"
       end
 
       private
@@ -84,7 +86,7 @@ END
       end
 
       def edit_object_route(object, type)
-        instance_route("edit_#{current_model_name.underscore}", object, type)
+        instance_route(current_model_name.underscore, object, type, "edit")
       end
 
       def objects_route(type)
@@ -92,15 +94,15 @@ END
       end
 
       def new_object_route(type)
-        collection_route("new_#{current_model_name.underscore}", type)
+        collection_route(current_model_name.underscore, type, "new")
       end
 
-      def instance_route(name, object, type)
-        send("#{url_helper_prefix}#{name}_#{type}", *(parent_objects + [object]))
+      def instance_route(name, object, type, action = nil)
+        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{name}_#{type}", *(parent_objects + [object]))
       end
 
-      def collection_route(name, type)
-        send("#{url_helper_prefix}#{name}_#{type}",  *parent_objects)
+      def collection_route(name, type, action = nil)
+        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{name}_#{type}",  *parent_objects)
       end
     end
   end
