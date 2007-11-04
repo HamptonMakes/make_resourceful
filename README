@@ -150,7 +150,7 @@ is by overriding accessors.
 For instance, if you want to only look up the 10 most recent records for +index+,
 you're override +current_objects+.
 If you wanted to use a different model than that suggested by the name of the controller,
-you'd override @current_model@.
+you'd override +current_model+.
 
 When you're overriding methods that do SQL lookups, though, be a little cautious.
 By default, these methods cache their values in instance variables
@@ -161,6 +161,26 @@ For instance,
   def current_object
     @current_object ||= current_model.find_by_name(params[:name])
   end
+
+=== For More Information...
+
+Haven't found all the information you need in the RDoc?
+Still a little confused about something?
+Don't despair, there are still more resources available!
+
+* Nathan Weizenbaum periodically makes blog posts about new features and versions of make_resourceful.
+  They may be a little outdated, but they should still be useful and explanatory.
+  * On Resourceful::Builder#publish[link:classes/Resourceful/Builder.html#M000061]
+    and Resourceful::Serialize:
+    here[http://nex-3.com/posts/35-make_resourceful-the-basics-of-publish] and
+    here[http://nex-3.com/posts/36-make_resourceful-publish-extras].
+  * An overview of make_resourceful 0.1.0: here[http://nex-3.com/posts/7-overview-of-make_resourceful-0-1-0.].
+* There's an excellent, active Google Group (link[http://groups.google.com/group/make_resourceful])
+  where people will be happy to answer your questions.
+* Read the source code!
+  It's very straightforward,
+  and make_resourceful is built to encourage overriding methods
+  and hacking the source.
 
 ---
 
