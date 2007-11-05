@@ -51,17 +51,6 @@ module Resourceful
       # which provides a lot of flexibility
       # (see the documentation for current_model for details).
       def current_objects
-        if defined?(model_includes)
-          STDERR.puts <<END.gsub("\n", ' ')
-DEPRECATION WARNING: 
-The make_resourceful #model_includes accessor
-is deprecated and will be removed in 0.3.0.
-Override #current_objects instead.
-END
-          @current_objects ||= current_model.find(:all, :includes => model_includes)
-          return @current_objects
-        end
-
         @current_objects ||= current_model.find(:all)
       end
 
@@ -94,16 +83,6 @@ END
       # then in HatsController current_object essentially runs <tt>Person.find(params[:person_id]).hat</tt>.
       def current_object
         @current_object ||= if plural?
-          if defined?(current_param)
-            STDERR.puts <<END.gsub("\n", ' ')
-DEPRECATION WARNING: 
-The make_resourceful #current_param accessor
-is deprecated and will be removed in 0.3.0.
-Override #current_object instead.
-END
-            return current_model.find(current_param)
-          end
-
           current_model.find(params[:id])
         else
           parent_objects[-1].send(instance_variable_name)

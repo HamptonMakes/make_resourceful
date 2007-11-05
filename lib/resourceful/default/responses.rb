@@ -44,17 +44,7 @@ module Resourceful
       # TODO: Move this out of here
       #++
       def set_default_redirect(to, options = {})
-        status = options[:status] || options[:on] || :success
-
-        if options[:on]
-          STDERR.puts <<END.gsub("\n", ' ')
-DEPRECATION WARNING:
-The make_resourceful #set_default_redirect :on option
-is deprecated and will be removed in 0.3.0.
-Use the :status option instead.
-END
-        end
-
+        status = options[:status] || :success
         redirect_to (params[:_redirect_on] && params[:_redirect_on][status]) || to
       end
 

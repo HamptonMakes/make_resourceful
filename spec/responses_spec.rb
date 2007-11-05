@@ -39,13 +39,6 @@ describe 'Resourceful::Default::Responses', " with a _redirect parameter on :fai
     @controller.set_default_redirect(:back, :status => :failure)
   end
 
-  it "should accept the deprecated :on option in place of status." do
-    STDERR.expects(:puts).with(regexp_matches(/^DEPRECATION WARNING: /))
-
-    @controller.expects(:redirect_to).with('http://hamptoncatlin.com/')
-    @controller.set_default_redirect(:back, :on => :failure)
-  end
-
   it "should set the redirect for :success to the default value when set_default_redirect is called on :success" do
     @controller.expects(:redirect_to).with(:back)
     @controller.set_default_redirect(:back, :status => :success)

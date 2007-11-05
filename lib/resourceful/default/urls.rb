@@ -65,16 +65,6 @@ module Resourceful
       #
       # Then +object_path+ is the same as <tt>admin_content_page_path(current_object)</tt>.
       def url_helper_prefix
-        if defined?(namespace_prefix)
-          STDERR.puts <<END.gsub("\n", ' ')
-DEPRECATION WARNING: 
-The make_resourceful #namespace_prefix accessor
-is deprecated and will be removed in 0.3.0.
-Override #url_method_prefix instead.
-END
-          return namespace_prefix
-        end
-        
         prefixes = namespaces.empty? ? parents : namespaces
         prefixes.empty? ? '' : "#{prefixes.join('_')}_"
       end

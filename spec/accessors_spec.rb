@@ -91,26 +91,6 @@ describe Resourceful::Default::Accessors, "#current_object on a singular control
   end
 end
 
-describe Resourceful::Default::Accessors, "#current_object on a plural controller with current_param defined" do
-  include ControllerMocks
-  before :each do
-    mock_controller Resourceful::Default::Accessors
-    @controller.stubs(:plural?).returns(true)
-    @controller.stubs(:current_param).returns("12")
-
-    @object = stub
-    @model = stub
-    @controller.stubs(:current_model).returns(@model)
-  end
-
-  it "should look up the object specified by #current_param, but issue a deprecation warning" do
-    STDERR.expects(:puts).with(regexp_matches(/^DEPRECATION WARNING: /))
-
-    @model.expects(:find).with("12").returns(@object)
-    @controller.current_object.should == @object
-  end
-end
-
 describe Resourceful::Default::Accessors, "#load_object" do
   include ControllerMocks
   before :each do
