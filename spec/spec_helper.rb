@@ -1,6 +1,6 @@
-%w(rubygems spec action_pack active_record).each(&method(:require))
 $: << File.dirname(__FILE__) + '/../lib'
-require 'resourceful/maker'
+%w[rubygems spec action_pack active_record resourceful/maker
+   action_controller action_controller/test_process action_controller/integration].each &method(:require)
 
 Spec::Runner.configure do |config|
   config.mock_with :mocha
@@ -103,5 +103,80 @@ module ControllerMocks
   # @builder should be initialized via create_builder.
   def made_resourceful(mod)
     mod.included(@builder)
+  end
+end
+
+module RailsMocks
+  attr_reader :response, :request, :controller, :kontroller
+
+  def mock_resourceful(options = {}, &block)
+    options = {
+      :name => "things"
+    }.merge options
+
+    init_kontroller options
+    init_routes options
+
+    stub_const(options[:name].singularize.camelize)
+    kontroller.make_resourceful(&block)
+
+    init_controller options
+  end
+
+  def assigns(name)
+    controller.instance_variable_get("@#{name}")
+  end
+
+  private
+
+  def init_kontroller(options)
+    @kontroller = Class.new ActionController::Base
+    @kontroller.extend Resourceful::Maker
+
+    @kontroller.metaclass.send(:define_method, :controller_name) { options[:name] }
+    @kontroller.metaclass.send(:define_method, :controller_path) { options[:name] }
+    @kontroller.metaclass.send(:define_method, :inspect) { "#{options[:name].camelize}Controller" }
+    @kontroller.metaclass.send(:alias_method, :to_s, :inspect)
+
+    @kontroller.send(:define_method, :controller_name) { options[:name] }
+    @kontroller.send(:define_method, :controller_path) { options[:name] }
+    @kontroller.send(:define_method, :inspect) { "#<#{options[:name].camelize}Controller>" }
+    @kontroller.send(:alias_method, :to_s, :inspect)
+    @kontroller.send(:include, ControllerMethods)
+
+    @kontroller
+  end
+
+  def init_routes(options)
+    ActionController::Routing::Routes.clear!
+    route_block = options[:routes] || proc { |map| map.resources options[:name] }
+    ActionController::Routing::Routes.draw(&route_block)
+  end
+  
+  def init_controller(options)
+    @controller = kontroller.new
+    @request = ActionController::TestRequest.new
+    @response = ActionController::TestResponse.new
+
+    @controller.request = @request
+    @controller.response = @response
+    @request.accept = '*/*'
+
+    @controller
+  end
+
+  module ControllerMethods
+    def render(options=nil, deprecated_status=nil, &block)
+      unless block_given?
+        @template.metaclass.class_eval do
+          define_method :file_exists? do true end
+          define_method :render_file do |*args|
+            @first_render ||= args[0]
+          end
+        end
+      end
+
+      super(options, deprecated_status, &block)
+    end
   end
 end
