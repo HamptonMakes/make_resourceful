@@ -166,4 +166,121 @@ describe "ThingsController", "with all the resourceful actions" do
     post :create
     response.should render_template('new')
   end
+
+  ## Specs for #update
+
+  it "should find the record with id 12 on PUT /things/12" do
+    Thing.expects(:find).with('12').returns(@object)
+    put :update, :id => 12
+  end
+
+  it "should return an object for #current_object after PUT /things/12" do
+    Thing.stubs(:find).returns(@object)
+    put :update, :id => 12
+    controller.current_object.should == @object
+  end
+
+  it "should assign @thing to an object for PUT /things/12" do
+    Thing.stubs(:find).returns(@object)
+    put :update, :id => 12
+    assigns(:thing).should == @object
+  end  
+
+  it "should update the new object for PUT /things/12" do
+    Thing.stubs(:find).returns(@object)
+    @object.expects(:update_attributes).with('name' => "Jorje")
+    put :update, :id => 12, :thing => {:name => "Jorje"}
+  end
+
+  it "should set an appropriate flash notice for a successful PUT /things/12" do
+    Thing.stubs(:find).returns(@object)
+    put :update, :id => 12
+    flash[:notice].should == "Save successful!"
+  end
+
+  it "should redirect to the updated object for a successful PUT /things/12" do
+    Thing.stubs(:find).returns(@object)
+    put :update, :id => 12
+    response.should redirect_to('/things/12')
+  end
+
+  it "should set an appropriate flash error for an unsuccessful PUT /things/12" do
+    Thing.stubs(:find).returns(@object)
+    @object.stubs(:update_attributes).returns(false)
+    put :update, :id => 12
+    flash[:error].should == "There was a problem saving!"
+  end
+
+  it "should give a failing response for an unsuccessful PUT /things/12" do
+    Thing.stubs(:find).returns(@object)
+    @object.stubs(:update_attributes).returns(false)
+    put :update, :id => 12
+    response.should_not be_success
+    response.code.should == '422'
+  end
+
+  it "should render the #edit template for an unsuccessful PUT /things/12" do
+    Thing.stubs(:find).returns(@object)
+    @object.stubs(:update_attributes).returns(false)
+    put :update, :id => 12
+    response.should render_template('edit')
+  end
+
+  ## Specs for #destroy
+
+  it "should find the record with id 12 on DELETE /things/12" do
+    Thing.expects(:find).with('12').returns(@object)
+    delete :destroy, :id => 12
+  end
+
+  it "should return an object for #current_object after DELETE /things/12" do
+    Thing.stubs(:find).returns(@object)
+    delete :destroy, :id => 12
+    controller.current_object.should == @object
+  end
+
+  it "should assign @thing to an object for DELETE /things/12" do
+    Thing.stubs(:find).returns(@object)
+    delete :destroy, :id => 12
+    assigns(:thing).should == @object
+  end  
+
+  it "should destroy the new object for DELETE /things/12" do
+    Thing.stubs(:find).returns(@object)
+    @object.expects(:destroy)
+    delete :destroy, :id => 12
+  end
+
+  it "should set an appropriate flash notice for a successful DELETE /things/12" do
+    Thing.stubs(:find).returns(@object)
+    delete :destroy, :id => 12
+    flash[:notice].should == "Record deleted!"
+  end
+
+  it "should redirect to the object list for a successful DELETE /things/12" do
+    Thing.stubs(:find).returns(@object)
+    delete :destroy, :id => 12
+    response.should redirect_to('/things')
+  end
+
+  it "should set an appropriate flash error for an unsuccessful DELETE /things/12" do
+    Thing.stubs(:find).returns(@object)
+    @object.stubs(:destroy).returns(false)
+    delete :destroy, :id => 12
+    flash[:error].should == "There was a problem deleting!"
+  end
+
+  it "should give a failing response for an unsuccessful DELETE /things/12" do
+    Thing.stubs(:find).returns(@object)
+    @object.stubs(:destroy).returns(false)
+    delete :destroy, :id => 12
+    response.should_not be_success
+  end
+
+  it "should redirect to the previous page for an unsuccessful DELETE /things/12" do
+    Thing.stubs(:find).returns(@object)
+    @object.stubs(:destroy).returns(false)
+    delete :destroy, :id => 12
+    response.should redirect_to(:back)
+  end
 end

@@ -196,6 +196,15 @@ module RailsMocks
                  end
   end
 
+  def action_method(action)
+    method case action
+           when :index, :show, :edit, :new: :get
+           when :update: :put
+           when :create: :post
+           when :destroy: :delete
+           end
+  end
+
   module ControllerMethods
     def render(options=nil, deprecated_status=nil, &block)
       unless block_given?
@@ -215,7 +224,7 @@ end
 module Spec::DSL::BehaviourEval::ModuleMethods
   def should_render_html(action)
     it "should render HTML by default for #{action_string(action)}" do
-      get action, action_params(action)
+      action_method(action)[action, action_params(action)]
       response.should be_success
       response.content_type.should == 'text/html'
     end
@@ -223,7 +232,7 @@ module Spec::DSL::BehaviourEval::ModuleMethods
 
   def should_render_js(action)
     it "should render JS for #{action_string(action)}" do
-      get action, action_params(action, :format => 'js')
+      action_method(action)[action, action_params(action, :format => 'js')]
       response.should be_success
       response.content_type.should == 'text/javascript'
     end
@@ -231,7 +240,7 @@ module Spec::DSL::BehaviourEval::ModuleMethods
 
   def shouldnt_render_xml(action)
     it "should render XML for #{action_string(action)}" do
-      get action, action_params(action, :format => 'xml')
+      action_method(action)[action, action_params(action, :format => 'xml')]
       response.should_not be_success
       response.code.should == '406'
     end
