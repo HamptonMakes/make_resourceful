@@ -1,6 +1,7 @@
 $: << File.dirname(__FILE__) + '/../lib'
 %w[rubygems spec action_pack active_record resourceful/maker
-   action_controller action_controller/test_process action_controller/integration].each &method(:require)
+   action_controller action_controller/test_process action_controller/integration
+   spec/rspec_on_rails/redirect_to spec/rspec_on_rails/render_template].each &method(:require)
 
 Spec::Runner.configure do |config|
   config.mock_with :mocha
@@ -35,12 +36,19 @@ def stub_model(name)
 end
 
 def stub_const(name)
-  Object.const_set(name, stub(name.to_s)) unless Object.const_defined?(name)
+  unless Object.const_defined?(name)
+    obj = Object.new
+    obj.metaclass.send(:define_method, :to_s) { name.to_s }
+    obj.metaclass.send(:alias_method, :inspect, :to_s)
+    Object.const_set(name, obj)
+  end
   Object.const_get(name)
 end
 
-def stub_list(size, name = nil)
-  Array.new(size) { |i| name ? stub("#{name}_#{i}") : stub }
+def stub_list(size, name = nil, &block)
+  list = Array.new(size) { |i| name ? stub("#{name}_#{i}") : stub }
+  list.each(&block) if block
+  list
 end
 
 module Spec::Matchers
@@ -109,6 +117,11 @@ end
 module RailsMocks
   attr_reader :response, :request, :controller, :kontroller
 
+  def included(mod)
+    require 'ruby-debug'
+    debugger
+  end
+
   def mock_resourceful(options = {}, &block)
     options = {
       :name => "things"
@@ -125,6 +138,14 @@ module RailsMocks
 
   def assigns(name)
     controller.instance_variable_get("@#{name}")
+  end
+
+  def redirect_to(opts)
+    RedirectTo.new(request, opts)
+  end
+
+  def render_template(path)
+    RenderTemplate.new(path.to_s, @controller)
   end
 
   private
@@ -161,8 +182,18 @@ module RailsMocks
     @controller.request = @request
     @controller.response = @response
     @request.accept = '*/*'
+    @request.env['HTTP_REFERER'] = 'http://test.host'
 
     @controller
+  end
+
+  def action_params(action, params = {})
+    params.merge case action
+                 when :show, :edit, :destroy: {:id => 12}
+                 when :update: {:id => 12, :thing => {}}
+                 when :create: {:thing => {}}
+                 else {}
+                 end
   end
 
   module ControllerMethods
@@ -177,6 +208,44 @@ module RailsMocks
       end
 
       super(options, deprecated_status, &block)
+    end
+  end
+end
+
+module Spec::DSL::BehaviourEval::ModuleMethods
+  def should_render_html(action)
+    it "should render HTML by default for #{action_string(action)}" do
+      get action, action_params(action)
+      response.should be_success
+      response.content_type.should == 'text/html'
+    end
+  end
+
+  def should_render_js(action)
+    it "should render JS for #{action_string(action)}" do
+      get action, action_params(action, :format => 'js')
+      response.should be_success
+      response.content_type.should == 'text/javascript'
+    end
+  end
+
+  def shouldnt_render_xml(action)
+    it "should render XML for #{action_string(action)}" do
+      get action, action_params(action, :format => 'xml')
+      response.should_not be_success
+      response.code.should == '406'
+    end
+  end
+
+  def action_string(action)
+    case action
+    when :index:   "GET /things"
+    when :show:    "GET /things/12"
+    when :edit:    "GET /things/12/edit"
+    when :update:  "PUT /things/12"
+    when :create:  "POST /things"
+    when :new:     "GET /things/new"
+    when :destroy: "DELETE /things/12"
     end
   end
 end
