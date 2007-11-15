@@ -79,14 +79,15 @@ describe Resourceful::Default::Accessors, "#current_object on a singular control
     @controller.stubs(:plural?).returns(false)
     @controller.stubs(:instance_variable_name).returns("post")
 
-    @parents = stub_list 5, 'parent'
-    @controller.stubs(:parent_objects).returns(@parents)
+    @parent = stub('parent')
+    @controller.stubs(:parent_object).returns(@parent)
+    @controller.stubs(:parent?).returns(true)
 
     @object = stub
   end
 
-  it "should look up the instance object of the last parent object" do
-    @parents[-1].expects(:post).returns(@object)
+  it "should look up the instance object of the parent object" do
+    @parent.expects(:post).returns(@object)
     @controller.current_object.should == @object
   end
 end
@@ -201,8 +202,9 @@ describe Resourceful::Default::Accessors, "#current_model for a singular control
     @controller.stubs(:singular?).returns(true)
     @controller.stubs(:current_model_name).returns("Post")
 
-    @parents = stub_list 5, 'parent'
-    @controller.stubs(:parent_objects).returns(@parents)
+    @parent = stub('parent')
+    @controller.stubs(:parent_object).returns(@parent)
+    @controller.stubs(:parent?).returns(true)
   end
   
   it "should return the constant named by current_model_name" do
@@ -210,36 +212,18 @@ describe Resourceful::Default::Accessors, "#current_model for a singular control
   end
 end
 
-describe Resourceful::Default::Accessors, "#current_model for a plural controller with no parents" do
+describe Resourceful::Default::Accessors, "#current_model for a plural controller with no parent" do
   include ControllerMocks
   before :each do
     mock_controller Resourceful::Default::Accessors
     stub_const :Post
     @controller.stubs(:singular?).returns(false)
     @controller.stubs(:current_model_name).returns("Post")
-    @controller.stubs(:parent_objects).returns([])
+    @controller.stubs(:parent?).returns(false)
   end
   
   it "should return the constant named by current_model_name" do
     @controller.current_model.should == Post
-  end
-end
-
-describe Resourceful::Default::Accessors, "#current_model for a plural controller with parents" do
-  include ControllerMocks
-  before :each do
-    mock_controller Resourceful::Default::Accessors
-    @controller.stubs(:singular?).returns(false)
-    @controller.stubs(:instance_variable_name).returns("posts")
-
-    @model = stub
-    @parents = stub_list 5, 'parent'
-    @controller.stubs(:parent_objects).returns(@parents)
-  end
-  
-  it "should return the parent-scoped model" do
-    @parents[-1].stubs(:posts).returns(@model)
-    @controller.current_model.should == @model
   end
 end
 
@@ -257,64 +241,85 @@ describe Resourceful::Default::Accessors, "#object_parameters" do
   end
 end
 
-describe Resourceful::Default::Accessors, " with five parent classes set on the controller class" do
+describe Resourceful::Default::Accessors, " with two parent classes set on the controller class and one parent parameter supplied" do
   include ControllerMocks
   before :each do
     mock_controller Resourceful::Default::Accessors
-    @parents = %w{big_page page post comment paragraph}
+    @parents = %w{post comment}
     @models = @parents.map(&:camelize).map(&method(:stub_const))
     @kontroller.write_inheritable_attribute(:parents, @parents)
+    @controller.stubs(:singular?).returns(false)
+    @controller.stubs(:instance_variable_name).returns('lines')
 
-    @params = {'big_page_id' => 10, 'page_id' => 11, 'post_id' => 12,
-      'comment_id' => 13, 'paragraph_id' => 14}
+    @params = HashWithIndifferentAccess.new :post_id => 12
     @controller.stubs(:params).returns(@params)
 
-    @objects = stub_list 5, 'object'
-    @models[0].stubs(:find).once.with(10).returns(@objects.first)
-    [:pages, :posts, :comments, :paragraphs].zip((11..14).to_a, (1..4).to_a) do
-        |method, key, index|
-      @objects[index - 1].stubs(method).once.returns(@models[index])
-      @models[index].stubs(:find).once.with(key).returns(@objects[index])
-    end
+    @post = stub('Post')
+    Post.stubs(:find).returns(@post)
+
+    @model = stub
   end
 
-  it "should return the parents for #parents" do
-    @controller.parents.should == @parents
+  it "should return true for #parent?" do
+    @controller.parent?.should be_true
   end
 
-  it "should return the camelized model names for #parent_model_names" do
-    @controller.parent_model_names.should == %w{BigPage Page Post Comment Paragraph}
+  it "should return the string names of all the parents for #parent_names" do
+    @controller.parent_names.should == @parents
   end
 
-  it "should return the parameters for each parent for #parent_params" do
-    @controller.parent_params.should == [10, 11, 12, 13, 14]
+  it "should return the string name of the current parent for #parent_name" do
+    @controller.parent_name.should == 'post'
   end
 
-  it "should return the model classes for #parent_models" do
-    @controller.parent_models.should == [BigPage, Page, Post, Comment, Paragraph]
+  it "should return the model class for #parent_model" do
+    @controller.parent_model.should == Post
   end
 
-  it "should return an array of parent objects looked up with their respective params scoped by their parents" do
-    @models[0].expects(:find).with(10).returns(@objects.first)
-    [:pages, :posts, :comments, :paragraphs].zip((11..14).to_a, (1..4).to_a) do
-        |method, key, index|
-      @objects[index - 1].expects(method).returns(@models[index])
-      @models[index].expects(:find).with(key).returns(@objects[index])
-    end
-    @controller.parent_objects.should == @objects
+  it "should return the parent object for #parent_object" do
+    Post.expects(:find).with(12).returns(@post)
+    @controller.parent_object.should == @post
   end
 
-  it "should cache the value of #parent_objects so multiple calls won't cause multiple queries" do
-    @models[0].expects(:find).returns(@objects.first).once
-    @controller.parent_objects
-    @controller.parent_objects
+  it "should cache the value of #parent_object so multiple calls won't cause multiple queries" do
+    Post.expects(:find).returns(@post).once
+    @controller.parent_object
+    @controller.parent_object
   end
 
-  it "should bind the parent objects to their respective instance variables" do
-    @controller.load_parent_objects
-    ['big_page', 'page', 'post', 'comment', 'paragraph'].each_with_index do |var, i|
-      @controller.instance_variable_get("@#{var}").should == @objects[i]
-    end
+  it "should bind the parent object its proper instance variable" do
+    @controller.load_parent_object
+    @controller.instance_variable_get('@post').should == @post
+  end
+
+  it "should return the parent-scoped model for #current_model" do
+    @post.stubs(:lines).returns(@model)
+    @controller.current_model.should == @model
+  end
+end
+
+describe Resourceful::Default::Accessors, " with two parent classes set on the controller class but no parent parameter supplied" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @parents = %w{post comment}
+    @models = @parents.map(&:camelize).map(&method(:stub_const))
+    @kontroller.write_inheritable_attribute(:parents, @parents)
+    @controller.stubs(:params).returns({})
+    @controller.stubs(:controller_name).returns('line')
+    stub_const('Line')
+  end
+
+  it "should return false for #parent?" do
+    @controller.parent?.should be_false
+  end
+
+  it "should return nil for #parent_name" do
+    @controller.parent_name.should be_nil
+  end
+
+  it "should return the unscoped model for #current_model" do
+    @controller.current_model.should == Line
   end
 end
 
@@ -323,10 +328,20 @@ describe Resourceful::Default::Accessors, " with no parents" do
   before :each do
     mock_controller Resourceful::Default::Accessors
     @controller.stubs(:parents).returns([])
+    @controller.stubs(:current_model_name).returns('Line')
+    stub_const 'Line'
   end
 
-  it "should return [] for #parent_objects" do
-    @controller.parent_objects.should == []
+  it "should return false for #parent?" do
+    @controller.parent?.should be_false
+  end
+
+  it "should return nil for #parent_name" do
+    @controller.parent_name.should be_nil
+  end
+
+  it "should return the unscoped model for #current_model" do
+    @controller.current_model.should == Line
   end
 end
 

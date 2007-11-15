@@ -284,3 +284,114 @@ describe "ThingsController", "with all the resourceful actions" do
     response.should redirect_to(:back)
   end
 end
+
+describe "ThingsController", "with several parent objects" do
+  include RailsMocks
+  inherit Test::Unit::TestCase
+  before :each do
+    mock_resourceful do
+      actions :all
+      belongs_to :person, :category
+    end
+    stub_const 'Person'
+    stub_const 'Category'
+
+    @objects = stub_list(5, 'Thing') do |t|
+      t.stubs(:save).returns(true)
+    end
+    @object = @objects.first
+    @person = stub('Person')
+    @category = stub('Category')
+    @fake_model = stub('parent_object.things')
+  end
+
+  ## No parent ids
+
+  it "should find all things on GET /things" do
+    Thing.expects(:find).with(:all).returns(@objects)
+    get :index
+    controller.current_objects.should == @objects
+  end
+
+  it "should find the thing with id 12 regardless of scoping on GET /things/12" do
+    Thing.expects(:find).with('12').returns(@object)
+    get :show, :id => 12
+    controller.current_object.should == @object
+  end
+
+  it "should create a new thing without a person on POST /things" do
+    Thing.expects(:new).with('name' => "Lamp").returns(@object)
+    post :create, :thing => {:name => "Lamp"}
+    controller.current_object.should == @object
+  end
+
+  ## Person ids
+
+  it "should assign the proper parent variables and accessors to the person with id 4 for GET /people/4/things" do
+    Person.stubs(:find).returns(@person)
+    @person.stubs(:things).returns(@fake_model)
+    @fake_model.stubs(:find).with(:all).returns(@objects)
+    get :index, :person_id => 4
+    controller.parent_object.should == @person
+    assigns(:person).should == @person
+  end
+
+  it "should find all the things belonging to the person with id 4 on GET /people/4/things" do
+    Person.expects(:find).with('4').returns(@person)
+    @person.expects(:things).at_least_once.returns(@fake_model)
+    @fake_model.expects(:find).with(:all).returns(@objects)
+    get :index, :person_id => 4
+    controller.current_objects.should == @objects
+  end
+
+  it "should find the thing with id 12 if it belongs to the person with id 4 on GET /person/4/things/12" do
+    Person.expects(:find).with('4').returns(@person)
+    @person.expects(:things).at_least_once.returns(@fake_model)
+    @fake_model.expects(:find).with('12').returns(@object)
+    get :show, :person_id => 4, :id => 12
+    controller.current_object.should == @object
+  end
+
+  it "should create a new thing belonging to the person with id 4 on POST /person/4/things" do
+    Person.expects(:find).with('4').returns(@person)
+    @person.expects(:things).at_least_once.returns(@fake_model)
+    @fake_model.expects(:build).with('name' => 'Lamp').returns(@object)
+    post :create, :person_id => 4, :thing => {:name => "Lamp"}
+    controller.current_object.should == @object
+  end
+
+  ## Category ids
+
+  it "should assign the proper parent variables and accessors to the category with id 4 for GET /people/4/things" do
+    Category.stubs(:find).returns(@category)
+    @category.stubs(:things).returns(@fake_model)
+    @fake_model.stubs(:find).with(:all).returns(@objects)
+    get :index, :category_id => 4
+    controller.parent_object.should == @category
+    assigns(:category).should == @category
+  end
+
+  it "should find all the things belonging to the category with id 4 on GET /people/4/things" do
+    Category.expects(:find).with('4').returns(@category)
+    @category.expects(:things).at_least_once.returns(@fake_model)
+    @fake_model.expects(:find).with(:all).returns(@objects)
+    get :index, :category_id => 4
+    controller.current_objects.should == @objects
+  end
+
+  it "should find the thing with id 12 if it belongs to the category with id 4 on GET /category/4/things/12" do
+    Category.expects(:find).with('4').returns(@category)
+    @category.expects(:things).at_least_once.returns(@fake_model)
+    @fake_model.expects(:find).with('12').returns(@object)
+    get :show, :category_id => 4, :id => 12
+    controller.current_object.should == @object
+  end
+
+  it "should create a new thing belonging to the category with id 4 on POST /category/4/things" do
+    Category.expects(:find).with('4').returns(@category)
+    @category.expects(:things).at_least_once.returns(@fake_model)
+    @fake_model.expects(:build).with('name' => 'Lamp').returns(@object)
+    post :create, :category_id => 4, :thing => {:name => "Lamp"}
+    controller.current_object.should == @object
+  end
+end

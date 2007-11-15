@@ -140,6 +140,46 @@ and returns the record that's currently being dealt with.
 The full documentation of the helper methods
 is in Resourceful::Default::Accessors and Resourceful::Default::URLs.
 
+=== Nested Resources
+
+make_resourceful supports easy management of nested resources.
+This is set up with the Resourceful::Builder#belongs_to declaration.
+Pass in the name of the parent model,
+
+  belongs_to :user
+
+and everything will be taken care of.
+When +index+ is run for GET /users/12/albums,
+parent_object[link:classes/Resourceful/Accessors.html#M000024]
+will get <tt>User.find(params[:user_id])</tt>,
+and current_objects[link:classes/Resourceful/Default/Accessors.html#M000010]
+will get <tt>parent_object.albums</tt>.
+When +create+ is run for POST /users/12/albums,
+the newly created Album will automatically belong to the user
+with id 12.
+
+The normal non-scoped actions still work, too.
+GET /albums/15 runs just fine.
+make_resourceful knows that since there's no <tt>params[:user_id]</tt>,
+you just want to deal with the album.
+
+You can even have a single resource nested under several different resources.
+Just pass multiple parent names to the Resourceful::Builder#belongs_to, like
+
+  belongs_to :user, :artist
+
+Then /users/15/albums and /artists/7/albums will both work.
+
+This does, however, mean that make_resourceful only supports one level of nesting.
+There's no automatic handling of /users/15/collections/437/albums.
+However, this is really the best way to organize most resources anyway;
+see this article[http://weblog.jamisbuck.org/2007/2/5/nesting-resources].
+
+If you really need a deeply nested controller,
+it should be easy enough to set up on your own.
+Just override current_model[link:classes/Resourceful/Default/Accessors.html#M000018].
+See the next section for more details.
+
 === Overriding Methods
 
 Not only are helper methods useful to the developer to use,

@@ -7,11 +7,10 @@ module Resourceful
     module URLs
       # This returns the path for the given object,
       # by default current_object[link:classes/Resourceful/Default/Accessors.html#M000012].
-      # For example, in HatsController where Person has_many :hats,
-      # the following are equivalent:
+      # For example, in HatsController the following are equivalent:
       #
-      #   object_path                    #=> "/people/42/hats/12"
-      #   person_hat_path(@person, @hat) #=> "/people/42/hats/12"
+      #   object_path                    #=> "/hats/12"
+      #   hat_path(@hat) #=> "/hats/12"
       # 
       def object_path(object = current_object); object_route(object, 'path'); end
       # Same as object_path, but with the protocol and hostname.
@@ -19,18 +18,17 @@ module Resourceful
 
       # This returns the path for the edit action for the given object,
       # by default current_object[link:classes/Resourceful/Default/Accessors.html#M000012].
-      # For example, in HatsController where Person has_many :hats,
-      # the following are equivalent:
+      # For example, in HatsController the following are equivalent:
       #
-      #   edit_object_path                    #=> "/people/42/hats/12/edit"
-      #   edit_person_hat_path(@person, @hat) #=> "/people/42/hats/12/edit"
+      #   edit_object_path                    #=> "/hats/12/edit"
+      #   edit_person_hat_path(@person, @hat) #=> "/hats/12/edit"
       # 
       def edit_object_path(object = current_object); edit_object_route(object, 'path'); end
       # Same as edit_object_path, but with the protocol and hostname.
       def edit_object_url (object = current_object); edit_object_route(object, 'url');  end
 
       # This returns the path for the collection of the current controller.
-      # For example, in HatsController where Person has_many :hats,
+      # For example, in HatsController where Person has_many :hats and <tt>params[:person_id] == 42</tt>,
       # the following are equivalent:
       #
       #   objects_path              #=> "/people/42/hats"
@@ -41,7 +39,7 @@ module Resourceful
       def objects_url ; objects_route('url');  end
 
       # This returns the path for the new action for the current controller.
-      # For example, in HatsController where Person has_many :hats,
+      # For example, in HatsController where Person has_many :hats and <tt>params[:person_id] == 42</tt>,
       # the following are equivalent:
       #
       #   new_object_path              #=> "/people/42/hats/new"
@@ -54,7 +52,7 @@ module Resourceful
       # This prefix is added to the Rails URL helper names
       # before they're called.
       # By default, it's the underscored list of namespaces of the current controller,
-      # or the underscored list of parents if there are no namespaces defined.
+      # or nil if there are no namespaces defined.
       # However, it can be overridden if another prefix is needed.
       # Note that if this is overridden,
       # the new method should return a string ending in an underscore.
@@ -63,10 +61,21 @@ module Resourceful
       #
       #   url_helper_prefix #=> "admin_content_"
       #
-      # Then +object_path+ is the same as <tt>admin_content_page_path(current_object)</tt>.
+      # Then object_path is the same as <tt>admin_content_page_path(current_object)</tt>.
       def url_helper_prefix
-        prefixes = namespaces.empty? ? parents : namespaces
-        prefixes.empty? ? '' : "#{prefixes.join('_')}_"
+        namespaces.empty? ? nil : "#{namespaces.join('_')}_"
+      end
+
+      # This prefix is added to the Rails URL helper names
+      # for the make_resourceful collection URL helpers,
+      # objects_path and new_object_path.
+      # It's only added if url_helper_prefix returns nil.
+      # By default, it's the parent name followed by an underscore if a parent is given,
+      # and the empty string otherwise.
+      #
+      # See also url_helper_prefix.
+      def collection_url_prefix
+        parent? ? "#{parent_name}_" : ''
       end
 
       private
@@ -88,11 +97,12 @@ module Resourceful
       end
 
       def instance_route(name, object, type, action = nil)
-        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{name}_#{type}", *(parent_objects + [object]))
+        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{name}_#{type}", object)
       end
 
       def collection_route(name, type, action = nil)
-        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{name}_#{type}",  *parent_objects)
+        send("#{action ? action + '_' : ''}#{url_helper_prefix || collection_url_prefix}#{name}_#{type}",
+             *(parent? ? [parent_object] : []))
       end
     end
   end

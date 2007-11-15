@@ -34,10 +34,10 @@ describe Resourceful::Builder, " applied without any modification" do
     parents.should be_empty
   end
 
-  it "should set load_parent_objects as a before_filter" do
+  it "should set load_parent_object as a before_filter" do
     yielded = stub
     @kontroller.expects(:before_filter).yields(yielded)
-    yielded.expects(:send).with(:load_parent_objects)
+    yielded.expects(:send).with(:load_parent_object)
     @builder.apply
   end
 end
