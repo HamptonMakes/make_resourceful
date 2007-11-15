@@ -49,6 +49,16 @@ module Resourceful
       # Same as new_object_path, but with the protocol and hostname.
       def new_object_url ; new_object_route('url');  end
 
+      # This returns the path for the parent object.
+      # 
+      def parent_path(object = parent_object)
+        instance_route(parent_name, object, 'path')
+      end
+      # Same as parent_path, but with the protocol and hostname.
+      def parent_url(object = parent_object)
+        instance_route(parent_name, object, 'url')
+      end
+
       # This prefix is added to the Rails URL helper names
       # before they're called.
       # By default, it's the underscored list of namespaces of the current controller,
