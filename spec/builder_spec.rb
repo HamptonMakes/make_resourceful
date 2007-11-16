@@ -34,10 +34,8 @@ describe Resourceful::Builder, " applied without any modification" do
     parents.should be_empty
   end
 
-  it "should set load_parent_object as a before_filter" do
-    yielded = stub
-    @kontroller.expects(:before_filter).yields(yielded)
-    yielded.expects(:send).with(:load_parent_object)
+  it "should set load_parent_object as a before_filter for no actions" do
+    @kontroller.expects(:before_filter).with(:load_parent_object, :only => [])
     @builder.apply
   end
 end
@@ -62,6 +60,11 @@ describe Resourceful::Builder, " with some actions set" do
   it "should un-hide the given actions" do
     @builder.apply
     (@kontroller.hidden_actions & @actions).should be_empty
+  end
+
+  it "should set load_parent_object as a before_filter for the given actions" do
+    @kontroller.expects(:before_filter).with(:load_parent_object, :only => [:show, :index, :new, :create])
+    @builder.apply
   end
 end
 
