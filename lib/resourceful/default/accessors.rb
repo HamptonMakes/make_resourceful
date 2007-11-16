@@ -235,7 +235,7 @@ module Resourceful
       # Finally, note that parents must be declared via Builder#belongs_to.
       def parent_name
         return @parent_name if defined?(@parent_name)
-        @parent_name = parent_names.find { |name| params.keys.any? { |key| key == "#{name}_id" } }
+        @parent_name = parent_names.find { |name| params.keys["#{name}_id"] }
       end
 
       # Returns the model class of the current parent.
