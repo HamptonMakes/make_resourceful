@@ -20,6 +20,7 @@ module Resourceful
     # additions to the controller.
     def initialize(kontroller)
       @controller       = kontroller
+      @inherited        = !kontroller.read_inheritable_attribute(:resourceful_responses).blank?
       @action_module    = Resourceful::Default::Actions.dup
       @ok_actions       = []
       @callbacks        = {:before => {}, :after => {}}
@@ -51,6 +52,7 @@ module Resourceful
 
       kontroller.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
       kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
+      kontroller.write_inheritable_attribute(:made_resourceful, true)
 
       kontroller.write_inheritable_attribute(:parents, @parents)
       kontroller.before_filter :load_parent_object, :only => @ok_actions
@@ -309,6 +311,14 @@ module Resourceful
     #
     def belongs_to(*parents)
       @parents = parents.map(&:to_s)
+    end
+    
+    # This method is only meant to be called internally.
+    #
+    # Returns whether or not the Builder's controller
+    # inherits make_resourceful settings from a parent controller.
+    def inherited?
+      @inherited
     end
 
     private

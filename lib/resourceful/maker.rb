@@ -12,6 +12,7 @@ module Resourceful
       base.write_inheritable_attribute :resourceful_callbacks, {}
       base.write_inheritable_attribute :resourceful_responses, {}
       base.write_inheritable_attribute :parents,               []
+      base.write_inheritable_attribute :made_resourceful,      false
     end
 
     # :call-seq:
@@ -51,12 +52,21 @@ module Resourceful
       # :startdoc:
 
       builder = Resourceful::Builder.new(self)
-      (Resourceful::Base.made_resourceful + Array(options[:include])).each { |proc| builder.instance_eval(&proc) }
+      unless builder.inherited?
+        Resourceful::Base.made_resourceful.each { |proc| builder.instance_eval(&proc) }
+      end
+      Array(options[:include]).each { |proc| builder.instance_eval(&proc) }
       builder.instance_eval(&block)
 
       builder.apply
 
       add_helpers
+    end
+
+    # Returns whether or not make_resourceful has been called
+    # on this controller or any controllers it inherits from.
+    def made_resourceful?
+      read_inheritable_attribute(:made_resourceful)
     end
 
     private

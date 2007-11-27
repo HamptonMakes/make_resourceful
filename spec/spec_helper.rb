@@ -78,11 +78,12 @@ module ControllerMocks
     to_extend.each(&@controller.method(:extend))
   end
 
-  def mock_builder
+  def mock_builder(inherited = false)
     @builder = stub
     @builder.stubs(:response_for)
     @builder.stubs(:apply)
     @builder.stubs(:instance_eval).yields(@buildercc )
+    @builder.stubs(:inherited?).returns(inherited)
     Resourceful::Base.stubs(:made_resourceful).returns([])
     Resourceful::Builder.stubs(:new).returns(@builder)
   end
