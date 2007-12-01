@@ -42,6 +42,28 @@ describe Resourceful::Default::URLs, " for a controller with no parents or names
     @controller.object_url(model)
   end
 
+  it "should get the path of current_object with #nested_object_path" do
+    @controller.expects(:send).with('thing_path', @object)
+    @controller.nested_object_path
+  end
+
+  it "should get the url of current_object with #nested_object_url" do
+    @controller.expects(:send).with('thing_url', @object)
+    @controller.nested_object_url
+  end
+
+  it "should get the path of the passed object with #nested_object_path" do
+    model = stub_model('Thing')
+    @controller.expects(:send).with('thing_path', model)
+    @controller.nested_object_path(model)
+  end
+
+  it "should get the url of the passed object with #nested_object_url" do
+    model = stub_model('Thing')
+    @controller.expects(:send).with('thing_url', model)
+    @controller.nested_object_url(model)
+  end
+
   it "should get the edit path of current_object with #edit_object_path" do
     @controller.expects(:send).with('edit_thing_path', @object)
     @controller.edit_object_path
@@ -112,6 +134,28 @@ describe Resourceful::Default::URLs, " for a controller with a parent object" do
   it "should get the path of current_object with #object_path" do
     @controller.expects(:send).with('thing_path', @object)
     @controller.object_path
+  end
+
+  it "should get the nested path of current_object with #nested_object_path" do
+    @controller.expects(:send).with('person_thing_path', @person, @object)
+    @controller.nested_object_path
+  end
+
+  it "should get the nested url of current_object with #nested_object_url" do
+    @controller.expects(:send).with('person_thing_url', @person, @object)
+    @controller.nested_object_url
+  end
+
+  it "should get the nested path of the passed object with #nested_object_path" do
+    object = stub_model('Thing')
+    @controller.expects(:send).with('person_thing_path', @person, object)
+    @controller.nested_object_path object
+  end
+
+  it "should get the nested url of the passed object with #nested_object_url" do
+    object = stub_model('Thing')
+    @controller.expects(:send).with('person_thing_url', @person, object)
+    @controller.nested_object_url object
   end
 
   it "should get the plural path of the current model and its parent with #objects_path" do

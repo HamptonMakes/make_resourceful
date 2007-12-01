@@ -9,12 +9,25 @@ module Resourceful
       # by default current_object[link:classes/Resourceful/Default/Accessors.html#M000012].
       # For example, in HatsController the following are equivalent:
       #
-      #   object_path                    #=> "/hats/12"
+      #   object_path    #=> "/hats/12"
       #   hat_path(@hat) #=> "/hats/12"
       # 
       def object_path(object = current_object); object_route(object, 'path'); end
       # Same as object_path, but with the protocol and hostname.
       def object_url (object = current_object); object_route(object, 'url');  end
+
+      # This is the same as object_path,
+      # unless a parent exists.
+      # Then it returns the nested path for the object.
+      # For example, in HatsController where Person has_many :hats and <tt>params[:person_id] == 42</tt>,
+      # the following are equivalent:
+      #
+      #   nested_object_path             #=> "/person/42/hats/12"
+      #   person_hat_path(@person, @hat) #=> "/person/42/hats/12"
+      # 
+      def nested_object_path(object = current_object); nested_object_route(object, 'path'); end
+      # Same as nested_object_path, but with the protocol and hostname.
+      def nested_object_url (object = current_object); nested_object_route(object, 'url');  end
 
       # This returns the path for the edit action for the given object,
       # by default current_object[link:classes/Resourceful/Default/Accessors.html#M000012].
@@ -92,6 +105,11 @@ module Resourceful
 
       def object_route(object, type)
         instance_route(current_model_name.underscore, object, type)
+      end
+
+      def nested_object_route(object, type)
+        return object_route(object, type) unless parent?
+        send("#{url_helper_prefix}#{parent_name}_#{current_model_name.underscore}_#{type}", parent_object, object)
       end
 
       def edit_object_route(object, type)
