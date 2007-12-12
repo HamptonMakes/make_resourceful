@@ -296,6 +296,11 @@ describe Resourceful::Default::Accessors, " with two parent classes set on the c
     @post.stubs(:lines).returns(@model)
     @controller.current_model.should == @model
   end
+
+  it "should return true for #ensure_parent_exists" do
+    @controller.expects(:render).never
+    @controller.ensure_parent_exists.should be_true
+  end
 end
 
 describe Resourceful::Default::Accessors, " with two parent classes set on the controller class but no parent parameter supplied" do
@@ -320,6 +325,11 @@ describe Resourceful::Default::Accessors, " with two parent classes set on the c
 
   it "should return the unscoped model for #current_model" do
     @controller.current_model.should == Line
+  end
+
+  it "should return false and render a 422 error for #ensure_parent_exists" do
+    @controller.expects(:render).with(has_entry(:status, 422))
+    @controller.ensure_parent_exists.should be_false
   end
 end
 

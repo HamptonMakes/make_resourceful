@@ -272,6 +272,19 @@ module Resourceful
         instance_variable_set("@#{parent_name}", parent_object) if parent?
       end
 
+      # Renders a 422 error if no parent id is given.
+      # This is meant to be used with before_filter
+      # to ensure that some actions are only called with a parent id.
+      # For example:
+      #
+      #   before_filter :ensure_parent_exists, :only => [:create, :update]
+      # 
+      def ensure_parent_exists
+        return true if parent?
+        render :text => 'No parent id given', :status => 422
+        return false
+      end
+
       # Returns whether or not the database update in the +create+, +update+, and +destroy+
       # was completed successfully.
       def save_succeeded?
