@@ -39,9 +39,9 @@ class ResourcefulScaffoldGenerator < Rails::Generator::NamedBase
 
       # Views
       for action in scaffold_views
-        m.template("view_#{action}.haml", File.join('app/views', controller_class_path, controller_file_name, "#{action}.haml"))
+        m.template("view_#{action}.haml", File.join('app/views', controller_class_path, controller_file_name, "#{action}.html.haml"))
       end
-      m.template('view_partial.haml', File.join('app/views', controller_class_path, controller_file_name, "_#{singular_name}.haml"))
+      m.template('view_partial.haml', File.join('app/views', controller_class_path, controller_file_name, "_#{singular_name}.html.haml"))
 
       # Helper
       m.template('helper.rb', File.join('app/helpers', controller_class_path, "#{controller_file_name}_helper.rb"))
