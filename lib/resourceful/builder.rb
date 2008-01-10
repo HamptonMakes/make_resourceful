@@ -188,6 +188,8 @@ module Resourceful
     # The default responses are defined by
     # Default::Responses.included[link:classes/Resourceful/Default/Responses.html#M000011].
     def response_for(*actions, &block)
+      raise "Must specify one or more actions for response_for." if actions.empty?
+
       if block.arity < 1
         response_for(*actions) do |format|
           format.html(&block)

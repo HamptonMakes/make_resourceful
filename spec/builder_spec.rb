@@ -175,6 +175,18 @@ describe Resourceful::Builder, " with a response set for the default format" do
   end
 end
 
+describe Resourceful::Builder, " with a response set for no actions" do
+  include ControllerMocks
+  before :each do
+    mock_kontroller
+    create_builder
+  end
+
+  it "should raise an error" do
+    lambda { @builder.response_for {} }.should raise_error("Must specify one or more actions for response_for.")
+  end
+end
+
 describe Resourceful::Builder, " publishing without an attributes hash" do
   include ControllerMocks
   before :each do
