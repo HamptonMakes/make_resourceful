@@ -1,5 +1,6 @@
 $: << File.dirname(__FILE__) + '/../lib'
-%w[rubygems spec action_pack active_record resourceful/maker
+require 'rubygems'
+%w[spec action_pack active_record resourceful/maker
    action_controller action_controller/test_process action_controller/integration
    spec/rspec_on_rails/redirect_to spec/rspec_on_rails/render_template].each &method(:require)
 
@@ -222,7 +223,7 @@ module RailsMocks
   end
 end
 
-module Spec::DSL::BehaviourEval::ModuleMethods
+module Spec::Example::ExampleGroupMethods
   def should_render_html(action)
     it "should render HTML by default for #{action_string(action)}" do
       action_method(action)[action, action_params(action)]
@@ -257,5 +258,22 @@ module Spec::DSL::BehaviourEval::ModuleMethods
     when :new:     "GET /things/new"
     when :destroy: "DELETE /things/12"
     end
+  end
+end
+
+module Spec::Example
+  class IntegrationExampleGroup < Test::Unit::TestCase
+    include ExampleMethods
+    class << self
+      include ExampleGroupMethods
+    end
+
+    def initialize(defined_description, &implementation)
+      super()
+      @_defined_description = defined_description
+      @_implementation = implementation
+    end
+
+    ExampleGroupFactory.register(:integration, self)
   end
 end

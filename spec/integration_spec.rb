@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe "ThingsController", "with all the resourceful actions" do
+describe "ThingsController", "with all the resourceful actions", :type => :integration do
   include RailsMocks
-  inherit Test::Unit::TestCase
+  #inherit Test::Unit::TestCase
   before :each do
     mock_resourceful do
       actions :all
@@ -285,9 +285,8 @@ describe "ThingsController", "with all the resourceful actions" do
   end
 end
 
-describe "ThingsController", "with several parent objects" do
+describe "ThingsController", "with several parent objects", :type => :integration do
   include RailsMocks
-  inherit Test::Unit::TestCase
   before :each do
     mock_resourceful do
       actions :all

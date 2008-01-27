@@ -89,16 +89,3 @@ describe Resourceful::Maker, "when made_resourceful with an inherited controller
     @kontroller.make_resourceful(&(should_be_called { with(@builder) }))
   end
 end
-
-describe Resourceful::Maker, "after being made_resourceful" do
-  include ControllerMocks
-  before(:each) { mock_kontroller }
-
-  it "should have methods from Resourceful::Default" do
-    @kontroller.make_resourceful {}
-    @kontroller.should respond_to?(:current_object)
-    @kontroller.should respond_to?(:set_default_flash)
-    @kontroller.should respond_to?(:response_for)
-    @kontroller.should respond_to?(:object_path)
-  end
-end
