@@ -125,7 +125,9 @@ module Resourceful
         @current_object = if current_model.respond_to? :build
           current_model.build(object_parameters)
         else
-          current_model.new(object_parameters)
+          returning(current_model.new(object_parameters)) do |obj|
+            obj.send("#{parent_name}_id=", parent_object.id) if singular? && parent?
+          end
         end
       end
 

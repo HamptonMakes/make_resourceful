@@ -139,6 +139,9 @@ describe Resourceful::Default::Accessors, "#build_object with a non-#build-able 
     @params = {:name => "Bob", :password => "hideously insecure"}
     @controller.stubs(:object_parameters).returns(@params)
 
+    @controller.stubs(:singular?).returns(false)
+    @controller.stubs(:parent?).returns(false)
+
     @object = stub
     @model = stub
     @controller.stubs(:current_model).returns(@model)
@@ -352,6 +355,32 @@ describe Resourceful::Default::Accessors, " with no parents" do
 
   it "should return the unscoped model for #current_model" do
     @controller.current_model.should == Line
+  end
+end
+
+describe Resourceful::Default::Accessors, " for a singular controller with a parent" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Accessors
+    @controller.stubs(:singular?).returns(true)
+    
+    @model = stub_model('Thing')    
+    @model.send(:attr_accessor, :person_id)
+    @controller.stubs(:current_model).returns(@model)
+
+    @person = stub_model('Person')
+    @person.stubs(:id).returns 42
+    @controller.stubs(:parent_object).returns(@person)
+    @controller.stubs(:parent_name).returns('person')
+    @controller.stubs(:parent?).returns(true)
+
+    @controller.stubs(:object_parameters).returns :thinginess => 12, :bacon => true
+  end
+
+  it "should set assign the parent's id to a newly built object" do
+    thing = @controller.build_object
+    thing.thinginess.should == 12
+    thing.person_id.should == @person.id
   end
 end
 
