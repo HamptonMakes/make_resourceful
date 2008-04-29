@@ -3,18 +3,17 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe Resourceful::Default::Callbacks, " with a few callbacks" do
   include ControllerMocks
   before :each do
-    mock_controller Resourceful::Default::Callbacks
-    callbacks[:before] = {:create => proc { "awesome!" }}
-    callbacks[:after] = {:index => proc { @var }}
-    @controller.instance_variable_set('@var', 'value')
+    mock_controller Resourceful::Default::Callbacks   
   end
 
   it "should fire the :before callback with the given name when #before is called" do
-    @controller.before(:create).should == "awesome!"
+    callbacks[:before] = { :create => [ should_be_called ] }
+    @controller.before(:create)
   end
 
-  it "should fire the :after callback with the given name when #before is called" do
-    @controller.after("index").should == "value"
+  it "should fire the :after callback with the given name when #after is called" do
+    callbacks[:after] = { :index  => [ should_be_called ] }
+    @controller.after("index")
   end
 end
 

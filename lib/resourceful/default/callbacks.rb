@@ -43,7 +43,8 @@ module Resourceful
       private
 
       def resourceful_fire(type, name)
-        scope(self.class.read_inheritable_attribute(:resourceful_callbacks)[type][name]).call
+        callbacks = self.class.read_inheritable_attribute(:resourceful_callbacks)[type][name] || []
+        callbacks.each { |callback| scope(callback).call }
       end
     end
   end

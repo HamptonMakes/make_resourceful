@@ -109,10 +109,24 @@ module Resourceful
     # This will set the <tt>@page_title</tt> variable
     # to the current object's title
     # for the show and edit actions.
+    #
+    # Successive before blocks for the same action will be chained and executed 
+    # in order when the event occurs.
+    #
+    # For example:
+    #    
+    #   before :show, :edit do
+    #     @page_title = current_object.title
+    #   end
+    #
+    #   before :show do
+    #     @side_bar = true
+    #   end
+    #
+    # These before blocks will both be executed for the show action and in the 
+    # same order as they were defined.
     def before(*events, &block)
-      events.each do |event|
-        @callbacks[:before][event.to_sym] = block
-      end
+      add_callback :before, *events, &block
     end
 
     # :call-seq:
@@ -140,9 +154,7 @@ module Resourceful
     # This will nillify the password of the current object
     # if the object creation/modification failed.
     def after(*events, &block)
-      events.each do |event|
-        @callbacks[:after][event.to_sym] = block
-      end
+      add_callback :after, *events, &block
     end
 
     # :call-seq:
@@ -329,6 +341,13 @@ module Resourceful
       @publish.each do |action, types|
         @responses[action.to_sym] ||= []
         @responses[action.to_sym] += types
+      end
+    end
+
+    def add_callback(type, *events, &block)    
+      events.each do |event|
+        @callbacks[type][event.to_sym] ||= []
+        @callbacks[type][event.to_sym] << block        
       end
     end
   end

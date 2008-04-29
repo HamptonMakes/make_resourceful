@@ -121,11 +121,34 @@ describe Resourceful::Builder, " with several before and after callbacks set" do
   end
 
   it "should save the callbacks as the :resourceful_callbacks inheritable_attribute" do
-    callbacks[:before][:create].call
-    callbacks[:before][:update].call
-    callbacks[:before][:destroy].call
-    callbacks[:after][:index].call
-    callbacks[:after][:update].call
+    callbacks[:before][:create].each(&:call)
+    callbacks[:before][:update].each(&:call)
+    callbacks[:before][:destroy].each(&:call)
+    callbacks[:after][:index].each(&:call)
+    callbacks[:after][:update].each(&:call)
+  end
+end
+
+describe Resourceful::Builder, " with chained before and after callbacks" do
+  include ControllerMocks
+  before :each do
+    mock_kontroller
+    create_builder
+    @before_value = ''
+    @builder.before(:index, &lambda { @before_value += 'A' })
+    @builder.before(:index, &lambda { @before_value += 'B' })
+    
+    @after_value = ''
+    @builder.after(:index, &lambda { @after_value += 'A' })
+    @builder.after(:index, &lambda { @after_value += 'B' })
+    @builder.apply
+  end
+
+  it "should save as array in the :resourceful_callbacks inheritable_attribute and execute in order" do
+    callbacks[:before][:index].each { |callback| callback.call }
+    @before_value.should == 'AB'
+    callbacks[:after][:index].each { |callback| callback.call }
+    @after_value.should == 'AB'
   end
 end
 
