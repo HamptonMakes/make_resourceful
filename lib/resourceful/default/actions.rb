@@ -15,14 +15,15 @@ module Resourceful
     module Actions
       # GET /foos
       def index
-        load_objects
+        #load_objects
         before :index
         response_for :index
       end
 
       # GET /foos/12
       def show
-        load_object
+        # NOTE - Moved this call to a more generic place
+        #load_object
         before :show
         response_for :show
       rescue
@@ -47,7 +48,7 @@ module Resourceful
 
       # PUT /foos/12
       def update
-        load_object
+        #load_object
         before :update
         if current_object.update_attributes object_parameters
           save_succeeded!
@@ -70,14 +71,14 @@ module Resourceful
 
       # GET /foos/12/edit
       def edit
-        load_object
+        #load_object
         before :edit
         response_for :edit
       end
 
       # DELETE /foos/12
       def destroy
-        load_object
+        #load_object
         before :destroy
         if current_object.destroy
           after :destroy

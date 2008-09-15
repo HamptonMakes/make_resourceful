@@ -27,6 +27,8 @@ module Resourceful
       @responses        = {}
       @publish          = {}
       @parents          = []
+      @custom_member_actions = []
+      @custom_collection_actions = []
     end
 
     # This method is only meant to be called internally.
@@ -55,7 +57,9 @@ module Resourceful
       kontroller.write_inheritable_attribute(:made_resourceful, true)
 
       kontroller.write_inheritable_attribute(:parents, @parents)
-      kontroller.before_filter :load_parent_object, :only => @ok_actions
+      kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_ACTIONS) + @custom_member_actions
+      kontroller.before_filter :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
+      kontroller.before_filter :load_parent_object, :only => @ok_actions + @custom_member_actions + @custom_collection_actions
     end
 
     # :call-seq:
@@ -82,12 +86,34 @@ module Resourceful
     # The available actions are defined in Default::Actions.
     def actions(*available_actions)
       if available_actions.first == :all
-        available_actions = controller.new.plural? ? ACTIONS : SINGULAR_ACTIONS
+        if controller.respond_to?(:new_without_capture)
+          available_actions = controller.new_without_capture.plural? ? ACTIONS : SINGULAR_ACTIONS
+        else
+          available_actions = controller.new.plural? ? ACTIONS : SINGULAR_ACTIONS
+        end
       end
 
       available_actions.each { |action| @ok_actions << action.to_sym }
     end
     alias build actions
+    
+    # :call-seq:
+    #   member_actions(*available_actions)
+    # 
+    # Registers custom member actions which will use the load_object before_filter.
+    # These actions are not created, but merely registered for filtering.
+    def member_actions(*available_actions)
+      available_actions.each { |action| @custom_member_actions << action.to_sym }
+    end
+    
+    # :call-seq:
+    #   collection_actions(*available_actions)
+    # 
+    # Registers custom collection actions which will use the load_objects before_filter.
+    # These actions are not created, but merely registered for filtering.
+    def collection_actions(*available_actions)
+      available_actions.each { |action| @custom_collection_actions << action.to_sym }
+    end
 
     # :call-seq:
     #   before(*events) { ... }

@@ -86,7 +86,7 @@ module Resourceful
       # then in HatsController current_object essentially runs <tt>Person.find(params[:person_id]).hat</tt>.
       def current_object
         @current_object ||= if plural?
-          current_model.find(params[:id])
+          current_model.find(params[:id]) if params[:id]
         else
           parent_object.send(instance_variable_name)
         end
@@ -126,7 +126,10 @@ module Resourceful
           current_model.build(object_parameters)
         else
           returning(current_model.new(object_parameters)) do |obj|
-            obj.send("#{parent_name}_id=", parent_object.id) if singular? && parent?
+            if singular? && parent?
+              obj.send("#{parent_name}_id=", parent_object.id)
+              obj.send("#{parent_name}_type=", parent_object.class.to_s) if polymorphic_parent?
+            end
           end
         end
       end
@@ -205,6 +208,11 @@ module Resourceful
         !!parent_name
       end
 
+      # Returns whether the parent (if it exists) is polymorphic
+      def polymorphic_parent?
+        !!polymorphic_parent_name
+      end
+
       # Returns the name of the current parent object if a parent id is given, or nil otherwise.
       # For example, in HatsController where Rack has_many :hats and Person has_many :hats,
       # if <tt>params[:rack_id]</tt> is given,
@@ -235,20 +243,58 @@ module Resourceful
       # rather than <tt>@parent_name ||=</tt>. See the source code.
       # 
       # Finally, note that parents must be declared via Builder#belongs_to.
+      #
+      # FIXME - Perhaps this logic should be moved to parent?() or another init method
       def parent_name
         return @parent_name if defined?(@parent_name)
         @parent_name = parent_names.find { |name| params["#{name}_id"] }
+        if @parent_name.nil?
+          # get any polymorphic parents through :as association inspection
+          names = params.reject { |key, value| key.to_s[/_id$/].nil? }.keys.map { |key| key.chomp("_id") }
+          names.each do |name|
+            klass = name.camelize.constantize
+            id = params["#{name}_id"]
+            object = klass.find(id)
+            if association = object.class.reflect_on_all_associations.detect { |association| association.options[:as] && parent_names.include?(association.options[:as].to_s) }
+              @parent_name = name
+              @polymorphic_parent_name = association.options[:as].to_s
+              @parent_class_name = name.camelize
+              @parent_object = object
+              break
+            end
+          end
+        else
+          @parent_class_name = params["#{parent_name}_type"]
+          @polymorphic_parent = !@parent_class_name.nil?
+        end
+        @parent_name
+      end
+      
+      def polymorphic_parent_name
+        @polymorphic_parent_name
+      end
+
+      # Returns the class name of the current parent.
+      # For example, in HatsController where Person has_many :hats,
+      # if <tt>params[:person_id]</tt> is given,
+      #
+      #   parent_class_name #=> 'Person'
+      #
+      # Note that parents must be declared via Builder#belongs_to.
+      def parent_class_name
+        parent_name # to init @parent_class_name
+        @parent_class_name ||= parent_name.camelize
       end
 
       # Returns the model class of the current parent.
       # For example, in HatsController where Person has_many :hats,
       # if <tt>params[:person_id]</tt> is given,
       #
-      #   parent_models #=> Rack
+      #   parent_models #=> Person
       #
       # Note that parents must be declared via Builder#belongs_to.
       def parent_model
-        parent_name.camelize.constantize
+        parent_class_name.constantize
       end
 
       # Returns the current parent object for the current object.
@@ -272,6 +318,7 @@ module Resourceful
       # You shouldn't need to use it directly unless you're creating a new action.
       def load_parent_object
         instance_variable_set("@#{parent_name}", parent_object) if parent?
+        instance_variable_set("@#{polymorphic_parent_name}", parent_object) if polymorphic_parent?
       end
 
       # Renders a 422 error if no parent id is given.

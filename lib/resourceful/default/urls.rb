@@ -65,11 +65,11 @@ module Resourceful
       # This returns the path for the parent object.
       # 
       def parent_path(object = parent_object)
-        instance_route(parent_name, object, 'path')
+        instance_route(parent_class_name.underscore, object, 'path')
       end
       # Same as parent_path, but with the protocol and hostname.
       def parent_url(object = parent_object)
-        instance_route(parent_name, object, 'url')
+        instance_route(parent_class_name.underscore, object, 'url')
       end
 
       # This prefix is added to the Rails URL helper names
@@ -98,7 +98,7 @@ module Resourceful
       #
       # See also url_helper_prefix.
       def collection_url_prefix
-        parent? ? "#{parent_name}_" : ''
+        parent? ? "#{parent_class_name.underscore}_" : ''
       end
 
       private
@@ -109,7 +109,7 @@ module Resourceful
 
       def nested_object_route(object, type)
         return object_route(object, type) unless parent?
-        send("#{url_helper_prefix}#{parent_name}_#{current_model_name.underscore}_#{type}", parent_object, object)
+        send("#{url_helper_prefix}#{parent_class_name.underscore}_#{current_model_name.underscore}_#{type}", parent_object, object)
       end
 
       def edit_object_route(object, type)
