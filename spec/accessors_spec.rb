@@ -77,7 +77,7 @@ describe Resourceful::Default::Accessors, "#current_object on a singular control
   before :each do
     mock_controller Resourceful::Default::Accessors
     @controller.stubs(:plural?).returns(false)
-    @controller.stubs(:instance_variable_name).returns("post")
+    @controller.stubs(:controller_name).returns("posts")
 
     @parent = stub('parent')
     @controller.stubs(:parent_object).returns(@parent)
@@ -86,7 +86,7 @@ describe Resourceful::Default::Accessors, "#current_object on a singular control
     @object = stub
   end
 
-  it "should look up the instance object of the parent object" do
+  it "should return the instance object from parent object" do
     @parent.expects(:post).returns(@object)
     @controller.current_object.should == @object
   end
