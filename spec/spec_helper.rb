@@ -296,6 +296,6 @@ module Spec::Example
     include ActionController::Assertions
     include RailsMocks
     
-    Spec::Example::ExampleGroupFactory.register(:integration, self)
+    ExampleGroupFactory.register(:integration, self)
   end
 end
