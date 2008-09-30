@@ -1,10 +1,9 @@
 require 'rake'
-require 'rake/testtask'
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
 
-desc 'Default: run unit tests.'
-task :default => :test
+desc 'Default: run specs.'
+task :default => :spec
 
 spec_files = Rake::FileList["spec/**/*_spec.rb"]
 
@@ -19,16 +18,6 @@ Spec::Rake::SpecTask.new(:coverage) do |t|
   t.spec_files = spec_files
   t.rcov = true
   t.rcov_opts = ['--exclude', 'spec,/var/lib/gems']
-end
-
-desc 'Test the make_resourceful plugin.'
-task :test do
-  Dir.chdir(File.dirname(__FILE__) + '/test')
-  tests = IO.popen('rake test')
-
-  while byte = tests.read(1)
-    print byte
-  end
 end
 
 desc 'Generate documentation for the make_resourceful plugin.'
