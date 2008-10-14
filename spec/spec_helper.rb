@@ -1,8 +1,9 @@
 $: << File.dirname(__FILE__) + '/../lib'
+
 require 'rubygems'
-%w[spec action_pack active_record resourceful/maker
+%w[spec rails/version action_pack active_record resourceful/maker
    action_controller action_controller/test_process action_controller/integration
-   spec/rspec_on_rails/redirect_to spec/rspec_on_rails/render_template].each &method(:require)
+   spec/rspec-rails/redirect_to spec/rspec-rails/render_template].each &method(:require)
 
 Spec::Runner.configure do |config|
   config.mock_with :mocha
@@ -39,6 +40,7 @@ end
 def stub_const(name)
   unless Object.const_defined?(name)
     obj = Object.new
+    obj.extend Spec::MetaClass
     obj.metaclass.send(:define_method, :to_s) { name.to_s }
     obj.metaclass.send(:alias_method, :inspect, :to_s)
     Object.const_set(name, obj)
@@ -93,7 +95,7 @@ module ControllerMocks
     @builder = Resourceful::Builder.new(@kontroller)
     class << @builder
       alias_method :made_resourceful, :instance_eval
-    end    
+    end
   end
 
   def responses
@@ -143,11 +145,11 @@ module RailsMocks
   end
 
   def redirect_to(opts)
-    RedirectTo.new(request, opts)
+    Spec::Rails::Matchers::RedirectTo.new(request, opts)
   end
 
   def render_template(path)
-    RenderTemplate.new(path.to_s, @controller)
+    Spec::Rails::Matchers::RenderTemplate.new(path.to_s, @controller)
   end
 
   private
@@ -155,6 +157,7 @@ module RailsMocks
   def init_kontroller(options)
     @kontroller = Class.new ActionController::Base
     @kontroller.extend Resourceful::Maker
+    @kontroller.extend Spec::MetaClass
 
     @kontroller.metaclass.send(:define_method, :controller_name) { options[:name] }
     @kontroller.metaclass.send(:define_method, :controller_path) { options[:name] }
@@ -175,7 +178,7 @@ module RailsMocks
     route_block = options[:routes] || proc { |map| map.resources options[:name] }
     ActionController::Routing::Routes.draw(&route_block)
   end
-  
+
   def init_controller(options)
     @controller = kontroller.new
     @request = ActionController::TestRequest.new
@@ -208,19 +211,45 @@ module RailsMocks
   end
 
   module ControllerMethods
-    def render(options=nil, deprecated_status=nil, &block)
+    # From rspec-rails ControllerExampleGroup  
+    
+    def render(options=nil, deprecated_status_or_extra_options=nil, &block)
+      if ::Rails::VERSION::STRING >= '2.0.0' && deprecated_status_or_extra_options.nil?
+        deprecated_status_or_extra_options = {}
+      end
+      
       unless block_given?
-        @template.metaclass.class_eval do
-          define_method :file_exists? do true end
+        if @template.respond_to?(:finder)
+          (class << @template.finder; self; end).class_eval do
+            define_method :file_exists? do; true; end
+          end
+        else
+          (class << @template; self; end).class_eval do
+            define_method :file_exists? do; true; end
+          end
+        end
+        (class << @template; self; end).class_eval do
           define_method :render_file do |*args|
-            @first_render ||= args[0]
+            @first_render ||= args[0] unless args[0] =~ /^layouts/
+            @_first_render ||= args[0] unless args[0] =~ /^layouts/
+          end
+          
+          define_method :_pick_template do |*args|
+            @_first_render ||= args[0] unless args[0] =~ /^layouts/
+            PickedTemplate.new
           end
         end
       end
 
-      super(options, deprecated_status, &block)
+      super(options, deprecated_status_or_extra_options, &block)
+    end
+    
+    class PickedTemplate
+      def render_template(*ignore_args); end
+      def render_partial(*ignore_args);  end
     end
   end
+  
 end
 
 module Spec::Example::ExampleGroupMethods
@@ -262,18 +291,11 @@ module Spec::Example::ExampleGroupMethods
 end
 
 module Spec::Example
-  class IntegrationExampleGroup < Test::Unit::TestCase
-    include ExampleMethods
-    class << self
-      include ExampleGroupMethods
-    end
-
-    def initialize(defined_description, &implementation)
-      super()
-      @_defined_description = defined_description
-      @_implementation = implementation
-    end
-
+  class IntegrationExampleGroup < Spec::Example::ExampleGroup
+    include ActionController::TestProcess
+    include ActionController::Assertions
+    include RailsMocks
+    
     ExampleGroupFactory.register(:integration, self)
   end
 end

@@ -88,7 +88,7 @@ module Resourceful
         @current_object ||= if plural?
           current_model.find(params[:id]) if params[:id]
         else
-          parent_object.send(instance_variable_name)
+          parent_object.send(instance_variable_name.singularize)
         end
       end
 
