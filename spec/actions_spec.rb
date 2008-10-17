@@ -178,6 +178,33 @@ describe Resourceful::Default::Actions, " unsuccessful update action" do
   end
 end
 
+describe Resourceful::Default::Actions, " unsuccessful update action because of StaleObjectError" do
+  include ControllerMocks
+  before :each do
+    mock_controller Resourceful::Default::Actions
+    [:load_object, :before, :after, :object_parameters,
+     :save_failed!, :response_for].each(&@controller.method(:stubs))
+    @object = stub_model("Thing")
+    @object.stubs(:update_attributes).raises(ActiveRecord::StaleObjectError)
+    @object.expects(:reload)
+    @controller.stubs(:current_object).returns(@object)
+  end
+
+  after(:each) { @controller.update }
+
+  it "should record the unsuccessful save" do
+    @controller.expects(:save_failed!)
+  end
+
+  it "should call the after :update_fails callback" do
+    @controller.expects(:after).with(:update_fails)
+  end
+
+  it "should run the response for update failing" do
+    @controller.expects(:response_for).with(:update_fails)
+  end
+end
+
 describe Resourceful::Default::Actions, " new action" do
   include ControllerMocks
   before :each do

@@ -50,7 +50,15 @@ module Resourceful
       def update
         #load_object
         before :update
-        if current_object.update_attributes object_parameters
+        
+        begin
+          result = current_object.update_attributes object_parameters
+        rescue ActiveRecord::StaleObjectError
+          current_object.reload
+          result = false
+        end
+        
+        if result
           save_succeeded!
           after :update
           response_for :update
