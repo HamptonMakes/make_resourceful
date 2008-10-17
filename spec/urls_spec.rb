@@ -120,6 +120,7 @@ describe Resourceful::Default::URLs, " for a controller with a parent object" do
     @controller.stubs(:parent_object).returns(@person)
     @controller.stubs(:parent_name).returns('person')
     @controller.stubs(:parent?).returns(true)
+    @controller.stubs(:parent_class_name).returns('Person')
     @controller.stubs(:namespaces).returns([])
   end
 
@@ -247,6 +248,7 @@ describe Resourceful::Default::URLs, " for a controller with a parent object and
     @controller.stubs(:parent_object).returns(@person)
     @controller.stubs(:parent_name).returns('person')
     @controller.stubs(:parent?).returns(true)
+    @controller.stubs(:parent_class_name).returns('Person')
     @controller.stubs(:namespaces).returns([:admin, :main])
   end
 

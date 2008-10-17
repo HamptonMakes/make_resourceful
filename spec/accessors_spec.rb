@@ -342,6 +342,7 @@ describe Resourceful::Default::Accessors, " with no parents" do
     mock_controller Resourceful::Default::Accessors
     @controller.stubs(:parents).returns([])
     @controller.stubs(:current_model_name).returns('Line')
+    @controller.stubs(:params).returns({})
     stub_const 'Line'
   end
 
