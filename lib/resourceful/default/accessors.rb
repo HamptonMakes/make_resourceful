@@ -252,15 +252,18 @@ module Resourceful
           # get any polymorphic parents through :as association inspection
           names = params.reject { |key, value| key.to_s[/_id$/].nil? }.keys.map { |key| key.chomp("_id") }
           names.each do |name|
-            klass = name.camelize.constantize
-            id = params["#{name}_id"]
-            object = klass.find(id)
-            if association = object.class.reflect_on_all_associations.detect { |association| association.options[:as] && parent_names.include?(association.options[:as].to_s) }
-              @parent_name = name
-              @polymorphic_parent_name = association.options[:as].to_s
-              @parent_class_name = name.camelize
-              @parent_object = object
-              break
+            begin
+              klass = name.camelize.constantize
+              id = params["#{name}_id"]
+              object = klass.find(id)
+              if association = object.class.reflect_on_all_associations.detect { |association| association.options[:as] && parent_names.include?(association.options[:as].to_s) }
+                @parent_name = name
+                @polymorphic_parent_name = association.options[:as].to_s
+                @parent_class_name = name.camelize
+                @parent_object = object
+                break
+              end
+            rescue
             end
           end
         else
@@ -283,7 +286,7 @@ module Resourceful
       # Note that parents must be declared via Builder#belongs_to.
       def parent_class_name
         parent_name # to init @parent_class_name
-        @parent_class_name ||= parent_name.camelize
+        @parent_class_name ||= parent_name.nil? ? nil : parent_name.camelize
       end
 
       # Returns the model class of the current parent.
@@ -294,7 +297,7 @@ module Resourceful
       #
       # Note that parents must be declared via Builder#belongs_to.
       def parent_model
-        parent_class_name.constantize
+        parent_class_name.nil? ? nil : parent_class_name.constantize
       end
 
       # Returns the current parent object for the current object.
@@ -308,7 +311,7 @@ module Resourceful
       # Note also that the results of this method are cached
       # so that multiple calls don't result in multiple SQL queries.
       def parent_object
-        @parent_object ||= parent_model.find(params["#{parent_name}_id"])
+        @parent_object ||= parent_model.nil? ? nil : parent_model.find(params["#{parent_name}_id"])
       end
 
       # Assigns the current parent object, as given by parent_objects,
