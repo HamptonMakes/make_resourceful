@@ -57,7 +57,7 @@ module Resourceful
       kontroller.write_inheritable_attribute(:made_resourceful, true)
 
       kontroller.write_inheritable_attribute(:parents, @parents)
-      kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_ACTIONS) + @custom_member_actions
+      kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
       kontroller.before_filter :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
       kontroller.before_filter :load_parent_object, :only => @ok_actions + @custom_member_actions + @custom_collection_actions
     end

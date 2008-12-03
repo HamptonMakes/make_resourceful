@@ -21,6 +21,9 @@ module Resourceful
 
   # The actions that act on just one record.
   SINGULAR_ACTIONS = ACTIONS - PLURAL_ACTIONS
+
+  # The actions that act on just one record.
+  SINGULAR_PRELOADED_ACTIONS = SINGULAR_ACTIONS - [:new, :create]
 end
 
 require 'resourceful/default/accessors'
