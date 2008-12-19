@@ -15,7 +15,7 @@ indicating how to customize various bits of the controller.
   class PostsController < ApplicationController
     def index
       # Override #current_objects to change this
-      @posts = Post.find(:all)
+      @posts = Post.all
 
       # Use before :index to add something here
 

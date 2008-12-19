@@ -41,7 +41,7 @@ module Resourceful
     # for providing customized model lookup logic.
     module Accessors
       # Returns an array of all the objects of the model corresponding to the controller.
-      # For UsersController, it essentially runs <tt>User.find(:all)</tt>.
+      # For UsersController, it essentially runs <tt>User.all</tt>.
       #
       # However, there are a few important differences.
       # First, this method caches is results in the <tt>@current_objects</tt> instance variable.
