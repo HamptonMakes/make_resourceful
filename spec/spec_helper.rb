@@ -9,6 +9,12 @@ Spec::Runner.configure do |config|
   config.mock_with :mocha
 end
 
+module MetaClass
+  def metaclass
+    class << self; self; end
+  end
+end
+
 def should_be_called(&block)
   pstub = stub
   pstub.expects(:call).instance_eval(&(block || proc {}))
@@ -40,7 +46,7 @@ end
 def stub_const(name)
   unless Object.const_defined?(name)
     obj = Object.new
-    obj.extend Spec::MetaClass
+    obj.extend MetaClass
     obj.metaclass.send(:define_method, :to_s) { name.to_s }
     obj.metaclass.send(:alias_method, :inspect, :to_s)
     Object.const_set(name, obj)
@@ -157,7 +163,7 @@ module RailsMocks
   def init_kontroller(options)
     @kontroller = Class.new ActionController::Base
     @kontroller.extend Resourceful::Maker
-    @kontroller.extend Spec::MetaClass
+    @kontroller.extend MetaClass
 
     @kontroller.metaclass.send(:define_method, :controller_name) { options[:name] }
     @kontroller.metaclass.send(:define_method, :controller_path) { options[:name] }
