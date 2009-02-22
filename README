@@ -18,12 +18,11 @@ while still keeping your controllers trim and readable.
  
 Rails
 
-  $ ruby script/plugin install http://svn.hamptoncatlin.com/make_resourceful/trunk
-  $ mv vendor/plugins/trunk vendor/plugins/make_resourceful
+  $ ruby script/plugin install git://github.com/hcatlin/make_resourceful.git
 
-Subversion
+Git
 
-  $ svn co http://svn.hamptoncatlin.com/make_resourceful/trunk make_resourceful
+  $ git clone git://github.com/hcatlin/make_resourceful.git
 
 == Use it!
 
