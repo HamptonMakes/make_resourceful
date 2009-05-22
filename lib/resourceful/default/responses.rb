@@ -66,7 +66,7 @@ module Resourceful
 
           response_for(:create) do |format|
             format.html do
-              set_default_flash :notice, I18n.t('make_resourceful.create', :default => "Create successful!")
+              set_default_flash :notice, I18n.t('make_resourceful.create.success', :default => "Create successful!")
               set_default_redirect object_path
             end
             format.js
@@ -82,7 +82,7 @@ module Resourceful
         
           response_for(:update) do |format|
             format.html do
-              set_default_flash :notice, I18n.t('make_resourceful.update', :default => "Save successful!")
+              set_default_flash :notice, I18n.t('make_resourceful.update.success', :default => "Save successful!")
               set_default_redirect object_path
             end
             format.js
@@ -98,7 +98,7 @@ module Resourceful
           
           response_for(:destroy) do |format|
             format.html do
-              set_default_flash :notice, I18n.t('make_resourceful.destroy', :default => "Record deleted!")
+              set_default_flash :notice, I18n.t('make_resourceful.destroy.success', :default => "Record deleted!")
               set_default_redirect objects_path
             end
             format.js
