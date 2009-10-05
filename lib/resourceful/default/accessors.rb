@@ -378,6 +378,9 @@ module Resourceful
       #
       # Note that the way this is determined is based on the singularity of the controller name,
       # so it may yield false positives for oddly-named controllers and need to be overridden.
+      # 
+      # TODO: maybe we can define plural? and singular? as class_methods, 
+      # so they are not visible to the world
       def singular?
         instance_variable_name.singularize == instance_variable_name
       end
@@ -388,6 +391,9 @@ module Resourceful
       # Note that the way this is determined is based on the singularity of the controller name,
       # so it may yield false negatives for oddly-named controllers.
       # If this is the case, the singular? method should be overridden.
+      # 
+      # TODO: maybe we can define plural? and singular? as class_methods, 
+      # so they are not visible to the world
       def plural?
         !singular?
       end
