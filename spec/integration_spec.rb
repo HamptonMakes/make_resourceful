@@ -19,6 +19,16 @@ describe "ThingsController", "with all the resourceful actions", :type => :integ
   (Resourceful::ACTIONS - Resourceful::MODIFYING_ACTIONS).each(&method(:should_render_html))
   Resourceful::ACTIONS.each(&method(:should_render_js))
   Resourceful::ACTIONS.each(&method(:shouldnt_render_xml))
+  
+  # Need this helper, because we made current_objects private
+  def current_objects
+    controller.instance_eval("current_objects")
+  end
+  
+  # Need this helper, because we made current_object private
+  def current_objects
+    controller.instance_eval("current_object")
+  end
 
   ## Specs for #index
 
@@ -92,7 +102,7 @@ describe "ThingsController", "with all the resourceful actions", :type => :integ
   it "should return the new object for #current_object after GET /things/new" do
     Thing.stubs(:new).returns(@object)
     get :new
-    controller.current_object.should == @object
+    controller.instance_eval('current_object).should == @object
   end
 
   it "should assign @thing to the new object for GET /things/new" do
