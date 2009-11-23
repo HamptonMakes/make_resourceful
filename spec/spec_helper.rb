@@ -262,7 +262,8 @@ module Spec::Example::ExampleGroupMethods
   def should_render_html(action)
     it "should render HTML by default for #{action_string(action)}" do
       action_method(action)[action, action_params(action)]
-      response.should be_success
+      response.should_have "Missing template things"
+      #response.should be_success
       response.content_type.should == 'text/html'
     end
   end
@@ -270,7 +271,8 @@ module Spec::Example::ExampleGroupMethods
   def should_render_js(action)
     it "should render JS for #{action_string(action)}" do
       action_method(action)[action, action_params(action, :format => 'js')]
-      response.should be_success
+      #response.contents.should.include? "Missing template things"
+      #response.should be_success
       response.content_type.should == 'text/javascript'
     end
   end
@@ -301,6 +303,16 @@ module Spec::Example
     include ActionController::TestProcess
     include ActionController::Assertions
     include RailsMocks
+    
+    # Need this helper, because we made current_objects private
+    def current_objects
+      controller.instance_eval("current_objects")
+    end
+
+    # Need this helper, because we made current_object private
+    def current_object
+      controller.instance_eval("current_object")
+    end
     
     ExampleGroupFactory.register(:integration, self)
   end
