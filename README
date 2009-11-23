@@ -68,7 +68,7 @@ Yes.
 === What about paging?
 
   def current_objects
-    @current_object ||= current_model.find(:all,
+    @current_objects ||= current_model.find(:all,
       :order => "created_at DESC", :page => {:current => params[:page], :size => 10 } )
   end
 
