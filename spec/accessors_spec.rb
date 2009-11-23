@@ -10,12 +10,12 @@ describe Resourceful::Default::Accessors, "#current_objects" do
   end
 
   it "should look up all objects in the current model" do
-    @model.expects(:all).returns(@objects)
+    @model.expects(:find).with(:all).returns(@objects)
     @controller.current_objects.should == @objects
   end
 
   it "should cache the result, so subsequent calls won't run multiple queries" do
-    @model.expects(:all).once.returns(@objects)
+    @model.expects(:find).once.returns(@objects)
     @controller.current_objects
     @controller.current_objects
   end
