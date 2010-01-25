@@ -177,5 +177,9 @@ module Resourceful
   end
 end
 
-class ActiveRecord::Base; include Resourceful::Serialize::Model; end
+if defined? ActiveModel
+  class ActiveModel::Base; include Resourceful::Serialize::Model; end
+else
+  class ActiveRecord::Base; include Resourceful::Serialize::Model; end
+end
 class Array; include Resourceful::Serialize::Array; end
