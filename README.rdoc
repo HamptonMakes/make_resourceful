@@ -32,7 +32,7 @@ It uses the same syntax as the Rails scaffold_resource generator:
 
   $ script/generate resource_scaffold post title:string body:text
 
-It does, however, require Haml[http://haml.hamptoncatlin.com].
+It does, however, require Haml [http://haml-lang.com].
 You _are_ using Haml, right? No?
 I'll wait here while you go fall in love with it.
 
@@ -224,7 +224,7 @@ Don't despair, there are still more resources available!
 
 ---
 
-Copyright 2007, 2008, 2009 Hampton Catlin, Nathan Weizenbaum, and Jeff Hardy.
+Copyright 2007-2010 Hampton Catlin, Nathan Weizenbaum, and Jeff Hardy.
 
 Contributions by:
 
