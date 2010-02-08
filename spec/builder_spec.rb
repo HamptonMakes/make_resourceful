@@ -36,7 +36,7 @@ describe Resourceful::Builder, " applied without any modification" do
 
   it "should set the controller as made_resourceful" do
     @builder.apply
-    @kontroller.read_inheritable_attribute(:made_resourceful).should be_true
+    @kontroller.made_resourceful.should be_true
   end
 
   it "should set load_parent_object as a before_filter for no actions" do

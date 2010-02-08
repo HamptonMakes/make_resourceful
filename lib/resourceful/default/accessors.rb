@@ -190,7 +190,7 @@ module Resourceful
       #
       # Note that the parents must be declared via Builder#belongs_to.
       def parent_names
-        self.class.read_inheritable_attribute :parents
+        self.class.parents
       end
 
       # Returns true if an appropriate parent id parameter has been supplied.
