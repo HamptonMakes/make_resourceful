@@ -224,8 +224,7 @@ Don't despair, there are still more resources available!
 
 ---
 
-Copyright 2007-2010 Hampton Catlin, Nathan Weizenbaum, and Jeff Hardy.
-
+Copyright 2007-2010 Hampton Catlin and Nathan Weizenbaum.
 Contributions by:
 
 * Russell Norris
