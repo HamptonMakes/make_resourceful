@@ -149,7 +149,7 @@ Pass in the name of the parent model,
 
 and everything will be taken care of.
 When +index+ is run for GET /users/12/albums,
-parent_object
+parent_object[link:classes/Resourceful/Accessors.html#M000024]
 will get <tt>User.find(params[:user_id])</tt>,
 and current_objects
 will get <tt>parent_object.albums</tt>.
