@@ -149,9 +149,9 @@ Pass in the name of the parent model,
 
 and everything will be taken care of.
 When +index+ is run for GET /users/12/albums,
-parent_object[link:classes/Resourceful/Accessors.html]
+parent_object
 will get <tt>User.find(params[:user_id])</tt>,
-and current_objects[link:classes/Resourceful/Default/Accessors.html]
+and current_objects
 will get <tt>parent_object.albums</tt>.
 When +create+ is run for POST /users/12/albums,
 the newly created Album will automatically belong to the user
@@ -172,11 +172,11 @@ Then /users/15/albums and /artists/7/albums will both work.
 This does, however, mean that make_resourceful only supports one level of nesting.
 There's no automatic handling of /users/15/collections/437/albums.
 However, this is really the best way to organize most resources anyway;
-see this {article}[http://weblog.jamisbuck.org/2007/2/5/nesting-resources].
+see this article
 
 If you really need a deeply nested controller,
 it should be easy enough to set up on your own.
-Just override {current_model}[link:classes/Resourceful/Default/Accessors.html].
+Just override current_model.
 See the next section for more details.
 
 === Overriding Methods
@@ -207,15 +207,7 @@ Haven't found all the information you need in the RDoc?
 Still a little confused about something?
 Don't despair, there are still more resources available!
 
-* Nathan Weizenbaum periodically makes blog posts about new features and versions of make_resourceful.
-  They may be a little outdated, but they should still be useful and explanatory.
-  * On nesting and associations: here[http://nex-3.com/posts/55-nesting-and-make_resourceful].
-  * An overview of make_resourceful 0.2.0 and 0.2.2: {here}[http://localhost:3000/posts/54-make_resourceful-0-2-0].
-  * On Resourceful::Builder#publish[link:classes/Resourceful/Builder.html#M000061]
-    and Resourceful::Serialize:
-    {here}[http://nex-3.com/posts/35-make_resourceful-the-basics-of-publish] and
-    {here}[http://nex-3.com/posts/36-make_resourceful-publish-extras].
-* There's an excellent, active Google Group ({link}[http://groups.google.com/group/make_resourceful])
+* There's an excellent, active Google Group http://groups.google.com/group/make_resourceful
   where people will be happy to answer your questions.
 * Read the source code!
   It's very straightforward,
