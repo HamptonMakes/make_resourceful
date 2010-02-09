@@ -149,7 +149,7 @@ Pass in the name of the parent model,
 
 and everything will be taken care of.
 When +index+ is run for GET /users/12/albums,
-parent_object[link:classes/Resourceful/Accessors.html]
+parent_object
 will get <tt>User.find(params[:user_id])</tt>,
 and current_objects
 will get <tt>parent_object.albums</tt>.
@@ -207,12 +207,20 @@ Haven't found all the information you need in the RDoc?
 Still a little confused about something?
 Don't despair, there are still more resources available!
 
-* There's an excellent, active Google Group http://groups.google.com/group/make_resourceful
-  where people will be happy to answer your questions.
 * Read the source code!
   It's very straightforward,
   and make_resourceful is built to encourage overriding methods
   and hacking the source.
+* Nathan Weizenbaum has some good blog posts about make_resourceful.
+  They may be a little outdated, but they should still be useful and explanatory.
+  * On nesting and associations: here[http://nex-3.com/posts/55-nesting-and-make_resourceful].
+  * An overview of make_resourceful 0.2.0 and 0.2.2: {here}[http://localhost:3000/posts/54-make_resourceful-0-2-0].
+  * On Resourceful::Builder#publish[link:classes/Resourceful/Builder.html#M000061]
+    and Resourceful::Serialize:
+    {here}[http://nex-3.com/posts/35-make_resourceful-the-basics-of-publish] and
+    {here}[http://nex-3.com/posts/36-make_resourceful-publish-extras].
+* There's an excellent, active Google Group http://groups.google.com/group/make_resourceful
+  where people will be happy to answer your questions.
 
 ---
 
