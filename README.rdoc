@@ -172,7 +172,7 @@ Then /users/15/albums and /artists/7/albums will both work.
 This does, however, mean that make_resourceful only supports one level of nesting.
 There's no automatic handling of /users/15/collections/437/albums.
 However, this is really the best way to organize most resources anyway;
-see this article
+see this {article}[http://weblog.jamisbuck.org/2007/2/5/nesting-resources].
 
 If you really need a deeply nested controller,
 it should be easy enough to set up on your own.
