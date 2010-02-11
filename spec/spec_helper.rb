@@ -1,9 +1,17 @@
 $: << File.dirname(__FILE__) + '/../lib'
 
 require 'rubygems'
-%w[spec rails/version action_pack active_record resourceful/maker
-   action_controller action_controller/test_process action_controller/integration
-   spec/rspec-rails/redirect_to spec/rspec-rails/render_template].each &method(:require)
+
+
+begin
+  %w[spec rails/version action_pack active_record resourceful/maker
+     spec/rspec-rails/redirect_to spec/rspec-rails/render_template
+     action_controller action_controller/test_process action_controller/integration].each &method(:require)
+rescue LoadError # If we are on rails3, these should work
+  require 'action_controller/testing/process' 
+  require 'action_controller/testing/integration' 
+  require 'active_support/testing/test_case'
+end
 
 Spec::Runner.configure do |config|
   config.mock_with :mocha
@@ -200,19 +208,19 @@ module RailsMocks
 
   def action_params(action, params = {})
     params.merge case action
-                 when :show, :edit, :destroy: {:id => 12}
-                 when :update: {:id => 12, :thing => {}}
-                 when :create: {:thing => {}}
+                 when :show, :edit, :destroy, {:id => 12}
+                 when :update, {:id => 12, :thing => {}}
+                 when :create, {:thing => {}}
                  else {}
                  end
   end
 
   def action_method(action)
     method case action
-           when :index, :show, :edit, :new: :get
-           when :update: :put
-           when :create: :post
-           when :destroy: :delete
+           when :index, :show, :edit, :new, :get
+           when :update, :put
+           when :create, :post
+           when :destroy, :delete
            end
   end
 
@@ -287,13 +295,13 @@ module Spec::Example::ExampleGroupMethods
 
   def action_string(action)
     case action
-    when :index:   "GET /things"
-    when :show:    "GET /things/12"
-    when :edit:    "GET /things/12/edit"
-    when :update:  "PUT /things/12"
-    when :create:  "POST /things"
-    when :new:     "GET /things/new"
-    when :destroy: "DELETE /things/12"
+    when :index,   "GET /things"
+    when :show,    "GET /things/12"
+    when :edit,    "GET /things/12/edit"
+    when :update,  "PUT /things/12"
+    when :create,  "POST /things"
+    when :new,     "GET /things/new"
+    when :destroy, "DELETE /things/12"
     end
   end
 end
