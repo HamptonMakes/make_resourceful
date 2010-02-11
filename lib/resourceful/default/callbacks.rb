@@ -21,7 +21,7 @@ module Resourceful
       # Note that these aren't called directly,
       # but instead passed along to Rails' respond_to method.
       def response_for(event)
-        if responses = self.class.read_inheritable_attribute(:resourceful_responses)[event.to_sym]
+        if responses = self.class.resourceful_responses[event.to_sym]
           respond_to do |format|
             responses.each do |key, value|
               format.send(key, &scope(value))
@@ -43,7 +43,7 @@ module Resourceful
       private
 
       def resourceful_fire(type, name)
-        callbacks = self.class.read_inheritable_attribute(:resourceful_callbacks)[type][name] || []
+        callbacks = self.class.resourceful_callbacks[type][name] || []
         callbacks.each { |callback| scope(callback).call }
       end
     end

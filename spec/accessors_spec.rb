@@ -250,7 +250,7 @@ describe Resourceful::Default::Accessors, " with two parent classes set on the c
     mock_controller Resourceful::Default::Accessors
     @parents = %w{post comment}
     @models = @parents.map(&:camelize).map(&method(:stub_const))
-    @kontroller.write_inheritable_attribute(:parents, @parents)
+    @kontroller.parents = @parents
     @controller.stubs(:singular?).returns(false)
     @controller.stubs(:instance_variable_name).returns('lines')
 
@@ -312,7 +312,7 @@ describe Resourceful::Default::Accessors, " with two parent classes set on the c
     mock_controller Resourceful::Default::Accessors
     @parents = %w{post comment}
     @models = @parents.map(&:camelize).map(&method(:stub_const))
-    @kontroller.write_inheritable_attribute(:parents, @parents)
+    @kontroller.parents = @parents
     @controller.stubs(:params).returns({})
     @controller.stubs(:controller_name).returns('line')
     stub_const('Line')

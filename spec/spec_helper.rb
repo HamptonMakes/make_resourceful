@@ -105,15 +105,15 @@ module ControllerMocks
   end
 
   def responses
-    @kontroller.read_inheritable_attribute(:resourceful_responses)
+    @kontroller.resourceful_responses
   end
 
   def callbacks
-    @kontroller.read_inheritable_attribute(:resourceful_callbacks)
+    @kontroller.resourceful_callbacks
   end
 
   def parents
-    @kontroller.read_inheritable_attribute(:parents)
+    @kontroller.parents
   end
 
   # Evaluates the made_resourceful block of mod (a module)

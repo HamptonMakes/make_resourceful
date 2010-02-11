@@ -20,7 +20,7 @@ module Resourceful
     # additions to the controller.
     def initialize(kontroller)
       @controller       = kontroller
-      @inherited        = !kontroller.read_inheritable_attribute(:resourceful_responses).blank?
+      @inherited        = !kontroller.resourceful_responses.blank?
       @action_module    = Resourceful::Default::Actions.dup
       @ok_actions       = []
       @callbacks        = {:before => {}, :after => {}}
@@ -40,6 +40,7 @@ module Resourceful
       apply_publish
 
       kontroller = @controller
+      
       Resourceful::ACTIONS.each do |action_named|
         # See if this is a method listed by #actions
         unless @ok_actions.include? action_named
@@ -52,11 +53,11 @@ module Resourceful
       kontroller.hidden_actions.reject! &@ok_actions.method(:include?)
       kontroller.send :include, @action_module
 
-      kontroller.read_inheritable_attribute(:resourceful_callbacks).merge! @callbacks
-      kontroller.read_inheritable_attribute(:resourceful_responses).merge! @responses
-      kontroller.write_inheritable_attribute(:made_resourceful, true)
+      kontroller.resourceful_callbacks.merge! @callbacks
+      kontroller.resourceful_responses.merge! @responses
+      kontroller.made_resourceful = true
 
-      kontroller.write_inheritable_attribute(:parents, @parents)
+      kontroller.parents = @parents
       kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
       kontroller.before_filter :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
       kontroller.before_filter :load_parent_object, :only => @ok_actions + @custom_member_actions + @custom_collection_actions
