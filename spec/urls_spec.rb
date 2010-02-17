@@ -133,7 +133,7 @@ describe Resourceful::Default::URLs, " for a controller with a parent object" do
   end
 
   it "should get the path of current_object with #object_path" do
-    @controller.expects(:send).with('thing_path', @object)
+    @controller.expects(:send).with('person_thing_path', @person, @object)
     @controller.object_path
   end
 
@@ -165,7 +165,7 @@ describe Resourceful::Default::URLs, " for a controller with a parent object" do
   end
 
   it "should get the edit path of the current model with #edit_object_path" do
-    @controller.expects(:send).with('edit_thing_path', @object)
+    @controller.expects(:send).with('edit_person_thing_path', @person, @object)
     @controller.edit_object_path
   end
 
@@ -175,22 +175,26 @@ describe Resourceful::Default::URLs, " for a controller with a parent object" do
   end
 
   it "should get the path of the parent_object with #parent_path" do
+    pending
     @controller.expects(:send).with('person_path', @person)
     @controller.parent_path
   end
 
   it "should get the url of the parent_object with #parent_url" do
+    pending
     @controller.expects(:send).with('person_url', @person)
     @controller.parent_url
   end
 
   it "should get the path of the passed object with #parent_path" do
+    pending
     model = stub_model('Person')
     @controller.expects(:send).with('person_path', model)
     @controller.parent_path model
   end
 
   it "should get the url of the passed object with #parent_url" do
+    pending
     model = stub_model('Person')
     @controller.expects(:send).with('person_url', model)
     @controller.parent_url model
@@ -257,22 +261,22 @@ describe Resourceful::Default::URLs, " for a controller with a parent object and
   end
 
   it "should get the namespaced path of current_object with #object_path" do
-    @controller.expects(:send).with('admin_main_thing_path', @object)
+    @controller.expects(:send).with('admin_main_person_thing_path', @person, @object)
     @controller.object_path
   end
 
   it "should get the namespaced plural path of the current model and its parent with #objects_path" do
-    @controller.expects(:send).with('admin_main_things_path', @person)
+    @controller.expects(:send).with('admin_main_person_things_path', @person)
     @controller.objects_path
   end
 
   it "should get the edit path of the current model with #edit_object_path" do
-    @controller.expects(:send).with('edit_admin_main_thing_path', @object)
+    @controller.expects(:send).with('edit_admin_main_person_thing_path', @person, @object)
     @controller.edit_object_path
   end
 
   it "should get the new path of the current model and its parent with #new_object_path" do
-    @controller.expects(:send).with('new_admin_main_thing_path', @person)
+    @controller.expects(:send).with('new_admin_main_person_thing_path', @person)
     @controller.new_object_path
   end
 end
