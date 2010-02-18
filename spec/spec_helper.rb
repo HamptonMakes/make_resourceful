@@ -175,6 +175,7 @@ module RailsMocks
     @kontroller.send(:define_method, :inspect) { "#<#{options[:name].camelize}Controller>" }
     @kontroller.send(:alias_method, :to_s, :inspect)
     @kontroller.send(:include, ControllerMethods)
+    @kontroller.send(:view_paths=, [File.join(File.dirname(__FILE__), 'views')])
 
     @kontroller
   end
@@ -262,7 +263,7 @@ module Spec::Example::ExampleGroupMethods
   def should_render_html(action)
     it "should render HTML by default for #{action_string(action)}" do
       action_method(action)[action, action_params(action)]
-      response.body.should include("Missing template things")
+      response.body.should include("as HTML")
       response.content_type.should == 'text/html'
     end
   end
