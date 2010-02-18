@@ -18,8 +18,8 @@ describe "ThingsController", "with all the resourceful actions" do
   ## Default responses
 
   (Resourceful::ACTIONS - Resourceful::MODIFYING_ACTIONS).each(&method(:should_render_html))
+  Resourceful::ACTIONS.each(&method(:should_render_js))
   Resourceful::ACTIONS.each(&method(:shouldnt_render_xml))
-  
 
   ## Specs for #index
 

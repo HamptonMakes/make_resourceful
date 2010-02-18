@@ -267,6 +267,15 @@ module Spec::Example::ExampleGroupMethods
       response.content_type.should == 'text/html'
     end
   end
+  
+  def should_render_js(action)
+    it "should render JS for #{action_string(action)}" do
+      action_method(action)[action, action_params(action, :format => 'js')]
+      response.body.should include("insert(\"#{action}")
+      response.should be_success
+      response.content_type.should == 'text/javascript'
+    end
+  end
 
   def shouldnt_render_xml(action)
     it "shouldn't render XML for #{action_string(action)}" do
