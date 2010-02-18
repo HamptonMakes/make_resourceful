@@ -262,23 +262,13 @@ module Spec::Example::ExampleGroupMethods
   def should_render_html(action)
     it "should render HTML by default for #{action_string(action)}" do
       action_method(action)[action, action_params(action)]
-      response.should_have "Missing template things"
-      #response.should be_success
+      response.body.should include("Missing template things")
       response.content_type.should == 'text/html'
     end
   end
 
-  def should_render_js(action)
-    it "should render JS for #{action_string(action)}" do
-      action_method(action)[action, action_params(action, :format => 'js')]
-      #response.contents.should.include? "Missing template things"
-      #response.should be_success
-      response.content_type.should == 'text/javascript'
-    end
-  end
-
   def shouldnt_render_xml(action)
-    it "should render XML for #{action_string(action)}" do
+    it "shouldn't render XML for #{action_string(action)}" do
       action_method(action)[action, action_params(action, :format => 'xml')]
       response.should_not be_success
       response.code.should == '406'
