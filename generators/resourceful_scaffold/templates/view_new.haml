@@ -2,7 +2,7 @@
 
 = error_messages_for :<%= singular_name %>
 
-- form_for(:<%= singular_name %>, :url => objects_url) do |f|
+= form_for(:<%= singular_name %>, :url => objects_url) do |f|
   = render :partial => "form", :locals => {:f => f}
   %p= submit_tag "Create"
 
