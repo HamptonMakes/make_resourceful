@@ -134,6 +134,10 @@ module Resourceful
         end
       end
 
+      def namespaced_model_name
+        [self.class.model_namespace, current_model_name].compact.join('::')
+      end
+
       # The string name of the current model.
       # By default, this is derived from the name of the controller.
       def current_model_name
@@ -168,7 +172,7 @@ module Resourceful
       # and so forth.
       def current_model
         if !parent? || singular?
-          current_model_name.constantize
+          namespaced_model_name.constantize
         else
           parent_object.send(instance_variable_name)
         end
@@ -179,7 +183,7 @@ module Resourceful
       # of the current object.
       # This is only meaningful for +create+ or +update+.
       def object_parameters
-        params[current_model_name.underscore]
+        params[namespaced_model_name.underscore.tr('/', '_')]
       end
 
       # Returns a list of the names of all the potential parents of the current model.

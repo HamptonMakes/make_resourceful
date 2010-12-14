@@ -58,6 +58,7 @@ module Resourceful
       kontroller.made_resourceful = true
 
       kontroller.parents = @parents
+      kontroller.model_namespace = @model_namespace
       kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
       kontroller.before_filter :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
       kontroller.before_filter :load_parent_object, :only => @ok_actions + @custom_member_actions + @custom_collection_actions
@@ -359,6 +360,13 @@ module Resourceful
       @parents = parents.map(&:to_s)
     end
     
+    # Specifies a namespace for the resource model. It can be given as a
+    # Module::NameSpace, 'Module::NameSpace' (in a string), or
+    # 'module/name_space' (underscored form).
+    def model_namespace(ns)
+      @model_namespace = ns.to_s.camelize
+    end
+
     # This method is only meant to be called internally.
     #
     # Returns whether or not the Builder's controller
