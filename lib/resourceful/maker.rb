@@ -12,6 +12,7 @@ module Resourceful
       base.class_attribute :resourceful_callbacks
       base.class_attribute :resourceful_responses
       base.class_attribute :parents
+      base.class_attribute :shallow_route
       base.class_attribute :model_namespace
       base.class_attribute :made_resourceful
       

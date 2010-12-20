@@ -27,6 +27,7 @@ module Resourceful
       @responses        = {}
       @publish          = {}
       @parents          = []
+      @shallow_route    = false
       @custom_member_actions = []
       @custom_collection_actions = []
     end
@@ -58,6 +59,7 @@ module Resourceful
       kontroller.made_resourceful = true
 
       kontroller.parents = @parents
+      kontroller.shallow_route = @shallow_route
       kontroller.model_namespace = @model_namespace
       kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
       kontroller.before_filter :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
@@ -357,7 +359,9 @@ module Resourceful
     #   current_objects   #=> Baker.find(12).cakes
     #
     def belongs_to(*parents)
+      options = parents.extract_options!
       @parents = parents.map(&:to_s)
+      @shallow_route = !!options[:shallow_route]
     end
     
     # Specifies a namespace for the resource model. It can be given as a
