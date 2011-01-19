@@ -52,9 +52,12 @@ module Resourceful
 
       kontroller.hidden_actions.reject! &@ok_actions.method(:include?)
       kontroller.send :include, @action_module
-
-      kontroller.resourceful_callbacks.merge! @callbacks
-      kontroller.resourceful_responses.merge! @responses
+      
+      merged_callbacks = kontroller.resourceful_callbacks.merge @callbacks
+      merged_responses = kontroller.resourceful_responses.merge @responses
+      
+      kontroller.resourceful_callbacks = merged_callbacks
+      kontroller.resourceful_responses = merged_responses
       kontroller.made_resourceful = true
 
       kontroller.parents = @parents
