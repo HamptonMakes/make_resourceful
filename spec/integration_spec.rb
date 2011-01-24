@@ -20,8 +20,6 @@ describe "ThingsController", "with all the resourceful actions" do
   (Resourceful::ACTIONS - Resourceful::MODIFYING_ACTIONS).each(&method(:should_render_html))
   Resourceful::ACTIONS.each(&method(:should_render_js))
   Resourceful::ACTIONS.each(&method(:shouldnt_render_xml))
-  
-  
 
   ## Specs for #index
 
@@ -165,7 +163,7 @@ describe "ThingsController", "with all the resourceful actions" do
     Thing.stubs(:new).returns(@object)
     @object.stubs(:save).returns(false)
     post :create
-    response.should render_template('new')
+    response.body.should include('New object')
   end
 
   ## Specs for #update
@@ -224,7 +222,7 @@ describe "ThingsController", "with all the resourceful actions" do
     Thing.stubs(:find).returns(@object)
     @object.stubs(:update_attributes).returns(false)
     put :update, :id => 12
-    response.should render_template('edit')
+    response.body.should include('Editting object')
   end
 
   ## Specs for #destroy
