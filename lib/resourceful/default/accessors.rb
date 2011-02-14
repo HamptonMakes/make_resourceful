@@ -223,9 +223,10 @@ module Resourceful
         !!polymorphic_parent_name
       end
 
-      # Returns the name of the current parent object if a parent id is given, or nil otherwise.
-      # For example, in HatsController where Rack has_many :hats and Person has_many :hats,
-      # if <tt>params[:rack_id]</tt> is given,
+      # Returns the name of the current parent object if a parent id is given,
+      # or nil otherwise. For example, in HatsController where Rack has_many
+      # :hats and Person has_many :hats, if <tt>params[:rack_id]</tt> is
+      # given,
       #
       #   parent_name #=> "rack"
       #
@@ -233,28 +234,30 @@ module Resourceful
       #
       #   parent_name #=> "person"
       #
-      # If both <tt>params[:rack_id]</tt> and <tt>params[:rack_id]</tt> are nil,
+      # If both <tt>params[:rack_id]</tt> and <tt>params[:person_id]</tt> are
+      # nil,
       #
       #   parent_name #=> nil
       #
-      # There are several things to note about this method.
-      # First, make_resourceful only supports single-level model nesting.
-      # Thus, if neither <tt>params[:rack_id]</tt> nor <tt>params[:rack_id]</tt> are nil,
-      # the return value of +parent_name+ is undefined.
+      # There are several things to note about this method. First,
+      # make_resourceful only supports single-level model nesting. Thus, if
+      # neither <tt>params[:rack_id]</tt> nor <tt>params[:rack_id]</tt> are
+      # nil, the return value of +parent_name+ is undefined.
       #
       # Second, don't use parent_name to check whether a parent id is given.
       # It's better to use the more semantic parent? method.
       #
-      # Third, parent_name caches its return value in the <tt>@parent_name</tt> variable,
-      # which you should keep in mind if you're overriding it.
-      # However, because <tt>@parent_name == nil</tt> could mean that there is no parent
-      # _or_ that the method hasn't been run yet,
-      # it uses <tt>defined?(@parent_name)</tt> to do the caching
+      # Third, parent_name caches its return value in the
+      # <tt>@parent_name</tt> variable, which you should keep in mind if
+      # you're overriding it. However, because <tt>@parent_name == nil</tt>
+      # could mean that there is no parent _or_ that the method hasn't been
+      # run yet, it uses <tt>defined?(@parent_name)</tt> to do the caching
       # rather than <tt>@parent_name ||=</tt>. See the source code.
       #
       # Finally, note that parents must be declared via Builder#belongs_to.
       #
-      # FIXME - Perhaps this logic should be moved to parent?() or another init method
+      # FIXME - Perhaps this logic should be moved to parent?() or another
+      # init method
       def parent_name
         return @parent_name if defined?(@parent_name)
         @parent_name = parent_names.find { |name| params["#{name}_id"] }
