@@ -212,10 +212,12 @@ module Resourceful
         !!parent_name
       end
 
-      # Returns true if the belongs_to relationship on this controller was
-      # declared to use shallow routing.
-      def shallow_route?
-        !!self.class.shallow_route
+      # Returns true if no parent id parameter can be found _and_ a belongs_to
+      # relationship on this controller was declared with a parent for shallow
+      # routing.
+      def shallow?
+        self.class.shallow_parent &&
+          (parent_name.nil? || parent_name == self.class.shallow_parent)
       end
 
       # Returns whether the parent (if it exists) is polymorphic

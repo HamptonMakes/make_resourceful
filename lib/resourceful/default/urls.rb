@@ -124,7 +124,7 @@ module Resourceful
       end
 
       def instance_route(name, object, type, action = nil)
-        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{collection_url_prefix unless shallow_route?}#{name}_#{type}", *(parent? && !shallow_route? ? [parent_object, object] : [object]))
+        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{collection_url_prefix unless shallow?}#{name}_#{type}", *(parent? && !shallow? ? [parent_object, object] : [object]))
       end
 
       def collection_route(name, type, action = nil)

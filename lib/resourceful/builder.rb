@@ -27,7 +27,7 @@ module Resourceful
       @responses        = {}
       @publish          = {}
       @parents          = []
-      @shallow_route    = false
+      @shallow_parent   = nil
       @custom_member_actions = []
       @custom_collection_actions = []
     end
@@ -59,7 +59,7 @@ module Resourceful
       kontroller.made_resourceful = true
 
       kontroller.parents = @parents
-      kontroller.shallow_route = @shallow_route
+      kontroller.shallow_parent = @shallow_parent
       kontroller.model_namespace = @model_namespace
       kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
       kontroller.before_filter :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
@@ -361,7 +361,11 @@ module Resourceful
     def belongs_to(*parents)
       options = parents.extract_options!
       @parents = parents.map(&:to_s)
-      @shallow_route = !!options[:shallow_route]
+      if options[:shallow]
+        options[:shallow] = options[:shallow].to_s
+        raise ArgumentError, ":shallow needs the name of a parent resource" unless @parents.include? options[:shallow]
+        @shallow_parent = options[:shallow]
+      end
     end
     
     # Specifies a namespace for the resource model. It can be given as a
