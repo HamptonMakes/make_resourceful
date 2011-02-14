@@ -263,17 +263,18 @@ module Resourceful
         @parent_name = parent_names.find { |name| params["#{name}_id"] }
         if @parent_name.nil?
           # get any polymorphic parents through :as association inspection
-          names = params.reject { |key, value| key.to_s[/_id$/].nil? }.keys.map { |key| key.chomp("_id") }
-          names.each do |name|
+          names = params.keys.inject({}) do |hsh, key|
+            hsh[key] = key.chomp("_id") if key.to_s =~ /_id$/
+            hsh
+          end
+          names.each do |key, name|
             begin
               klass = name.camelize.constantize
-              id = params["#{name}_id"]
-              object = klass.find(id)
-              if association = object.class.reflect_on_all_associations.detect { |association| association.options[:as] && parent_names.include?(association.options[:as].to_s) }
+              if association = klass.reflect_on_all_associations.detect { |association| association.options[:as] && parent_names.include?(association.options[:as].to_s) }
                 @parent_name = name
                 @polymorphic_parent_name = association.options[:as].to_s
                 @parent_class_name = name.camelize
-                @parent_object = object
+                @parent_object = klass.find(params[key])
                 break
               end
             rescue
@@ -281,7 +282,7 @@ module Resourceful
           end
         else
           @parent_class_name = params["#{parent_name}_type"]
-          @polymorphic_parent = !@parent_class_name.nil?
+          @polymorphic_parent = !@parent_class_name.nil? # NEVER USED
         end
         @parent_name
       end
