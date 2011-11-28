@@ -35,8 +35,8 @@ module Resourceful
       # The returned block accepts no arguments,
       # even if the given block accepted them.
       def scope(block)
-        lambda do
-          instance_eval(&(block || lambda {}))
+        proc do
+          instance_eval(&(block || proc {}))
         end
       end
 
