@@ -92,9 +92,8 @@ module Resourceful
       # This prefix is added to the Rails URL helper names
       # for the make_resourceful collection URL helpers,
       # objects_path and new_object_path.
-      # It's only added if url_helper_prefix returns nil.
-      # By default, it's the parent name followed by an underscore if a parent is given,
-      # and the empty string otherwise.
+      # By default, it's the parent name followed by an underscore if a parent
+      # is given, and the empty string otherwise.
       #
       # See also url_helper_prefix.
       def collection_url_prefix
@@ -125,7 +124,7 @@ module Resourceful
       end
 
       def instance_route(name, object, type, action = nil)
-        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{collection_url_prefix}#{name}_#{type}", *(parent? ? [parent_object, object] : [object]))
+        send("#{action ? action + '_' : ''}#{url_helper_prefix}#{collection_url_prefix unless shallow?}#{name}_#{type}", *(parent? && !shallow? ? [parent_object, object] : [object]))
       end
 
       def collection_route(name, type, action = nil)
