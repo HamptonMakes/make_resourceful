@@ -16,25 +16,15 @@ while still keeping your controllers trim and readable.
 
 == Get it!
  
-Rails
+Rails 3.0+
 
-  $ ruby script/plugin install git://github.com/hcatlin/make_resourceful.git
+  gem "make_resourceful" #ZOMG, SO EASY
 
 Git
 
   $ git clone git://github.com/hcatlin/make_resourceful.git
 
 == Use it!
-
-The easiest way to start with make_resourceful
-is to run the resource_scaffold generator.
-It uses the same syntax as the Rails scaffold_resource generator:
-
-  $ script/generate resource_scaffold post title:string body:text
-
-It does, however, require {Haml}[http://haml-lang.com].
-You _are_ using Haml, right? No?
-I'll wait here while you go fall in love with it.
 
 If you want to try make_resourceful on one of your current controllers,
 just replace the mess of repetition with this:
