@@ -1,4 +1,4 @@
-class ResourcefulScaffoldGenerator < Rails::Generator::NamedBase
+class ResourcefulScaffoldGenerator < Rails::Generators::Base
   attr_reader   :controller_class_path,
                 :controller_file_path,
                 :controller_class_nesting,
