@@ -51,7 +51,7 @@ module Resourceful
       # which provides a lot of flexibility
       # (see the documentation for current_model for details).
       def current_objects
-        @current_objects ||= current_model.find(:all)
+        @current_objects ||= current_model.all
       end
 
       # Calls current_objects and stores
