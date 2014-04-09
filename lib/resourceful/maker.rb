@@ -15,7 +15,8 @@ module Resourceful
       base.class_attribute :shallow_parent
       base.class_attribute :model_namespace
       base.class_attribute :made_resourceful
-      
+      base.class_attribute :permitted_params
+
       base.resourceful_callbacks = {}
       base.resourceful_responses = {}
       base.parents               = []
@@ -53,7 +54,7 @@ module Resourceful
     #       current_object.current_user = current_user
     #     end
     #   end
-    # 
+    #
     def make_resourceful(options = {}, &block)
       # :stopdoc:
       include Resourceful::Base
