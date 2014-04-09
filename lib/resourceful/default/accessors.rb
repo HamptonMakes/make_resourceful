@@ -184,7 +184,7 @@ module Resourceful
       # This is only meaningful for +create+ or +update+.
       def object_parameters
         if params.respond_to?(:permit) && self.class.permitted_params && params[:action].to_s != "new"
-          permitable_method = if self.class.permitted_params == :all?
+          permitable_method = if self.class.permitted_params == :all
             [:permit!]
           else
             [:permit, self.class.permitted_params]
