@@ -1,1 +1,2 @@
-* Generators need to be ported to Thor http://guides.rubyonrails.org/generators.html
+* Generators need to be ported to the new syntax http://guides.rubyonrails.org/generators.html
+* Add better strong parameters support

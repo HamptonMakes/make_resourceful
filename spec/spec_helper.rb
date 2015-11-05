@@ -2,18 +2,14 @@ $: << File.dirname(__FILE__) + '/../lib'
 
 require 'rubygems'
 
+require 'rack'
+require "rails/all"
+require 'rack/test'
+require 'rails/test_help'
+require 'rspec/rails'
 
-begin
-  %w[spec rails/version action_pack active_record resourceful/maker
-     spec/rspec-rails/redirect_to spec/rspec-rails/render_template
-     action_controller action_controller/test_process action_controller/integration].each &method(:require)
-rescue LoadError # If we are on rails3, these should work
-  require 'action_controller/testing/process' 
-  require 'action_controller/testing/integration' 
-  require 'active_support/testing/test_case'
-end
 
-Spec::Runner.configure do |config|
+RSpec::Runner.configure do |config|
   config.mock_with :mocha
 end
 
@@ -226,13 +222,13 @@ module RailsMocks
   end
 
   module ControllerMethods
-    # From rspec-rails ControllerExampleGroup  
-    
+    # From rspec-rails ControllerExampleGroup
+
     def render(options=nil, deprecated_status_or_extra_options=nil, &block)
       if ::Rails::VERSION::STRING >= '2.0.0' && deprecated_status_or_extra_options.nil?
         deprecated_status_or_extra_options = {}
       end
-      
+
       unless block_given?
         if @template.respond_to?(:finder)
           (class << @template.finder; self; end).class_eval do
@@ -248,7 +244,7 @@ module RailsMocks
             @first_render ||= args[0] unless args[0] =~ /^layouts/
             @_first_render ||= args[0] unless args[0] =~ /^layouts/
           end
-          
+
           define_method :_pick_template do |*args|
             @_first_render ||= args[0] unless args[0] =~ /^layouts/
             PickedTemplate.new
@@ -258,13 +254,13 @@ module RailsMocks
 
       super(options, deprecated_status_or_extra_options, &block)
     end
-    
+
     class PickedTemplate
       def render_template(*ignore_args); end
       def render_partial(*ignore_args);  end
     end
   end
-  
+
 end
 
 module Spec::Example::ExampleGroupMethods
@@ -275,7 +271,7 @@ module Spec::Example::ExampleGroupMethods
       response.content_type.should == 'text/html'
     end
   end
-  
+
   def should_render_js(action)
     it "should render JS for #{action_string(action)}" do
       action_method(action)[action, action_params(action, :format => 'js')]
@@ -311,7 +307,7 @@ module Spec::Example
     include ActionController::TestProcess
     include ActionController::Assertions
     include RailsMocks
-    
+
     # Need this helper, because we made current_objects private
     def current_objects
       controller.instance_eval("current_objects")
@@ -321,7 +317,7 @@ module Spec::Example
     def current_object
       controller.instance_eval("current_object")
     end
-    
+
     ExampleGroupFactory.register(:integration, self)
   end
 end

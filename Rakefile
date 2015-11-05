@@ -1,6 +1,6 @@
 require 'rake'
-require 'rake/rdoctask'
-require 'spec/rake/spectask'
+require 'rdoc/task'
+require 'rspec/core/rake_task'
 
 desc 'Default: run specs.'
 task :default => :spec
@@ -8,13 +8,13 @@ task :default => :spec
 spec_files = Rake::FileList["spec/**/*_spec.rb"]
 
 desc "Run specs"
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = spec_files
-  t.spec_opts = ["-c"]
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.pattern = "spec/**/*_spec.rb"
+  t.rspec_opts = ["-c"]
 end
 
 desc "Generate code coverage"
-Spec::Rake::SpecTask.new(:coverage) do |t|
+RSpec::Core::RakeTask.new(:coverage) do |t|
   t.spec_files = spec_files
   t.rcov = true
   t.rcov_opts = ['--exclude', 'spec,/var/lib/gems']
