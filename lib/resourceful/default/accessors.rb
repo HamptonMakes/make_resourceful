@@ -194,7 +194,7 @@ module Resourceful
       #
       # Note that the parents must be declared via Builder#belongs_to.
       def parent_names
-        self.class.parents
+        self.class.parent_controllers
       end
 
       # Returns true if an appropriate parent id parameter has been supplied.
