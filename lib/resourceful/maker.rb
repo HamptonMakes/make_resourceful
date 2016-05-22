@@ -53,7 +53,7 @@ module Resourceful
     #       current_object.current_user = current_user
     #     end
     #   end
-    # 
+    #
     def make_resourceful(options = {}, &block)
       # :stopdoc:
       include Resourceful::Base
