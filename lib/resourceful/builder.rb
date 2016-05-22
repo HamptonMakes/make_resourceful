@@ -61,7 +61,7 @@ module Resourceful
       kontroller.resourceful_responses = merged_responses
       kontroller.made_resourceful = true
 
-      kontroller.parents = @parents
+      kontroller.parent_controllers = @parents
       kontroller.shallow_parent = @shallow_parent
       kontroller.model_namespace = @model_namespace
       kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
