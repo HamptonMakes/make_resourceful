@@ -1,37 +1,41 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require_relative './spec_helper'
 
 describe Resourceful::Serialize, ".normalize_attributes" do
+  def expect_normalize(object)
+    expect(Resourceful::Serialize.normalize_attributes(object))
+  end
+
   it "should return nil if given nil" do
-    Resourceful::Serialize.normalize_attributes(nil).should be_nil
+    expect_normalize(nil).to be_nil
   end
 
   it "should return a basic hash if given a non-injectable attribute" do
-    Resourceful::Serialize.normalize_attributes(:foo).should == {:foo => nil}
-    Resourceful::Serialize.normalize_attributes(12).should == {12 => nil}
+    expect_normalize(:foo).to eq({:foo => nil})
+    expect_normalize(12).to eq({12 => nil})
   end
 
   it "should return a basic hash with a symbol key if given a string attribute" do
-    Resourceful::Serialize.normalize_attributes("foo").should == {:foo => nil}
+    expect_normalize("foo").to eq({:foo => nil})
   end
 
   it "should preserve hashes" do
-    Resourceful::Serialize.normalize_attributes({:foo => nil, :bar => nil, :baz => nil}).should ==
-      {:foo => nil, :bar => nil, :baz => nil}
-    Resourceful::Serialize.normalize_attributes({:foo => 3, :bar => 1, :baz => 4}).should ==
-      {:foo => 3, :bar => 1, :baz => 4}
-    Resourceful::Serialize.normalize_attributes({:foo => 3, :bar => 1, :baz => [:foo, :bar]}).should ==
-      {:foo => 3, :bar => 1, :baz => [:foo, :bar]}
+    expect_normalize({:foo => nil, :bar => nil, :baz => nil}).to eq({:foo => nil, :bar => nil, :baz => nil})
+    expect_normalize({:foo => 3, :bar => 1, :baz => 4}).to eq({:foo => 3, :bar => 1, :baz => 4})
+    expect_normalize({:foo => 3, :bar => 1, :baz => [:foo, :bar]}).to eq({:foo => 3, :bar => 1, :baz => [:foo, :bar]})
   end
 
   it "should merge injectable attributes into one big hash" do
-    Resourceful::Serialize.normalize_attributes([:foo, :bar, :baz]).should ==
-      {:foo => nil, :bar => nil, :baz => nil}
-    Resourceful::Serialize.normalize_attributes([:foo, :bar, {:baz => nil},
-                                                 :boom, {:bop => nil, :blat => nil}]).should ==
-      {:foo => nil, :bar => nil, :baz => nil, :boom => nil, :bop => nil, :blat => nil}
-    Resourceful::Serialize.normalize_attributes([:foo, :bar, {:baz => 12},
-                                                 :boom, {:bop => "foo", :blat => [:fee, :fi, :fo]}]).should ==
-      {:foo => nil, :bar => nil, :baz => 12, :boom => nil, :bop => "foo", :blat => [:fee, :fi, :fo]}
+    expect_normalize([:foo, :bar, :baz]).to eq({:foo => nil, :bar => nil, :baz => nil})
+    expect_normalize(
+      [:foo, :bar, {:baz => nil}, :boom, {:bop => nil, :blat => nil}]
+    ).to eq(
+           {:foo => nil, :bar => nil, :baz => nil, :boom => nil, :bop => nil, :blat => nil}
+         )
+    expect_normalize(
+      [:foo, :bar, {:baz => 12}, :boom, {:bop => "foo", :blat => [:fee, :fi, :fo]}]
+    ).to eq(
+           {:foo => nil, :bar => nil, :baz => 12, :boom => nil, :bop => "foo", :blat => [:fee, :fi, :fo]}
+         )
   end
 end
 
@@ -63,9 +67,9 @@ describe Array, " of serializable objects" do
 
   it "should follow deep attributes for #to_serializable" do
     @array.to_serializable([:fur, {:friend => :name}]).should ==
-      [{'fur' => 'brown',  'friend' => {'name' => 'rex'}},
+      [{'fur' => 'brown', 'friend' => {'name' => 'rex'}},
        {'fur' => 'yellow', 'friend' => {'name' => 'rover'}},
-       {'fur' => 'green',  'friend' => {'name' => 'fido'}}]
+       {'fur' => 'green', 'friend' => {'name' => 'fido'}}]
   end
 
   it "should raise an error if #serialize is called without the :attributes option" do
@@ -74,9 +78,9 @@ describe Array, " of serializable objects" do
 
   it "should serialize to a hash with a pluralized root for #serialize" do
     YAML.load(@array.serialize(:yaml, :attributes => [:fur, {:friend => :name}])).should ==
-      {"cats" => [{'fur' => 'brown',  'friend' => {'name' => 'rex'}},
+      {"cats" => [{'fur' => 'brown', 'friend' => {'name' => 'rex'}},
                   {'fur' => 'yellow', 'friend' => {'name' => 'rover'}},
-                  {'fur' => 'green',  'friend' => {'name' => 'fido'}}]}
+                  {'fur' => 'green', 'friend' => {'name' => 'fido'}}]}
   end
 
   it "should serialize to an XML document with a pluralized root for #serialize(:xml, ...)" do
@@ -92,7 +96,7 @@ describe Array, " of serializable objects" do
   end
 end
 
-describe ActiveRecord::Base, " with a few attributes and an association" do
+describe ActiveModel::Base, " with a few attributes and an association" do
   before :each do
     @person = stub_model("Person")
     @party_hat = stub_model("PartyHat")
@@ -124,7 +128,7 @@ describe ActiveRecord::Base, " with a few attributes and an association" do
     doc = REXML::Document.new(@model.serialize(:xml, :attributes => [:name, :eye_color, {:party_hat => :pattern}]),
                               :ignore_whitespace_nodes => :all)
     doc.root.name.should == "person"
-    doc.root.children.find { |e| e.name == "name"      }.text.should == "joe"
+    doc.root.children.find { |e| e.name == "name" }.text.should == "joe"
     doc.root.children.find { |e| e.name == "eye-color" }.text.should == "blue"
 
     hat = doc.root.children.find { |e| e.name == "party-hat" }
