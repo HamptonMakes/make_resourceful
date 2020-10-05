@@ -1,0 +1,17 @@
+PATH
+  remote: .
+  specs:
+    make_resourceful (2.0.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  make_resourceful!
+
+BUNDLED WITH
+   2.1.4
