@@ -51,7 +51,9 @@ module Resourceful
         end
       end
 
-      kontroller.hidden_actions.reject! &@ok_actions.method(:include?)
+      if kontroller.respond_to?(:hidden_actions) 
+        kontroller.hidden_actions.reject! &@ok_actions.method(:include?)
+      end
       kontroller.send :include, @action_module
       
       merged_callbacks = kontroller.resourceful_callbacks.merge @callbacks
