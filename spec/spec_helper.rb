@@ -88,7 +88,7 @@ module ControllerMocks
     @kontroller.stubs(:hidden_actions).returns(@hidden_actions)
     @kontroller.stubs(:plural_action?).returns(false)
     @kontroller.stubs(:include)
-    @kontroller.stubs(:before_filter)
+    @kontroller.stubs(:before_action)
     @kontroller.stubs(:helper_method)
   end
 
