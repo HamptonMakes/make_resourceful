@@ -51,7 +51,9 @@ module Resourceful
         end
       end
 
-      kontroller.hidden_actions.reject! &@ok_actions.method(:include?)
+      if kontroller.respond_to?(:hidden_actions) 
+        kontroller.hidden_actions.reject! &@ok_actions.method(:include?)
+      end
       kontroller.send :include, @action_module
       
       merged_callbacks = kontroller.resourceful_callbacks.merge @callbacks
@@ -64,9 +66,9 @@ module Resourceful
       kontroller.parents = @parents
       kontroller.shallow_parent = @shallow_parent
       kontroller.model_namespace = @model_namespace
-      kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
-      kontroller.before_filter :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
-      kontroller.before_filter :load_parent_object, :only => @ok_actions + @custom_member_actions + @custom_collection_actions
+      kontroller.before_action :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
+      kontroller.before_action :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
+      kontroller.before_action :load_parent_object, :only => @ok_actions + @custom_member_actions + @custom_collection_actions
     end
 
     # :call-seq:
@@ -112,7 +114,7 @@ module Resourceful
     # :call-seq:
     #   member_actions(*available_actions)
     # 
-    # Registers custom member actions which will use the load_object before_filter.
+    # Registers custom member actions which will use the load_object before_action.
     # These actions are not created, but merely registered for filtering.
     def member_actions(*available_actions)
       available_actions.each { |action| @custom_member_actions << action.to_sym }
@@ -121,7 +123,7 @@ module Resourceful
     # :call-seq:
     #   collection_actions(*available_actions)
     # 
-    # Registers custom collection actions which will use the load_objects before_filter.
+    # Registers custom collection actions which will use the load_objects before_action.
     # These actions are not created, but merely registered for filtering.
     def collection_actions(*available_actions)
       available_actions.each { |action| @custom_collection_actions << action.to_sym }

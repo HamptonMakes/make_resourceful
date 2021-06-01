@@ -333,7 +333,7 @@ module Resourceful
       # Assigns the current parent object, as given by parent_objects,
       # to its proper instance variable, as given by parent_name.
       #
-      # This is automatically added as a before_filter.
+      # This is automatically added as a before_action.
       # You shouldn't need to use it directly unless you're creating a new action.
       def load_parent_object
         instance_variable_set("@#{parent_name}", parent_object) if parent?
@@ -341,11 +341,11 @@ module Resourceful
       end
 
       # Renders a 422 error if no parent id is given.
-      # This is meant to be used with before_filter
+      # This is meant to be used with before_action
       # to ensure that some actions are only called with a parent id.
       # For example:
       #
-      #   before_filter :ensure_parent_exists, :only => [:create, :update]
+      #   before_action :ensure_parent_exists, :only => [:create, :update]
       #
       def ensure_parent_exists
         return true if parent?
