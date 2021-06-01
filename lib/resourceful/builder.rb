@@ -41,7 +41,7 @@ module Resourceful
       apply_publish
 
       kontroller = @controller
-      
+
       Resourceful::ACTIONS.each do |action_named|
         # See if this is a method listed by #actions
         unless @ok_actions.include? action_named
@@ -55,15 +55,15 @@ module Resourceful
         kontroller.hidden_actions.reject! &@ok_actions.method(:include?)
       end
       kontroller.send :include, @action_module
-      
+
       merged_callbacks = kontroller.resourceful_callbacks.merge @callbacks
       merged_responses = kontroller.resourceful_responses.merge @responses
-      
+
       kontroller.resourceful_callbacks = merged_callbacks
       kontroller.resourceful_responses = merged_responses
       kontroller.made_resourceful = true
 
-      kontroller.parents = @parents
+      kontroller.parent_controllers = @parents
       kontroller.shallow_parent = @shallow_parent
       kontroller.model_namespace = @model_namespace
       kontroller.before_action :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
@@ -74,7 +74,7 @@ module Resourceful
     # :call-seq:
     #   actions(*available_actions)
     #   actions :all
-    # 
+    #
     # Adds the default RESTful actions to the controller.
     #
     # If the only argument is <tt>:all</tt>,
@@ -110,16 +110,15 @@ module Resourceful
       available_actions.each { |action| @ok_actions << action.to_sym }
     end
     alias build actions
-    
+
     # :call-seq:
     #   member_actions(*available_actions)
-    # 
     # Registers custom member actions which will use the load_object before_action.
     # These actions are not created, but merely registered for filtering.
     def member_actions(*available_actions)
       available_actions.each { |action| @custom_member_actions << action.to_sym }
     end
-    
+
     # :call-seq:
     #   collection_actions(*available_actions)
     # 
@@ -150,11 +149,11 @@ module Resourceful
     # to the current object's title
     # for the show and edit actions.
     #
-    # Successive before blocks for the same action will be chained and executed 
+    # Successive before blocks for the same action will be chained and executed
     # in order when the event occurs.
     #
     # For example:
-    #    
+    #
     #   before :show, :edit do
     #     @page_title = current_object.title
     #   end
@@ -163,7 +162,7 @@ module Resourceful
     #     @side_bar = true
     #   end
     #
-    # These before blocks will both be executed for the show action and in the 
+    # These before blocks will both be executed for the show action and in the
     # same order as they were defined.
     def before(*events, &block)
       add_callback :before, *events, &block
@@ -232,7 +231,7 @@ module Resourceful
     #   end
     #
     # This is the same as
-    #     
+    #
     #   response_for :new do |format|
     #     format.html { render :action => 'edit' }
     #   end
@@ -279,8 +278,8 @@ module Resourceful
     #
     # Then GET /posts/12.yaml would render
     #
-    #   --- 
-    #   post: 
+    #   ---
+    #   post:
     #     title: Cool Stuff
     #     rendered_content: |-
     #       <p>This is a post.</p>
@@ -333,7 +332,7 @@ module Resourceful
         :only => [:show, :index]
       }.merge(Hash === formats.last ? formats.pop : {})
       raise "Must specify :attributes option" unless options[:attributes]
-      
+
       Array(options.delete(:only)).each do |action|
         @publish[action] ||= []
         formats.each do |format|
@@ -372,7 +371,7 @@ module Resourceful
         @shallow_parent = options[:shallow]
       end
     end
-    
+
     # Specifies a namespace for the resource model. It can be given as a
     # Module::NameSpace, 'Module::NameSpace' (in a string), or
     # 'module/name_space' (underscored form).
@@ -389,7 +388,7 @@ module Resourceful
     end
 
     private
-    
+
     def apply_publish
       @publish.each do |action, types|
         @responses[action.to_sym] ||= []
@@ -397,10 +396,10 @@ module Resourceful
       end
     end
 
-    def add_callback(type, *events, &block)    
+    def add_callback(type, *events, &block)
       events.each do |event|
         @callbacks[type][event.to_sym] ||= []
-        @callbacks[type][event.to_sym] << block        
+        @callbacks[type][event.to_sym] << block
       end
     end
   end
