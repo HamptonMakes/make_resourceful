@@ -15,6 +15,7 @@ module Resourceful
       base.class_attribute :shallow_parent
       base.class_attribute :model_namespace
       base.class_attribute :made_resourceful
+      base.class_attribute :permitted_params
 
       base.resourceful_callbacks = {}
       base.resourceful_responses = {}
