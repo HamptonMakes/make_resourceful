@@ -30,6 +30,7 @@ module Resourceful
       @shallow_parent   = nil
       @custom_member_actions = []
       @custom_collection_actions = []
+      @permitted_params = []
     end
 
     # This method is only meant to be called internally.
@@ -59,6 +60,7 @@ module Resourceful
       merged_callbacks = kontroller.resourceful_callbacks.merge @callbacks
       merged_responses = kontroller.resourceful_responses.merge @responses
 
+      kontroller.permitted_params = @permitted_params
       kontroller.resourceful_callbacks = merged_callbacks
       kontroller.resourceful_responses = merged_responses
       kontroller.made_resourceful = true
@@ -121,11 +123,27 @@ module Resourceful
 
     # :call-seq:
     #   collection_actions(*available_actions)
-    # 
+    #
     # Registers custom collection actions which will use the load_objects before_action.
     # These actions are not created, but merely registered for filtering.
     def collection_actions(*available_actions)
       available_actions.each { |action| @custom_collection_actions << action.to_sym }
+    end
+
+    # :call-seq:
+    #   permitted_params(*params_allowed)
+    #
+    # When using strong parameters, specifies which params are permitted
+    #
+    # If the only argument is <tt>:all</tt>,
+    # all parameters are permitted
+    def permitted_params(*params_permitted)
+      if params_permitted.first == :all
+        @permitted_params = params_permitted.first
+      else
+        @permitted_params = [] unless @permitted_params.is_a?(Array)
+        params_permitted.each { |param| @permitted_params << param.to_sym }
+      end
     end
 
     # :call-seq:

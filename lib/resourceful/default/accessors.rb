@@ -183,7 +183,16 @@ module Resourceful
       # of the current object.
       # This is only meaningful for +create+ or +update+.
       def object_parameters
-        params[namespaced_model_name.underscore.tr('/', '_')]
+        if params.respond_to?(:permit) && self.class.permitted_params && params[:action].to_s != "new"
+          permitable_method = if self.class.permitted_params == :all
+            [:permit!]
+          else
+            [:permit, self.class.permitted_params]
+          end
+          params.require(namespaced_model_name.underscore.tr('/', '_')).send(*permitable_method)
+        else
+          params[namespaced_model_name.underscore.tr('/', '_')]
+        end
       end
 
       # Returns a list of the names of all the potential parents of the current model.
